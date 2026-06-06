@@ -1,0 +1,50 @@
+{
+  "name": "mpoints-tracker",
+  "private": true,
+  "version": "3.7.2",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint .",
+    "typecheck": "node ./scripts/typecheck.mjs",
+    "verify:local": "node ./scripts/verify-local.mjs",
+    "preview": "vite preview",
+    "deploy": "npm run build && wrangler pages deploy dist --project-name=mpoints-tracker",
+    "test": "playwright test",
+    "test:unit": "vitest run",
+    "test:layout": "playwright test --project=mobile-small --project=mobile-large --project=tablet --project=foldable-open --project=foldable-closed --project=desktop --project=layout-legacy",
+    "test:logic": "playwright test --project=logic",
+    "test:fast": "playwright test --project=logic --project=foldable-closed",
+    "test:ui": "playwright test --ui",
+    "test:coverage": "vitest run --coverage --coverage.reporter=text"
+  },
+  "dependencies": {
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react": "^7.37.5",
+    "firebase": "^11.3.1",
+    "jsqr": "^1.4.0",
+    "qrcode": "^1.5.4",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "react-router-dom": "^7.14.2"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.4",
+    "@playwright/test": "^1.59.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.0",
+    "@vitest/coverage-v8": "^4.1.7",
+    "eslint": "^9.39.4",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.5.2",
+    "globals": "^17.4.0",
+    "jsdom": "^29.1.1",
+    "vite": "^8.0.0",
+    "vitest": "^4.1.6",
+    "wrangler": "^4.80.0"
+  }
+}

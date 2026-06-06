@@ -1,0 +1,49 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Wrangler local dev
+.wrangler
+
+# Playwright
+playwright-report
+test-results
+blob-report
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Local tool caches / dev runtime artifacts
+.corepack/
+.npm-cache/
+.superpowers/
+.tmp/
+.tmp-*.pid
+vite-dev.pid
+
+# Backup files
+*.zip
+*.tgz

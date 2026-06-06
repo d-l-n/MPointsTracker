@@ -1,0 +1,30 @@
+@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Google+Sans:wght@300;400;500;600;700&display=swap");
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html,
+  body,
+  #root {
+    min-height: 100%;
+  }
+
+  body {
+    margin: 0;
+    background: var(--bg-primary, #0f172a);
+    color: var(--text-primary, #f8fafc);
+    font-family: "Google Sans", sans-serif;
+  }
+
+  .page-shell,
+  .surface-grid,
+  .surface-card,
+  .surface-card--dense,
+  .list-card {
+    min-width: 0;
+  }
+}

@@ -1,0 +1,172 @@
+@layer components {
+  .glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px) saturate(1.2);
+    -webkit-backdrop-filter: blur(16px) saturate(1.2);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+  }
+
+  .page-shell,
+  .page,
+  .admin-page,
+  .fb-page {
+    width: min(100%, var(--page-max-width));
+    margin-inline: auto;
+    padding-inline: var(--page-gutter);
+  }
+
+  .page-header-compact,
+  .hdr,
+  .h2h-panel-head,
+  .home-section-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--compact-header-gap);
+  }
+
+  .page-title-block,
+  .detail-rematch-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    min-width: 0;
+  }
+
+  .page-title-block--grow {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .page-kicker {
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--tx3, var(--text-secondary));
+  }
+
+  .surface-grid,
+  .home-card-stack,
+  .champ-by-game,
+  .h2h-game-grid {
+    display: grid;
+    gap: var(--surface-gap);
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .surface-card,
+  .surface-card--dense,
+  .list-card,
+  .about-card,
+  .champ-hero,
+  .rule-game-card,
+  .h2h-panel,
+  .mcard,
+  .settings-row,
+  .cbg-card {
+    border-radius: var(--r, var(--radius-lg));
+    border: 1px solid var(--content-border, var(--glass-border));
+    background: var(--content-surface, var(--glass-bg));
+    backdrop-filter: var(--content-blur, blur(16px) saturate(1.1));
+    -webkit-backdrop-filter: var(--content-blur, blur(16px) saturate(1.1));
+    box-shadow: var(--content-shadow, var(--glass-shadow));
+  }
+
+  .surface-card {
+    padding: 1rem;
+  }
+
+  .surface-card--dense,
+  .list-card,
+  .mcard,
+  .settings-row,
+  .cbg-card {
+    padding: 0.875rem;
+  }
+
+  .utility-chip-row,
+  .search-bar,
+  .home-filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .list-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+  }
+
+  .list-card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+    color: var(--tx3, var(--text-secondary));
+    font-size: 0.72rem;
+  }
+
+  @media (min-width: 768px) {
+    .page-shell,
+    .page,
+    .admin-page,
+    .fb-page {
+      padding-inline: var(--page-gutter-lg);
+    }
+
+    .champ-by-game,
+    .h2h-game-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--surface-gap-lg, 1rem);
+    }
+  }
+
+  @media (min-width: 900px) {
+    .page-shell,
+    .page,
+    .admin-page,
+    .fb-page {
+      padding-inline: var(--page-gutter-lg);
+    }
+
+    .surface-grid,
+    .home-card-stack,
+    .champ-by-game,
+    .h2h-game-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--surface-gap-lg, 1rem);
+    }
+
+    .page-header-compact,
+    .hdr,
+    .h2h-panel-head,
+    .home-section-heading {
+      align-items: center;
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .home-card-stack {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--surface-gap-lg, 1rem);
+    }
+    .home-group-title {
+      font-size: 0.85rem;
+      letter-spacing: 0.18em;
+      margin-bottom: 14px;
+    }
+    .home-section-heading {
+      gap: 1.25rem;
+    }
+    .home-sub {
+      font-size: 0.85rem;
+    }
+    .big-title.mobile-hide {
+      font-size: 2.8rem;
+    }
+  }
+}

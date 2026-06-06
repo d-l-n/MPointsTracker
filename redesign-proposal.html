@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MPoints Tracker Redesign Proposal</title>
+  <style>
+    :root {
+      --bg: oklch(99% 0.002 240);
+      --surface: oklch(100% 0 0);
+      --fg: oklch(18% 0.012 250);
+      --muted: oklch(54% 0.012 250);
+      --border: oklch(92% 0.005 250);
+      --accent: oklch(58% 0.18 255);
+      --accent-soft: color-mix(in oklab, white 88%, var(--accent));
+      --success: oklch(72% 0.14 155);
+      --shadow: 0 24px 70px rgba(11, 20, 46, 0.08);
+      --radius: 28px;
+      --radius-sm: 18px;
+      --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif;
+      --font-body: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: var(--font-body);
+      color: var(--fg);
+      background:
+        radial-gradient(circle at top left, color-mix(in oklab, white 84%, var(--accent)) 0, transparent 28%),
+        linear-gradient(180deg, #fcfdff 0%, #f5f8ff 100%);
+      min-height: 100dvh;
+    }
+
+    .page {
+      width: min(1320px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 40px;
+    }
+
+    .hero, .card {
+      background: rgba(255, 255, 255, 0.88);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(22px);
+    }
+
+    .hero {
+      border-radius: 34px;
+      padding: 28px;
+      display: grid;
+      gap: 18px;
+      grid-template-columns: 1.5fr 1fr;
+      margin-bottom: 22px;
+    }
+
+    .eyebrow {
+      font-size: 12px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    h1 {
+      font-family: var(--font-display);
+      font-size: clamp(2.3rem, 4vw, 4.6rem);
+      line-height: 0.95;
+      letter-spacing: -0.04em;
+      margin: 0 0 14px;
+      max-width: 10ch;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 64ch;
+      font-size: 1.05rem;
+      line-height: 1.6;
+      color: var(--muted);
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      align-content: start;
+    }
+
+    .metric {
+      border-radius: 24px;
+      padding: 16px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.94), rgba(244,248,255,0.9));
+      border: 1px solid var(--border);
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 1.8rem;
+      letter-spacing: -0.04em;
+      margin-top: 8px;
+    }
+
+    .metric span {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .card {
+      border-radius: 30px;
+      padding: 18px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .shot {
+      border-radius: 22px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: #eff3ff;
+      aspect-ratio: 16 / 10;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+      background: white;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 1.35rem;
+      letter-spacing: -0.03em;
+    }
+
+    .card p, .list {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 0.96rem;
+    }
+
+    .list {
+      display: grid;
+      gap: 7px;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    .btn {
+      appearance: none;
+      text-decoration: none;
+      border-radius: 999px;
+      padding: 12px 16px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      border: 1px solid var(--border);
+      color: var(--fg);
+      background: var(--surface);
+    }
+
+    .btn.primary {
+      background: var(--accent);
+      color: white;
+      border-color: transparent;
+    }
+
+    @media (max-width: 1080px) {
+      .hero, .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div>
+        <div class="eyebrow">MPoints Tracker · Rediseño sugerido</div>
+        <h1>Menos ruido, más ritmo de partida.</h1>
+        <p>La propuesta ordena la app alrededor de tres momentos reales del uso: volver a una partida, empezar una nueva rápido y revisar historial sin perder contexto. Mantengo el espíritu casual del producto, pero con una jerarquía más clara y una interfaz más fresca para desktop y responsive web.</p>
+        <div class="actions">
+          <a class="btn primary" href="redesign/home.html">Abrir home</a>
+          <a class="btn" href="redesign/history.html">Abrir historial</a>
+          <a class="btn" href="redesign/game-detail.html">Abrir detalle de juego</a>
+        </div>
+      </div>
+      <div class="hero-grid">
+        <div class="metric">
+          <span>Dirección</span>
+          <strong>Modern minimal</strong>
+        </div>
+        <div class="metric">
+          <span>Usuarios</span>
+          <strong>Grupos de amigos</strong>
+        </div>
+        <div class="metric">
+          <span>Shift principal</span>
+          <strong>Continuar rápido</strong>
+        </div>
+        <div class="metric">
+          <span>Tono</span>
+          <strong>Humano + ágil</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <article class="card">
+        <div class="shot"><iframe src="redesign/home.html" title="Home redesign preview" loading="lazy"></iframe></div>
+        <h2>Home como tablero social</h2>
+        <p>La pantalla principal deja de ser solo catálogo. Primero aparece la partida viva, después accesos rápidos y recién luego la biblioteca de juegos.</p>
+        <div class="list">
+          <div>Continuar partida destacada con participantes y progreso.</div>
+          <div>Filtros cortos y buscador con respuesta inmediata.</div>
+          <div>Actividad del grupo y sugerencias visibles sin saturar.</div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="shot"><iframe src="redesign/history.html" title="History redesign preview" loading="lazy"></iframe></div>
+        <h2>Historial más legible y filtrable</h2>
+        <p>El historial pasa a una estructura de control a la izquierda y lectura a la derecha, con detalle contextual para no abrir y cerrar modales por cada partida.</p>
+        <div class="list">
+          <div>Filtros persistentes y recuento claro de resultados.</div>
+          <div>Resumen superior con sesión, ganadores y duración.</div>
+          <div>Panel de detalle lateral al seleccionar una partida.</div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="shot"><iframe src="redesign/game-detail.html" title="Game detail redesign preview" loading="lazy"></iframe></div>
+        <h2>Detalle de juego orientado a acción</h2>
+        <p>La carga cognitiva baja: el armado de jugadores, los puntajes y el estado de guardado viven en un flujo único, sin mezclar todo en una sola masa visual.</p>
+        <div class="list">
+          <div>Panel de ronda editable con ganador automático.</div>
+          <div>Jugadores vinculados y presets visibles.</div>
+          <div>Estado de borrador, resumen y CTA de guardado más claros.</div>
+        </div>
+      </article>
+    </section>
+  </main>
+</body>
+</html>

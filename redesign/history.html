@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MPoints Redesign · History</title>
+  <style>
+    :root {
+      --bg: oklch(99% 0.002 240);
+      --surface: oklch(100% 0 0);
+      --surface-alt: oklch(97% 0.004 248);
+      --fg: oklch(18% 0.012 250);
+      --muted: oklch(54% 0.012 250);
+      --border: oklch(92% 0.005 250);
+      --accent: oklch(54% 0.22 300);
+      --success: oklch(72% 0.14 155);
+      --danger: oklch(64% 0.21 24);
+      --shadow: 0 26px 64px rgba(18, 31, 68, 0.08);
+      --radius: 28px;
+      --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif;
+      --font-body: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: var(--font-body);
+      color: var(--fg);
+      background:
+        radial-gradient(circle at top right, color-mix(in oklab, white 84%, var(--accent)) 0, transparent 26%),
+        linear-gradient(180deg, #fdfcff 0%, #f7f3ff 100%);
+      min-height: 100dvh;
+    }
+    .app {
+      width: min(100% - 16px, 100%);
+      margin: 0 auto;
+      padding: 14px 0 28px;
+    }
+    .topbar, .surface {
+      background: rgba(255,255,255,0.88);
+      border: 1px solid rgba(255,255,255,0.9);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(22px);
+    }
+    .topbar {
+      border-radius: 24px;
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+    .surface {
+      border-radius: var(--radius);
+      padding: 18px;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+    .stack, .results, .details { display: grid; gap: 18px; }
+    .eyebrow { font-size: 0.74rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); font-weight: 800; }
+    h1, h2, h3 { margin: 0; letter-spacing: -0.04em; }
+    h1 { font-size: clamp(2rem, 4vw, 3.8rem); line-height: 0.94; margin-top: 8px; }
+    h2 { font-size: 1.2rem; }
+    p { margin: 0; color: var(--muted); line-height: 1.55; }
+    .chips, .row, .scoreline, .players, .filters { display: flex; gap: 10px; flex-wrap: wrap; }
+    .chip, .pill, .mini, input {
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      font: inherit;
+    }
+    .chip, .pill, .mini {
+      padding: 10px 14px;
+      background: white;
+      color: var(--fg);
+    }
+    .chip.active {
+      color: var(--accent);
+      background: color-mix(in oklab, white 85%, var(--accent));
+      border-color: color-mix(in oklab, white 60%, var(--accent));
+      font-weight: 700;
+    }
+    .mini { padding: 8px 10px; color: var(--muted); font-size: 0.82rem; }
+    input {
+      width: 100%;
+      padding: 12px 14px;
+      background: rgba(255,255,255,0.95);
+      color: var(--fg);
+    }
+    .hero {
+      display: grid;
+      gap: 14px;
+    }
+    .hero-summary {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    .stat, .match-card, .detail-card {
+      border-radius: 22px;
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(247,250,255,0.98));
+      padding: 15px;
+    }
+    .stat strong { display: block; font-size: 1.55rem; margin-top: 8px; }
+    .match-card {
+      display: grid;
+      gap: 12px;
+      cursor: pointer;
+    }
+    .match-card.active {
+      border-color: color-mix(in oklab, white 55%, var(--accent));
+      background: color-mix(in oklab, white 92%, var(--accent));
+    }
+    .match-top, .listline {
+      display: flex; justify-content: space-between; gap: 12px; align-items: start;
+    }
+    .badge {
+      border-radius: 999px;
+      padding: 7px 10px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      border: 1px solid transparent;
+    }
+    .badge.blue { background: color-mix(in oklab, white 85%, var(--accent)); color: var(--accent); }
+    .badge.green { background: color-mix(in oklab, white 78%, var(--success)); color: color-mix(in oklab, black 18%, var(--success)); }
+    .badge.red { background: color-mix(in oklab, white 80%, var(--danger)); color: var(--danger); }
+    .players span {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 7px 10px;
+      font-size: 0.82rem;
+    }
+    .detail-card { display: grid; gap: 14px; }
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    .scoreline strong { font-size: 1.05rem; }
+    .caption { color: var(--muted); font-size: 0.86rem; }
+    @media (min-width: 760px) {
+      .app { width: min(1180px, calc(100% - 24px)); padding-top: 20px; }
+      .topbar { border-radius: 999px; padding: 14px 18px; }
+      .hero-summary { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .detail-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (min-width: 1120px) {
+      .app { width: min(1380px, calc(100% - 24px)); }
+      .layout { grid-template-columns: minmax(280px, 0.85fr) minmax(0, 1.4fr) minmax(280px, 0.85fr); }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div>
+        <strong>Historial global</strong>
+        <div class="caption">Primero scannear, después profundizar</div>
+      </div>
+      <div class="row">
+        <button class="mini">Compartido con 4 amigos</button>
+        <button class="mini">Últimos 30 días</button>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside class="stack">
+        <section class="surface hero">
+          <div class="eyebrow">Rediseño sugerido · historial</div>
+          <h1>Todo el historial entra en un solo recorrido vertical.</h1>
+          <p>En móvil, filtros, resultados y detalle viven apilados y claros. En desktop se expanden a paneles, pero la lógica sigue siendo la misma.</p>
+        </section>
+
+        <section class="surface">
+          <div class="eyebrow">Búsqueda</div>
+          <div style="margin-top:10px;"><input id="search" type="search" placeholder="Buscar por jugador o juego"></div>
+        </section>
+
+        <section class="surface">
+          <div class="eyebrow">Filtros rápidos</div>
+          <div class="filters" id="gameFilters" style="margin-top:12px;">
+            <button class="chip active" data-game="all">Todos</button>
+            <button class="chip" data-game="uno">UNO</button>
+            <button class="chip" data-game="truco">Truco</button>
+            <button class="chip" data-game="chinchon">Chinchón</button>
+          </div>
+          <div class="filters" id="timeFilters" style="margin-top:12px;">
+            <button class="chip active" data-time="all">Todo</button>
+            <button class="chip" data-time="week">7 días</button>
+            <button class="chip" data-time="month">30 días</button>
+          </div>
+        </section>
+      </aside>
+
+      <section class="results">
+        <section class="surface">
+          <div class="eyebrow">Resumen</div>
+          <div class="hero-summary" style="margin-top:14px;">
+            <div class="stat"><span class="caption">Partidas visibles</span><strong id="visibleCount">4</strong></div>
+            <div class="stat"><span class="caption">Ganó más</span><strong>Sofi</strong></div>
+            <div class="stat"><span class="caption">Más jugado</span><strong>UNO</strong></div>
+          </div>
+        </section>
+
+        <section class="surface">
+          <div class="listline" style="margin-bottom:14px;">
+            <div>
+              <div class="eyebrow">Resultados</div>
+              <h2>Partidas recientes</h2>
+            </div>
+            <button class="mini">Ordenar por fecha</button>
+          </div>
+          <div class="stack" id="matchList">
+            <article class="match-card active" data-game="uno" data-time="week" data-players="sofi nico mora agus" data-id="uno-final">
+              <div class="match-top">
+                <div>
+                  <strong>UNO · Final del domingo</strong>
+                  <p>12 de mayo · 53 min · 6 rondas</p>
+                </div>
+                <span class="badge blue">Sofi ganó</span>
+              </div>
+              <div class="players">
+                <span>Sofi 184</span><span>Nico 171</span><span>Mora 159</span><span>Agus 147</span>
+              </div>
+            </article>
+
+            <article class="match-card" data-game="truco" data-time="week" data-players="nico agus mati juan" data-id="truco-night">
+              <div class="match-top">
+                <div>
+                  <strong>Truco · Noche de revancha</strong>
+                  <p>11 de mayo · 34 min · mejor de 3</p>
+                </div>
+                <span class="badge green">Nico + Agus</span>
+              </div>
+              <div class="players">
+                <span>Nico 30</span><span>Agus 24</span><span>Mati 18</span><span>Juan 14</span>
+              </div>
+            </article>
+
+            <article class="match-card" data-game="chinchon" data-time="month" data-players="mora sofia nico" data-id="chinchon-long">
+              <div class="match-top">
+                <div>
+                  <strong>Chinchón · Mesa larga</strong>
+                  <p>4 de mayo · 1 h 18 min · penalidades</p>
+                </div>
+                <span class="badge red">Mora quedó 1ra</span>
+              </div>
+              <div class="players">
+                <span>Mora 71</span><span>Sofi 82</span><span>Nico 97</span>
+              </div>
+            </article>
+
+            <article class="match-card" data-game="uno" data-time="month" data-players="agus juan luli nico" data-id="uno-friday">
+              <div class="match-top">
+                <div>
+                  <strong>UNO · Viernes rápido</strong>
+                  <p>28 de abril · 27 min · mesa de 4</p>
+                </div>
+                <span class="badge blue">Agus ganó</span>
+              </div>
+              <div class="players">
+                <span>Agus 210</span><span>Juan 176</span><span>Luli 162</span><span>Nico 149</span>
+              </div>
+            </article>
+          </div>
+        </section>
+      </section>
+
+      <aside class="details">
+        <section class="surface">
+          <div class="eyebrow">Detalle contextual</div>
+          <div class="detail-card" id="detailPanel" style="margin-top:12px;">
+            <div>
+              <h3 id="detailTitle">UNO · Final del domingo</h3>
+              <p id="detailMeta">Cierre de partida con 6 rondas y revancha disponible.</p>
+            </div>
+            <div class="detail-grid">
+              <div class="stat"><span class="caption">Ganador</span><strong id="detailWinner">Sofi</strong></div>
+              <div class="stat"><span class="caption">Duración</span><strong id="detailDuration">53 min</strong></div>
+            </div>
+            <div class="scoreline"><span class="caption">Participantes</span><strong id="detailPlayers">Sofi, Nico, Mora, Agus</strong></div>
+            <div class="scoreline"><span class="caption">Próxima acción</span><strong id="detailAction">Repetir misma mesa</strong></div>
+          </div>
+        </section>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+    const state = { game: "all", time: "all", query: "" };
+    const matches = Array.from(document.querySelectorAll(".match-card"));
+    const visibleCount = document.getElementById("visibleCount");
+    const detailMap = {
+      "uno-final": {
+        title: "UNO · Final del domingo",
+        meta: "Cierre de partida con 6 rondas y revancha disponible.",
+        winner: "Sofi",
+        duration: "53 min",
+        players: "Sofi, Nico, Mora, Agus",
+        action: "Repetir misma mesa"
+      },
+      "truco-night": {
+        title: "Truco · Noche de revancha",
+        meta: "Partida corta entre parejas con vuelta recomendada.",
+        winner: "Nico + Agus",
+        duration: "34 min",
+        players: "Nico, Agus, Mati, Juan",
+        action: "Abrir rematch con mismas parejas"
+      },
+      "chinchon-long": {
+        title: "Chinchón · Mesa larga",
+        meta: "Sesión extensa con penalidades y cambios de líder.",
+        winner: "Mora",
+        duration: "1 h 18 min",
+        players: "Mora, Sofi, Nico",
+        action: "Revisar penalidades"
+      },
+      "uno-friday": {
+        title: "UNO · Viernes rápido",
+        meta: "Partida breve ideal para reusar como preset.",
+        winner: "Agus",
+        duration: "27 min",
+        players: "Agus, Juan, Luli, Nico",
+        action: "Guardar como grupo frecuente"
+      }
+    };
+
+    function updateDetail(id) {
+      const detail = detailMap[id];
+      if (!detail) return;
+      document.getElementById("detailTitle").textContent = detail.title;
+      document.getElementById("detailMeta").textContent = detail.meta;
+      document.getElementById("detailWinner").textContent = detail.winner;
+      document.getElementById("detailDuration").textContent = detail.duration;
+      document.getElementById("detailPlayers").textContent = detail.players;
+      document.getElementById("detailAction").textContent = detail.action;
+    }
+
+    function render() {
+      let count = 0;
+      matches.forEach((match) => {
+        const gameOk = state.game === "all" || match.dataset.game === state.game;
+        const timeOk = state.time === "all" || match.dataset.time === state.time;
+        const query = state.query.trim().toLowerCase();
+        const text = `${match.textContent} ${match.dataset.players}`.toLowerCase();
+        const queryOk = !query || text.includes(query);
+        const visible = gameOk && timeOk && queryOk;
+        match.style.display = visible ? "grid" : "none";
+        if (visible) count += 1;
+      });
+      visibleCount.textContent = String(count);
+    }
+
+    document.getElementById("search").addEventListener("input", (event) => {
+      state.query = event.target.value;
+      render();
+    });
+
+    document.querySelectorAll("#gameFilters .chip").forEach((button) => {
+      button.addEventListener("click", () => {
+        state.game = button.dataset.game;
+        document.querySelectorAll("#gameFilters .chip").forEach((item) => item.classList.toggle("active", item === button));
+        render();
+      });
+    });
+
+    document.querySelectorAll("#timeFilters .chip").forEach((button) => {
+      button.addEventListener("click", () => {
+        state.time = button.dataset.time;
+        document.querySelectorAll("#timeFilters .chip").forEach((item) => item.classList.toggle("active", item === button));
+        render();
+      });
+    });
+
+    matches.forEach((match) => {
+      match.addEventListener("click", () => {
+        matches.forEach((item) => item.classList.toggle("active", item === match));
+        updateDetail(match.dataset.id);
+      });
+    });
+
+    render();
+  </script>
+</body>
+</html>

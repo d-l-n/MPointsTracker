@@ -1,0 +1,23 @@
+import { useCallback, useEffect, useRef, useState } from "react";
+
+import type { ToastState } from "../types";
+
+export function useToast() {
+  const [toast, setToast] = useState<ToastState>({ msg: "", show: false });
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const showToast = useCallback((msg: string, duration = 2400) => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    setToast({ msg, show: true });
+    timerRef.current = setTimeout(() => {
+      setToast((currentToast) => ({ ...currentToast, show: false }));
+      timerRef.current = null;
+    }, duration);
+  }, []);
+
+  useEffect(() => () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+  }, []);
+
+  return { toast, showToast };
+}

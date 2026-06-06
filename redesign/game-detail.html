@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MPoints Redesign · Game Detail</title>
+  <style>
+    :root {
+      --bg: oklch(99% 0.002 240);
+      --surface: oklch(100% 0 0);
+      --surface-alt: oklch(97% 0.004 248);
+      --fg: oklch(18% 0.012 250);
+      --muted: oklch(54% 0.012 250);
+      --border: oklch(92% 0.005 250);
+      --accent: oklch(54% 0.22 300);
+      --success: oklch(72% 0.14 155);
+      --shadow: 0 26px 64px rgba(18, 31, 68, 0.08);
+      --radius: 28px;
+      --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif;
+      --font-body: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: var(--font-body);
+      color: var(--fg);
+      background:
+        radial-gradient(circle at top left, color-mix(in oklab, white 84%, var(--accent)) 0, transparent 26%),
+        linear-gradient(180deg, #fdfcff 0%, #f7f3ff 100%);
+      min-height: 100dvh;
+    }
+    .app {
+      width: min(100% - 16px, 100%);
+      margin: 0 auto;
+      padding: 14px 0 110px;
+    }
+    .surface, .topbar {
+      background: rgba(255,255,255,0.88);
+      border: 1px solid rgba(255,255,255,0.9);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(22px);
+    }
+    .topbar {
+      border-radius: 24px;
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+    }
+    .stack { display: grid; gap: 18px; }
+    .surface {
+      border-radius: var(--radius);
+      padding: 18px;
+    }
+    .eyebrow { font-size: 0.74rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); font-weight: 800; }
+    h1, h2, h3 { margin: 0; letter-spacing: -0.04em; }
+    h1 { font-size: clamp(2rem, 4.4vw, 3.8rem); line-height: 0.94; margin-top: 8px; }
+    h2 { font-size: 1.2rem; }
+    p { margin: 0; color: var(--muted); line-height: 1.55; }
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+    .tag, .mini, .tab, .preset, .primary, .secondary, input {
+      border-radius: 999px;
+      font: inherit;
+    }
+    .tag, .mini, .preset, .secondary {
+      border: 1px solid var(--border);
+      background: white;
+      color: var(--fg);
+    }
+    .tag, .mini, .preset, .secondary, .primary, .tab { padding: 10px 14px; }
+    .primary, .tab.active {
+      border: 0;
+      color: white;
+      background: var(--accent);
+      font-weight: 700;
+    }
+    .secondary, .tab { border: 1px solid var(--border); background: white; }
+    .mini { padding: 8px 10px; font-size: 0.82rem; color: var(--muted); }
+    .tabs, .row, .presets, .summary-list, .scoreboard { display: flex; gap: 10px; flex-wrap: wrap; }
+    .tabs { margin-top: 16px; }
+    .editor {
+      display: grid;
+      gap: 16px;
+      margin-top: 8px;
+    }
+    .panel, .round-card, .aside-card {
+      border-radius: 22px;
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(247,250,255,0.98));
+      padding: 16px;
+    }
+    .players-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .player-pill {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 12px;
+      background: white;
+      display: grid;
+      gap: 8px;
+    }
+    .player-pill strong { font-size: 1rem; }
+    .player-pill input, .round-card input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      background: white;
+      color: var(--fg);
+    }
+    .round-card {
+      display: grid;
+      gap: 14px;
+    }
+    .round-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    .round-grid label, .player-pill label {
+      display: grid;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 0.84rem;
+    }
+    .scoreboard {
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--border);
+      padding-top: 12px;
+    }
+    .score-chip {
+      border-radius: 999px;
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      background: white;
+      font-weight: 700;
+    }
+    .aside-card { display: grid; gap: 12px; }
+    .summary-list { flex-direction: column; }
+    .summary-list div {
+      display: flex; justify-content: space-between; gap: 12px;
+      padding-bottom: 10px; border-bottom: 1px solid var(--border);
+    }
+    .summary-list div:last-child { border-bottom: 0; padding-bottom: 0; }
+    .sticky-save {
+      position: fixed;
+      left: 12px;
+      right: 12px;
+      bottom: 12px;
+      z-index: 10;
+      display: grid;
+      gap: 8px;
+      padding: 12px;
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,0.9);
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(22px);
+      box-shadow: var(--shadow);
+    }
+    @media (min-width: 760px) {
+      .app { width: min(1180px, calc(100% - 24px)); padding-top: 20px; padding-bottom: 32px; }
+      .topbar { border-radius: 999px; padding: 14px 18px; }
+      .hero { grid-template-columns: 1.2fr 0.8fr; }
+      .players-grid, .round-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .sticky-save { display: none; }
+    }
+    @media (min-width: 1120px) {
+      .app { width: min(1380px, calc(100% - 24px)); }
+      .layout { grid-template-columns: minmax(0, 1.25fr) minmax(320px, 0.95fr); }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div>
+        <strong>Detalle de juego · UNO</strong>
+        <div style="color:var(--muted); font-size:0.86rem;">Nueva partida y estado del borrador en el mismo flujo</div>
+      </div>
+      <div class="row">
+        <button class="mini">Borrador activo</button>
+        <button class="mini">Último guardado · 19:42</button>
+      </div>
+    </header>
+
+    <div class="layout">
+      <section class="stack">
+        <article class="surface hero">
+          <div>
+            <div class="eyebrow">Rediseño sugerido · detalle</div>
+          <h1>Cargar la ronda tiene que sentirse fácil en mano.</h1>
+          <p>La pantalla nace para móvil: tarjetas más cortas, campos grandes y acciones primarias siempre visibles. Desktop amplía el contexto, pero no cambia el flujo.</p>
+            <div class="tabs">
+              <button class="tab active">Nueva partida</button>
+              <button class="tab">Stats</button>
+              <button class="tab">Historial</button>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="eyebrow">Preset sugerido</div>
+            <h2 style="margin-top:8px;">Mesa del jueves</h2>
+            <p style="margin-top:8px;">Sofi, Nico, Mora y Agus. Ideal para arrancar en un toque y ajustar después si falta alguien.</p>
+            <div class="presets" style="margin-top:14px;">
+            <button class="preset">Usar grupo</button>
+            <button class="preset">Revancha anoche</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="surface editor">
+          <div>
+            <div class="eyebrow">1 · Jugadores</div>
+            <div class="players-grid">
+              <div class="player-pill">
+                <strong>Sofi</strong>
+                <label>Alias vinculado<input value="@sofi.table"></label>
+              </div>
+              <div class="player-pill">
+                <strong>Nico</strong>
+                <label>Alias vinculado<input value="@nico.play"></label>
+              </div>
+              <div class="player-pill">
+                <strong>Mora</strong>
+                <label>Alias vinculado<input value="@mora.points"></label>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="eyebrow">2 · Ronda actual</div>
+            <div class="round-card">
+              <div class="round-grid">
+                <label>Sofi<input id="score-sofi" type="number" value="42"></label>
+                <label>Nico<input id="score-nico" type="number" value="28"></label>
+                <label>Mora<input id="score-mora" type="number" value="19"></label>
+              </div>
+              <div class="scoreboard">
+                <div class="row">
+                  <span class="tag">Ronda 7</span>
+                  <span class="tag" id="winnerTag">Va ganando Sofi</span>
+                </div>
+                <div class="row">
+                  <button class="secondary">Agregar jugador</button>
+                  <button class="primary" id="saveRound">Guardar ronda</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <aside class="stack">
+        <article class="surface aside-card">
+          <div class="eyebrow">Estado de partida</div>
+          <h2>Resumen vivo</h2>
+          <div class="summary-list">
+            <div><span style="color:var(--muted)">Líder actual</span><strong id="leaderName">Sofi · 184</strong></div>
+            <div><span style="color:var(--muted)">Segunda posición</span><strong id="runnerUp">Nico · 171</strong></div>
+            <div><span style="color:var(--muted)">Último cambio</span><strong>Hace 9 min</strong></div>
+            <div><span style="color:var(--muted)">Acción siguiente</span><strong>Guardar y compartir</strong></div>
+          </div>
+        </article>
+
+        <article class="surface aside-card">
+          <div class="eyebrow">Marcador</div>
+          <div class="scoreboard">
+            <span class="score-chip" id="chipSofi">Sofi 184</span>
+            <span class="score-chip" id="chipNico">Nico 171</span>
+            <span class="score-chip" id="chipMora">Mora 159</span>
+          </div>
+          <button class="primary" style="width:100%;">Guardar partida</button>
+        </article>
+      </aside>
+    </div>
+
+    <div class="sticky-save">
+      <div style="display:flex; justify-content:space-between; gap:12px; color:var(--muted); font-size:0.86rem;">
+        <span>Borrador listo</span>
+        <strong style="color:var(--fg);">Sofi sigue arriba</strong>
+      </div>
+      <button class="primary" style="width:100%;">Guardar partida</button>
+    </div>
+  </main>
+
+  <script>
+    const inputs = [
+      { id: "score-sofi", name: "Sofi", base: 142 },
+      { id: "score-nico", name: "Nico", base: 143 },
+      { id: "score-mora", name: "Mora", base: 140 }
+    ];
+
+    function updateSummary() {
+      const totals = inputs.map((player) => {
+        const value = Number(document.getElementById(player.id).value || 0);
+        return { name: player.name, total: player.base + value };
+      }).sort((a, b) => b.total - a.total);
+
+      document.getElementById("winnerTag").textContent = `Va ganando ${totals[0].name}`;
+      document.getElementById("leaderName").textContent = `${totals[0].name} · ${totals[0].total}`;
+      document.getElementById("runnerUp").textContent = `${totals[1].name} · ${totals[1].total}`;
+      document.getElementById("chipSofi").textContent = `Sofi ${totals.find((item) => item.name === "Sofi").total}`;
+      document.getElementById("chipNico").textContent = `Nico ${totals.find((item) => item.name === "Nico").total}`;
+      document.getElementById("chipMora").textContent = `Mora ${totals.find((item) => item.name === "Mora").total}`;
+    }
+
+    inputs.forEach((player) => {
+      document.getElementById(player.id).addEventListener("input", updateSummary);
+    });
+
+    document.getElementById("saveRound").addEventListener("click", () => {
+      const button = document.getElementById("saveRound");
+      button.textContent = "Ronda guardada";
+      button.style.background = "var(--success)";
+      window.setTimeout(() => {
+        button.textContent = "Guardar ronda";
+        button.style.background = "var(--accent)";
+      }, 1400);
+    });
+
+    updateSummary();
+  </script>
+</body>
+</html>
