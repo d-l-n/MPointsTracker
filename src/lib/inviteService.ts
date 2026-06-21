@@ -128,7 +128,8 @@ function getInviteCodeFromUrl(url = window.location.href): string | null {
 async function resolveInvite(code: string | null | undefined, now = Date.now()): Promise<PendingInvite | null> {
   if (!code) return null;
 
-  const browserTestInvites = typeof window !== "undefined" ? window.__MP_TEST_INVITES__ : null;
+  const isDevMode = typeof import.meta !== "undefined" && import.meta.env?.DEV;
+  const browserTestInvites = isDevMode && typeof window !== "undefined" ? window.__MP_TEST_INVITES__ : null;
   if (browserTestInvites && browserTestInvites[code]) {
     return resolveInviteDoc(browserTestInvites[code], now);
   }

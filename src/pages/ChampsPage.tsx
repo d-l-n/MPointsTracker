@@ -145,7 +145,7 @@ function ChampsPage({ onViewProfile }: ChampsPageProps) {
     <div className="page">
       {/* ── Top global ── */}
       <div className="champ-section">
-        <div className="champ-sec-title">{t("globalTop")}</div>
+        <h2 className="champ-sec-title">{t("globalTop")}</h2>
         {globalStats.length === 0
           ? <div className="no-champs">{t("noMatchesYet")}</div>
           : <div className="podium">
@@ -179,7 +179,7 @@ function ChampsPage({ onViewProfile }: ChampsPageProps) {
 
       {/* ── Por juego ── */}
       <div className="champ-section">
-        <div className="champ-sec-title">{t("perGame")}</div>
+        <h2 className="champ-sec-title">{t("perGame")}</h2>
         {gamesWithMatches.length === 0
           ? <div className="no-champs">{t("noMatchesYet")}</div>
           : <div className="champ-by-game">

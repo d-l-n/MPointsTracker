@@ -86,26 +86,37 @@ export default function LoginForm({ t, onSignIn, onShowReset, onShowSignup, onBa
 
   return (
     <form className="auth-form" action={handleSubmit}>
-      <input
-        className="inp"
-        name="email"
-        type="email"
-        placeholder={t("emailPlaceholder")}
-        autoComplete="email"
-      />
-      <input
-        className="inp"
-        name="password"
-        type="password"
-        placeholder={t("passwordPlaceholder")}
-        autoComplete="current-password"
-      />
+      <div className="inp-group">
+        <label htmlFor="login-email" className="inp-label">{t("emailPlaceholder")}</label>
+        <input
+          id="login-email"
+          className="inp"
+          name="email"
+          type="email"
+          placeholder={t("emailPlaceholder")}
+          autoComplete="email"
+          aria-invalid={!!error}
+        />
+      </div>
+      <div className="inp-group">
+        <label htmlFor="login-password" className="inp-label">{t("passwordPlaceholder")}</label>
+        <input
+          id="login-password"
+          className="inp"
+          name="password"
+          type="password"
+          placeholder={t("passwordPlaceholder")}
+          autoComplete="current-password"
+          aria-invalid={!!error}
+          aria-describedby={error ? "login-error" : undefined}
+        />
+      </div>
       {optimisticState.email && !error && (
         <div className="auth-sub" data-testid="login-optimistic-status" style={optimisticStatusStyle}>
           {optimisticState.message} {optimisticState.email}
         </div>
       )}
-      {error && <div className="auth-err">{error}</div>}
+      {error && <div id="login-error" className="auth-err" aria-live="assertive">{error}</div>}
       <LoginSubmitButton t={t} />
       <div style={footerRowStyle}>
         <button type="button" className="auth-link" onClick={onShowReset}>

@@ -20,14 +20,11 @@ export function useOnlineStatus(): boolean {
     window.addEventListener("focus", reconcile);
     document.addEventListener("visibilitychange", reconcile);
 
-    const intervalId = window.setInterval(reconcile, 1000);
-
     return () => {
       window.removeEventListener("online", handleOnline);
       window.removeEventListener("offline", handleOffline);
       window.removeEventListener("focus", reconcile);
       document.removeEventListener("visibilitychange", reconcile);
-      window.clearInterval(intervalId);
     };
   }, []);
 

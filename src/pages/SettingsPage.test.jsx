@@ -1,46 +1,52 @@
-import { describe, expect, test, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
 import SettingsPage from "./SettingsPage";
 
+const defaultContextValue = {
+  user: { uid: "u1", displayName: "Ana", email: "ana@example.com" },
+  t: (key) => ({
+    signOut: "Cerrar sesion",
+    signOutConfirmTitle: "Cerrar sesion?",
+    signOutDataQuestion: "Que queres hacer con tus datos locales?",
+    signOutKeepData: "Mantener datos",
+    signOutClearData: "Limpiar datos",
+    signOutClearDataTitle: "Limpiar datos locales?",
+    signOutClearDataMsg: "Se borraran todas las partidas guardadas.",
+    cancel: "Cancelar",
+    myQR: "Mi codigo QR",
+    qrCodeHint: "Mostra este codigo para vincularme",
+    status: "Estado",
+    nameLabel: "Nombre visible",
+    totalMatches: "Partidas guardadas",
+    profileWins: "Victorias",
+    profileWinrate: "Win Rate",
+    profileStreak: "Racha max.",
+    viewProfile: "Ver perfil",
+    deleteAccountBtn: "Eliminar cuenta",
+    deleteAccountTitle: "Eliminar cuenta?",
+    deleteAccountMsg: "Esta accion es permanente.",
+    deleteAccountConfirm: "Eliminar para siempre",
+    deleting: "Eliminando...",
+    settingsPrefs: "Preferencias",
+    settingsPrefsDesc: "Pantalla e idioma",
+    settingsAbout: "Acerca de",
+    settingsAboutDesc: "Version y reportes",
+    connected: "Conectado",
+    cloudAndDevice: "Nube + dispositivo",
+    editName: "Editar",
+  }[key] || key),
+  showToast: vi.fn(),
+  playerGroups: [],
+  spotifyEnabled: false,
+  spotifyPosition: "center",
+  saveSpotifyPreference: vi.fn(),
+  saveSpotifyPosition: vi.fn(),
+};
+
+let mockContextValue = { ...defaultContextValue };
+
 vi.mock("../context/AppContext", () => ({
-  useAppContext: () => ({
-    user: { uid: "u1", displayName: "Ana", email: "ana@example.com" },
-    t: (key) => ({
-      signOut: "Cerrar sesion",
-      signOutConfirmTitle: "Cerrar sesion?",
-      signOutDataQuestion: "Que queres hacer con tus datos locales?",
-      signOutKeepData: "Mantener datos",
-      signOutClearData: "Limpiar datos",
-      signOutClearDataTitle: "Limpiar datos locales?",
-      signOutClearDataMsg: "Se borraran todas las partidas guardadas.",
-      cancel: "Cancelar",
-      myQR: "Mi codigo QR",
-      qrCodeHint: "Mostra este codigo para vincularme",
-      status: "Estado",
-      nameLabel: "Nombre visible",
-      totalMatches: "Partidas guardadas",
-      profileWins: "Victorias",
-      profileWinrate: "Win Rate",
-      profileStreak: "Racha max.",
-      viewProfile: "Ver perfil",
-      deleteAccountBtn: "Eliminar cuenta",
-      deleteAccountTitle: "Eliminar cuenta?",
-      deleteAccountMsg: "Esta accion es permanente.",
-      deleteAccountConfirm: "Eliminar para siempre",
-      deleting: "Eliminando...",
-      settingsPrefs: "Preferencias",
-      settingsPrefsDesc: "Pantalla e idioma",
-      settingsAbout: "Acerca de",
-      settingsAboutDesc: "Version y reportes",
-      connected: "Conectado",
-      cloudAndDevice: "Nube + dispositivo",
-      editName: "Editar",
-    }[key] || key),
-    showToast: vi.fn(),
-    playerGroups: [],
-    spotifyEnabled: false,
-    saveSpotifyPreference: vi.fn(),
-  }),
+  useAppContext: () => mockContextValue,
 }));
 
 vi.mock("../lib/firebase", () => ({
@@ -74,6 +80,7 @@ function renderSettingsPage(overrides = {}) {
     data: {},
     onSignOut: vi.fn(),
     onViewProfile: null,
+    subPage: null,
     ...overrides,
   };
   const result = render(
@@ -96,12 +103,22 @@ function renderSettingsPage(overrides = {}) {
       reduceEffects={false}
       onToggleReduceEffects={vi.fn()}
       onSubPage={vi.fn()}
+      subPage={props.subPage}
     />,
   );
   return { ...result, props };
 }
 
 describe("SettingsPage", () => {
+  beforeEach(() => {
+    mockContextValue = {
+      ...defaultContextValue,
+      showToast: vi.fn(),
+      saveSpotifyPreference: vi.fn(),
+      saveSpotifyPosition: vi.fn(),
+    };
+  });
+
   test("renders account actions as aligned settings rows", () => {
     renderSettingsPage();
 
@@ -157,5 +174,36 @@ describe("SettingsPage", () => {
     fireEvent.click(screen.getByRole("button", { name: /ver perfil/i }));
     expect(onViewProfile).toHaveBeenCalledWith("u1");
     expect(screen.getByRole("button", { name: /eliminar cuenta/i })).toBeInTheDocument();
+  });
+
+  test("does not render the position selector when Spotify is disabled", () => {
+    mockContextValue.spotifyEnabled = false;
+    renderSettingsPage({ subPage: "prefs" });
+
+    const selector = screen.queryByTestId("spotify-position-select");
+    expect(selector).toBeNull();
+  });
+
+  test("renders the position selector when Spotify is enabled", () => {
+    mockContextValue.spotifyEnabled = true;
+    mockContextValue.spotifyPosition = "center";
+    mockContextValue.saveSpotifyPosition = vi.fn();
+    renderSettingsPage({ subPage: "prefs" });
+
+    const selector = screen.getByTestId("spotify-position-select");
+    expect(selector).toBeInTheDocument();
+  });
+
+  test("calls saveSpotifyPosition when a new position is selected", () => {
+    const saveSpotifyPosition = vi.fn();
+    mockContextValue.spotifyEnabled = true;
+    mockContextValue.spotifyPosition = "center";
+    mockContextValue.saveSpotifyPosition = saveSpotifyPosition;
+    renderSettingsPage({ subPage: "prefs" });
+
+    const selector = screen.getByTestId("spotify-position-select");
+    fireEvent.change(selector, { target: { value: "left" } });
+
+    expect(saveSpotifyPosition).toHaveBeenCalledWith("left");
   });
 });

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { haptic, mkId } from "../../lib/storage";
 import type { Match, PlayerGroup, TranslationFn } from "../../types";
@@ -87,7 +87,7 @@ function fmt(secs: number) {
   return `${minutes}:${seconds.toString().padStart(2, "0")}`;
 }
 
-export default function AjedrezNewMatch({
+function AjedrezNewMatch({
   onSave,
   knownNames,
   draft = null,
@@ -595,3 +595,5 @@ export default function AjedrezNewMatch({
     </div>
   );
 }
+
+export default memo(AjedrezNewMatch)

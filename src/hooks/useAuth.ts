@@ -21,9 +21,10 @@ import {
   saveDataToCloud,
   savePlayerGroupsToCloud,
   saveSpotifyPreferenceToCloud,
+  saveSpotifyPositionToCloud,
   saveUserProfile,
 } from "../services/userService";
-import type { Match, PlayerGroup, TranslationFn } from "../types";
+import type { Match, PlayerGroup, SpotifyPosition, TranslationFn } from "../types";
 
 const isIOS =
   typeof navigator !== "undefined" &&
@@ -42,10 +43,12 @@ interface UserDataPayload {
   data?: string;
   playerGroups?: string;
   spotifyEnabled?: string | boolean;
+  spotifyPosition?: SpotifyPosition;
   [key: string]: unknown;
 }
 
 const SPOTIFY_ENABLED_KEY = "bgt_spotify_enabled";
+const SPOTIFY_POSITION_KEY = "bgt_spotify_position";
 
 type TestAuthUser = Partial<User> & {
   uid: string;
@@ -81,6 +84,18 @@ function normalizeSpotifyEnabled(value: unknown): boolean | null {
   if (value === true || value === "1") return true;
   if (value === false || value === "0") return false;
   return null;
+}
+
+function readStoredSpotifyPosition(): SpotifyPosition {
+  try {
+    const val = localStorage.getItem(SPOTIFY_POSITION_KEY);
+    if (val === "center" || val === "left" || val === "right" || val === "draggable") {
+      return val as SpotifyPosition;
+    }
+  } catch {
+    // ignore
+  }
+  return "center";
 }
 
 function readHadPreviousSession(): boolean {
@@ -119,6 +134,7 @@ export function useAuth({
   const [user, setUser] = useState<User | null | undefined>(undefined);
   const [playerGroups, setPlayerGroups] = useState<PlayerGroup[]>(readStoredPlayerGroups);
   const [spotifyEnabled, setSpotifyEnabled] = useState<boolean>(readStoredSpotifyEnabled);
+  const [spotifyPosition, setSpotifyPosition] = useState<SpotifyPosition>(readStoredSpotifyPosition);
 
   const hadPreviousSession = readHadPreviousSession();
   const [authChecked, setAuthChecked] = useState(hadPreviousSession);
@@ -185,6 +201,13 @@ export function useAuth({
           addLog("spotify preference uploaded from local storage");
         }
 
+        const cloudSpotifyPosition = userData?.spotifyPosition;
+        if (cloudSpotifyPosition === "center" || cloudSpotifyPosition === "left" || cloudSpotifyPosition === "right" || cloudSpotifyPosition === "draggable") {
+          setSpotifyPosition(cloudSpotifyPosition);
+          localStorage.setItem(SPOTIFY_POSITION_KEY, cloudSpotifyPosition);
+          addLog(`spotify position loaded (userdata): ${cloudSpotifyPosition}`);
+        }
+
         if (!userData?.data && !userData?.playerGroups && cloudSpotifyEnabled === null) {
           addLog("no userdata found - checking legacy users doc...");
           try {
@@ -236,7 +259,8 @@ export function useAuth({
     let cancelled = false;
 
     const init = async () => {
-      const testUser = typeof window !== "undefined" ? window.__MP_TEST_AUTH_USER__ : null;
+      const isDevMode = typeof import.meta !== "undefined" && import.meta.env?.DEV;
+      const testUser = isDevMode && typeof window !== "undefined" ? window.__MP_TEST_AUTH_USER__ : null;
       if (testUser?.uid) {
         const syntheticUser = {
           displayName: null,
@@ -279,7 +303,7 @@ export function useAuth({
         if (code === "auth/web-storage-unsupported") {
           if (!cancelled) {
             setAuthChecked(true);
-            showToast("⚠️ Activá el almacenamiento en Safari para iniciar sesión");
+            showToast(t("authSafariStorage"));
           }
           return;
         }
@@ -454,6 +478,25 @@ export function useAuth({
     [user],
   );
 
+  const saveSpotifyPosition = useCallback(
+    async (position: SpotifyPosition) => {
+      setSpotifyPosition(position);
+      try {
+        localStorage.setItem(SPOTIFY_POSITION_KEY, position);
+      } catch (error) {
+        console.error("[useAuth] saveSpotifyPosition localStorage error:", error);
+      }
+      if (user) {
+        try {
+          await saveSpotifyPositionToCloud(user.uid, position);
+        } catch (error) {
+          console.warn("[spotify] cloud position save failed:", error);
+        }
+      }
+    },
+    [user],
+  );
+
   return {
     user,
     authChecked,
@@ -461,6 +504,7 @@ export function useAuth({
     guestMode,
     playerGroups,
     spotifyEnabled,
+    spotifyPosition,
     signInGoogle,
     signInWithEmail,
     signUpWithEmail,
@@ -469,5 +513,6 @@ export function useAuth({
     enterGuestMode,
     savePlayerGroups,
     saveSpotifyPreference,
+    saveSpotifyPosition,
   };
 }

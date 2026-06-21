@@ -108,9 +108,4 @@ export function getGameComponent(gameType: GameType) {
   return GAME_COMPONENTS[loaderKey];
 }
 
-export function preloadGameComponentById(gameId: string | null | undefined) {
-  if (!gameId) return;
-  const game = GAMES[gameId as GameId];
-  if (!game) return;
-  getGameComponent(game.type);
-}
+

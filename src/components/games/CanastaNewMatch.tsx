@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 
 import { haptic, mkId } from "../../lib/storage";
 import type { Match, PlayerGroup, TranslationFn } from "../../types";
@@ -56,7 +56,7 @@ interface CanastaNewMatchProps {
 
 const GOAL = 5000;
 
-export default function CanastaNewMatch({
+function CanastaNewMatch({
   onSave,
   knownNames,
   linkedPlayers = [],
@@ -174,6 +174,7 @@ export default function CanastaNewMatch({
               {teamNames.map((name, index) => (
                 <input
                   key={`team-${index}`}
+                  id={`canasta-team-name-${index}`}
                   className="inp"
                   placeholder={`${t("team")} ${index + 1}`}
                   value={name}
@@ -182,6 +183,7 @@ export default function CanastaNewMatch({
                       currentTeamNames.map((currentValue, currentIndex) => (currentIndex === index ? event.target.value : currentValue)) as [string, string],
                     )
                   }
+                  aria-label={`${t("team")} ${index + 1}`}
                 />
               ))}
             </div>
@@ -241,6 +243,7 @@ export default function CanastaNewMatch({
                   />
                   <button
                     className="btnrm"
+                    aria-label={`${t("delete")} ${player.name || `${t("playerN")} ${index + 1}`}`}
                     onClick={() => {
                       if (players.length > 2) {
                         setPlayers((currentPlayers) => currentPlayers.filter((currentPlayer) => currentPlayer.id !== player.id));
@@ -363,6 +366,7 @@ export default function CanastaNewMatch({
                 <div className="rdfields">
                   <div className="rdfrow">
                     <input
+                      id={`canasta-round-score-${index}`}
                       className="rdinp"
                       type="number"
                       placeholder="0"
@@ -375,6 +379,7 @@ export default function CanastaNewMatch({
                           ],
                         )
                       }
+                      aria-label={`${t("roundLabel")} ${label}`}
                     />
                     <span className="rdlbl">{t("ptsCanBeNegative")}</span>
                   </div>
@@ -444,3 +449,5 @@ export default function CanastaNewMatch({
     </div>
   );
 }
+
+export default memo(CanastaNewMatch)

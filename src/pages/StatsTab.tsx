@@ -58,7 +58,7 @@ function StatsTab({
           <div className="etxt">{t("noStats")}</div>
         </div>
       )}
-      <span className="flbl" style={{ display:"block", marginBottom:"9px" }}>{t("leaderboard")}</span>
+      <h2 className="flbl" style={{ display:"block", marginBottom:"9px" }}>{t("leaderboard")}</h2>
       {players.length > 0 ? (
         <div className="lb">
           {players.map((p, i) => (

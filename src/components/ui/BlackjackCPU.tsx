@@ -503,6 +503,7 @@ function BlackjackCPU({onClose}) {
               <button
                 onClick={handleToggleTheme}
                 title={dark ? t("themeToggleLight") : t("themeToggleDark")}
+                aria-label={dark ? t("themeToggleLight") : t("themeToggleDark")}
                 style={{
                   width:34,height:34,borderRadius:"50%",
                   border:`1.5px solid ${tk.panelBorder}`,
@@ -517,7 +518,7 @@ function BlackjackCPU({onClose}) {
               </button>
 
               {/* Close */}
-              <button onClick={onClose} style={{
+              <button onClick={onClose} aria-label={t("cancel")} style={{
                 width:34,height:34,borderRadius:"50%",
                 border:`1px solid ${tk.panelBorder}`,
                 background: tk.panelBg,
@@ -653,8 +654,9 @@ function BlackjackCPU({onClose}) {
               }}>
                 <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:"1.1rem",
                   letterSpacing:"2px",color:"#f4a261",marginBottom:6}}>{t("bjCpuInsurance")}</div>
-                <div style={{fontSize:".72rem",color:tk.tx2,marginBottom:14,lineHeight:1.7}}
-                  dangerouslySetInnerHTML={{__html: t("bjCpuInsuranceDesc").replace("{n}", `<strong style="color:${tk.tx}">${Math.floor(bet/2)}</strong>`)}} />
+                <div style={{fontSize:".72rem",color:tk.tx2,marginBottom:14,lineHeight:1.7}}>
+                  {t("bjCpuInsuranceDesc").split("{n}")[0]}<strong style={{color:tk.tx}}>{Math.floor(bet/2)}</strong>{t("bjCpuInsuranceDesc").split("{n}")[1]}
+                </div>
                 <div style={{display:"flex",gap:8}}>
                   <button onClick={()=>resolveInsurance(true)} style={{
                     flex:1,padding:"12px",borderRadius:11,cursor:"pointer",

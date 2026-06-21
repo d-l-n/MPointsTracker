@@ -129,8 +129,6 @@ export {
   TRANSLATIONS,
   getGlobalT,
   detectLang,
-  flattenTranslationKeys,
-  getTranslationParityReport,
   saveLang,
   setGlobalT,
   useT,

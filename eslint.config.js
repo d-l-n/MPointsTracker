@@ -6,7 +6,7 @@ import reactRefresh from 'eslint-plugin-react-refresh'
 import jsxA11y from 'eslint-plugin-jsx-a11y'
 
 const jsxA11yRecommendedWarnings = Object.fromEntries(
-  Object.keys(jsxA11y.configs.recommended.rules).map((ruleName) => [ruleName, 'warn']),
+  Object.keys(jsxA11y.configs.recommended.rules).map((ruleName) => [ruleName, 'error']),
 )
 
 export default [
@@ -31,10 +31,10 @@ export default [
       ...jsxA11yRecommendedWarnings,
       ...reactHooks.configs.recommended.rules,
       ...reactRefresh.configs.vite.rules,
-      'jsx-a11y/anchor-is-valid': 'warn',
-      'jsx-a11y/click-events-have-key-events': 'warn',
-      'jsx-a11y/no-autofocus': 'warn',
-      'jsx-a11y/no-static-element-interactions': 'warn',
+      'jsx-a11y/anchor-is-valid': 'error',
+      'jsx-a11y/click-events-have-key-events': 'error',
+      'jsx-a11y/no-autofocus': 'error',
+      'jsx-a11y/no-static-element-interactions': 'error',
       'react/prop-types': 'off',
       'react-hooks/set-state-in-effect': 'off',
       'react-refresh/only-export-components': [

@@ -1,5 +1,6 @@
-import { useState, type ChangeEvent, type CSSProperties } from "react";
+import React, { useEffect, useState, type ChangeEvent, type CSSProperties } from "react";
 
+import { useFocusTrap } from "../../hooks/useFocusTrap";
 import type { Match, PlayerResult, TranslationFn } from "../../types";
 import ConfirmModal from "./ConfirmModal";
 
@@ -34,6 +35,15 @@ export default function EditMatchModal({
   const [penalty, setPenalty] = useState(match.penalty || "");
   const [streakType, setStreakType] = useState(match.streakType || "");
   const [note, setNote] = useState(match.note || "");
+  const dialogRef = useFocusTrap();
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
 
   const isRacha = match.penalty !== undefined || match.streakType !== undefined;
   const nameCount = players.reduce<Record<string, number>>((acc, player) => {
@@ -108,7 +118,14 @@ export default function EditMatchModal({
 
   return (
     <div style={overlayStyle} onClick={onClose}>
-      <div style={boxStyle} onClick={(event) => event.stopPropagation()}>
+      <div
+        ref={dialogRef as React.RefObject<HTMLDivElement>}
+        style={boxStyle}
+        role="dialog"
+        aria-modal="true"
+        aria-label={t("editMatch")}
+        onClick={(event) => event.stopPropagation()}
+      >
         <div style={{ fontFamily: "'Bebas Neue',sans-serif", fontSize: "1.3rem", letterSpacing: "2px", color: "var(--tx)" }}>
           {t("editMatch")}
         </div>
@@ -117,7 +134,7 @@ export default function EditMatchModal({
           <span className="flbl" style={{ color: "var(--tx)", opacity: 0.7 }}>
             {t("dateTime")}
           </span>
-          <input className="inp" type="datetime-local" value={date} onChange={(event) => setDate(event.target.value)} />
+          <input className="inp" type="datetime-local" value={date} onChange={(event) => setDate(event.target.value)} aria-label={t("dateTime")} />
         </div>
 
         {!isRacha && (
@@ -134,6 +151,7 @@ export default function EditMatchModal({
                     placeholder={t("namePlaceholder")}
                     value={player.name}
                     onChange={handlePlayerNameChange(index)}
+                    aria-label={`${t("playerN")} ${index + 1}`}
                   />
                   {player.score !== undefined && (
                     <input
@@ -143,6 +161,7 @@ export default function EditMatchModal({
                       placeholder="Pts"
                       value={player.score}
                       onChange={handlePlayerScoreChange(index)}
+                      aria-label={`${t("score")} ${player.name || `${t("playerN")} ${index + 1}`}`}
                     />
                   )}
                 </div>
@@ -187,12 +206,13 @@ export default function EditMatchModal({
         {isRacha && (
           <>
             <div>
-              <span className="flbl">{t("whatStreak")}</span>
-              <input className="inp" value={streakType} onChange={(event) => setStreakType(event.target.value.slice(0, 80))} />
+              <label htmlFor="edit-streak" className="flbl">{t("whatStreak")}</label>
+              <input id="edit-streak" className="inp" value={streakType} onChange={(event) => setStreakType(event.target.value.slice(0, 80))} />
             </div>
             <div>
-              <span className="flbl">{t("penalty")}</span>
+              <label htmlFor="edit-penalty" className="flbl">{t("penalty")}</label>
               <textarea
+                id="edit-penalty"
                 className="fb-textarea"
                 value={penalty}
                 onChange={(event) => setPenalty(event.target.value.slice(0, 300))}
@@ -203,12 +223,13 @@ export default function EditMatchModal({
         )}
 
         <div>
-          <span className="flbl" style={{ color: "var(--tx)", opacity: 0.7 }}>
-            {t("matchNoteLabel") || "Nota"}
-          </span>
+          <label htmlFor="edit-note" className="flbl" style={{ color: "var(--tx)", opacity: 0.7, display: "block", marginBottom: "8px" }}>
+            {t("matchNoteLabel")}
+          </label>
           <textarea
+            id="edit-note"
             className="fb-textarea"
-            placeholder={t("notePlaceholder") || "Nota opcional..."}
+            placeholder={t("notePlaceholder")}
             value={note}
             onChange={(event) => setNote(event.target.value.slice(0, 300))}
             style={{ minHeight: 60, fontSize: ".85rem" }}

@@ -1,4 +1,4 @@
-import { useEffect, useState, type CSSProperties } from "react";
+import { memo, useEffect, useState, type CSSProperties } from "react";
 
 import { useAppContext } from "../../context/AppContext";
 import type { PendingInvite, TranslationFn } from "../../types";
@@ -22,6 +22,8 @@ interface LinkedPlayerInputProps {
   knownNames?: string[];
   t: TranslationFn;
   allLinkedUids?: Array<string | null | undefined>;
+  label?: string;
+  id?: string;
 }
 
 interface CurrentUser {
@@ -94,7 +96,7 @@ const selfButtonStyle: CSSProperties = {
 // Reads the current user from AppContext instead of creating an
 // individual onAuthStateChanged listener per instance (Bug 26).
 // With 6 players in a match this was creating 6 simultaneous Firebase listeners.
-export default function LinkedPlayerInput({
+function LinkedPlayerInput({
   value,
   linkedUid,
   linkedName,
@@ -105,6 +107,8 @@ export default function LinkedPlayerInput({
   knownNames = [],
   t,
   allLinkedUids = [],
+  label,
+  id,
 }: LinkedPlayerInputProps) {
   const [showSearch, setShowSearch] = useState(false);
   const [showInvite, setShowInvite] = useState(false);
@@ -140,9 +144,11 @@ export default function LinkedPlayerInput({
     <>
       {showSearch && <UserSearchModal onLink={onLink} onClose={() => setShowSearch(false)} t={t} knownNames={knownNames} />}
       {showInvite && currentUser && <InviteLinkModal user={currentUser} onClose={() => setShowInvite(false)} t={t} />}
-      <div style={{ display: "flex", gap: 6, alignItems: "center", width: "100%", minWidth: 0 }}>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          {linkedUid ? (
+      <div className={label ? "inp-group" : ""} style={{ width: "100%", minWidth: 0 }}>
+        {label && id && <label htmlFor={id} className="inp-label">{label}</label>}
+        <div style={{ display: "flex", gap: 6, alignItems: "center", width: "100%", minWidth: 0 }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            {linkedUid ? (
             <div data-testid="linked-player-chip" style={linkedChipStyle}>
               <span style={linkedNameStyle}>🔗 {linkedName}</span>
               <span className="player-tag linked" style={{ flexShrink: 0 }}>
@@ -150,16 +156,16 @@ export default function LinkedPlayerInput({
               </span>
             </div>
           ) : (
-            <PlayerInput value={value} onChange={onChange} placeholder={placeholder} knownNames={knownNames} />
+            <PlayerInput value={value} onChange={onChange} placeholder={placeholder} knownNames={knownNames} id={id} />
           )}
         </div>
         {!linkedUid && (
-          <button onClick={() => setShowSearch(true)} style={baseButtonStyle} title={t("searchBtnTitle")}>
+          <button onClick={() => setShowSearch(true)} style={baseButtonStyle} title={t("searchBtnTitle")} aria-label={t("searchBtnTitle")}>
             🔍
           </button>
         )}
         {!linkedUid && currentUser && (
-          <button data-testid="invite-link-button" onClick={() => setShowInvite(true)} style={baseButtonStyle} title={t("inviteLinkBtn")}>
+          <button data-testid="invite-link-button" onClick={() => setShowInvite(true)} style={baseButtonStyle} title={t("inviteLinkBtn")} aria-label={t("inviteLinkBtn")}>
             🔗
           </button>
         )}
@@ -168,6 +174,7 @@ export default function LinkedPlayerInput({
             onClick={onUnlink}
             style={{ ...baseButtonStyle, border: "1.5px solid rgba(255,68,68,.4)", background: "rgba(255,68,68,.12)", color: "#ff6b6b" }}
             title={t("unlinkTitle")}
+            aria-label={t("unlinkTitle")}
           >
             ✕
           </button>
@@ -177,11 +184,15 @@ export default function LinkedPlayerInput({
             onClick={() => onLink({ uid: currentUser.uid, name: selfName })}
             style={selfButtonStyle}
             title={`${t("addMeAs")} ${selfName}`}
+            aria-label={`${t("addMeAs")} ${selfName}`}
           >
             {t("selfBtn")}
           </button>
         )}
+        </div>
       </div>
     </>
   );
 }
+
+export default memo(LinkedPlayerInput)

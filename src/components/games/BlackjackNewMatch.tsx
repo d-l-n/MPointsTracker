@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 
 import { haptic, mkId } from "../../lib/storage";
 import type { Match, PlayerGroup, TranslationFn } from "../../types";
@@ -57,7 +57,7 @@ interface BlackjackNewMatchProps {
 
 const RESULTS: RoundResult[] = ["win", "lose", "push"];
 
-export default function BlackjackNewMatch({
+function BlackjackNewMatch({
   onSave,
   knownNames,
   draft = null,
@@ -220,6 +220,7 @@ export default function BlackjackNewMatch({
                 />
                 <button
                   className="btnrm"
+                  aria-label={`${t("delete")} ${player.name || `${t("playerN")} ${index + 1}`}`}
                   onClick={() => {
                     if (players.length > 2) {
                       setPlayers((currentPlayers) => currentPlayers.filter((currentPlayer) => currentPlayer.id !== player.id));
@@ -326,7 +327,7 @@ export default function BlackjackNewMatch({
                     <div style={{ fontSize: ".58rem", color: "var(--tx3)", fontWeight: 600 }}>
                       {net >= 0 ? "+" : ""}
                       {t("currency")}
-                      {(net / rounds).toFixed(2)}/ronda
+                      {(net / rounds).toFixed(2)}{t("pokerPerRound")}
                     </div>
                   )}
                 </div>
@@ -448,6 +449,7 @@ export default function BlackjackNewMatch({
                         value={bet || ""}
                         onChange={(event) => setBets((currentBets) => ({ ...currentBets, [player.id]: event.target.value }))}
                         style={{ width: 72, textAlign: "center" }}
+                        aria-label={`${t("blackjackBetsVsDealer")} ${player.name}`}
                       />
                     </div>
                     {bet && parseFloat(bet) > 0 && (
@@ -509,3 +511,5 @@ export default function BlackjackNewMatch({
     </div>
   );
 }
+
+export default memo(BlackjackNewMatch)

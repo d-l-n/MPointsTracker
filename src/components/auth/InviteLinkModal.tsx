@@ -1,6 +1,7 @@
 import { useEffect, useState, type CSSProperties } from "react";
 
 import { createInviteLink } from "../../lib/inviteService";
+import { useFocusTrap } from "../../hooks/useFocusTrap";
 import type { TranslationFn } from "../../types";
 
 interface InviteUser {
@@ -132,19 +133,21 @@ function InviteLinkModal({ user, onClose, t = ((key: string) => key) as Translat
     }
   };
 
+  const dialogRef = useFocusTrap();
+
   return (
-    <div className="usearch-overlay" onClick={onClose}>
+    <div className="usearch-overlay" ref={dialogRef as React.RefObject<HTMLDivElement>} role="dialog" aria-modal="true" aria-labelledby="invite-title" onClick={onClose} onKeyDown={(e) => e.key === "Escape" && onClose()}>
       <div className="usearch-sheet" onClick={(event) => event.stopPropagation()}>
         <div style={headerStyle}>
-          <span className="usearch-title">{t("inviteTitle")}</span>
-          <button onClick={onClose} style={closeButtonStyle}>
+          <span id="invite-title" className="usearch-title">{t("inviteTitle")}</span>
+          <button onClick={onClose} style={closeButtonStyle} aria-label={t("closeMenu")}>
             ✕
           </button>
         </div>
 
         <div style={descriptionStyle}>{t("inviteDesc")}</div>
 
-        <textarea readOnly value={loading ? t("inviteGenerating") : link} style={textareaStyle} />
+        <textarea readOnly value={loading ? t("inviteGenerating") : link} style={textareaStyle} aria-label={t("inviteTitle")} />
 
         {error && <div style={errorStyle}>{error}</div>}
 

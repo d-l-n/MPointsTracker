@@ -200,9 +200,10 @@ function GlobalHistoryPage({
           placeholder={t("searchPlayer")}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
+          aria-label={t("searchPlayer")}
         />
         {search && (
-          <button className="search-clear-btn" onClick={() => setSearch("")}>✕</button>
+          <button className="search-clear-btn" onClick={() => setSearch("")} aria-label={t("clearSearch")}>✕</button>
         )}
       </div>
 

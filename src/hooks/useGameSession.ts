@@ -2,7 +2,6 @@ import { useCallback, useState } from "react";
 
 import { GAMES } from "../data/games";
 import { mkId } from "../lib/storage";
-import { preloadGameComponentById } from "../pages/gameDetailRegistry";
 import { useDraft } from "./useDraft";
 import { buildHomePath } from "./useNavigation";
 import type { GameId, SharedMatchRecipient } from "../types";
@@ -50,7 +49,6 @@ export function useGameSession({ navigate }: UseGameSessionOptions) {
   const openGame = useCallback(async (gameId: string, { tab = "new", resetDraft = false }: { tab?: string; resetDraft?: boolean } = {}) => {
     if (!GAMES[gameId as GameId]) return;
     if (resetDraft) clearDraft(gameId);
-    await preloadGameComponentById(gameId);
     setGameTab(tab);
     setActiveGame(gameId);
     setSelected(gameId);

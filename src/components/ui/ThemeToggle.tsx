@@ -38,6 +38,7 @@ export default function ThemeToggle({ dark, onChange, onLongPress, t = (key) => 
       onPointerUp={endPress}
       onPointerLeave={endPress}
       title={dark ? t("themeToggleLight") : t("themeToggleDark")}
+      aria-label={dark ? t("themeToggleLight") : t("themeToggleDark")}
       style={{
         width: 28, height: 28, borderRadius: "50%",
         border: "1.5px solid var(--bo2)", background: "var(--bg3)",

@@ -1,4 +1,5 @@
 import React, { useState, type KeyboardEvent } from "react";
+import { useFocusTrap } from "../../hooks/useFocusTrap";
 import { doc, getDoc, collection, getDocs } from "firebase/firestore";
 
 import { fbDb, fbAuth } from "../../lib/firebase";
@@ -104,12 +105,14 @@ function UserSearchModal({ onLink, onClose, t, knownNames = [] }: UserSearchModa
     return <QRScanner onScan={handleScan} onClose={() => setShowScanner(false)} t={t} />;
   }
 
+  const dialogRef = useFocusTrap();
+
   return (
-    <div className="usearch-overlay" onClick={onClose}>
+    <div className="usearch-overlay" ref={dialogRef as React.RefObject<HTMLDivElement>} role="dialog" aria-modal="true" aria-labelledby="usearch-title" onClick={onClose} onKeyDown={(e) => e.key === "Escape" && onClose()}>
       <div className="usearch-sheet" onClick={(event) => event.stopPropagation()}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <span className="usearch-title">{t("searchTitle")}</span>
-          <button onClick={onClose} style={{ background: "none", border: "none", color: "var(--tx3)", cursor: "pointer", fontSize: "1.2rem", lineHeight: 1 }}>
+          <span id="usearch-title" className="usearch-title">{t("searchTitle")}</span>
+          <button onClick={onClose} style={{ background: "none", border: "none", color: "var(--tx3)", cursor: "pointer", fontSize: "1.2rem", lineHeight: 1 }} aria-label={t("cancel")}>
             ✕
           </button>
         </div>
@@ -141,7 +144,7 @@ function UserSearchModal({ onLink, onClose, t, knownNames = [] }: UserSearchModa
             <div className="usearch-inp-row">
               <input
                 className="usearch-inp"
-                placeholder={method === "email" ? "nombre@email.com" : t("playerN")}
+                placeholder={method === "email" ? t("emailPlaceholderSearch") : t("playerN")}
                 value={query}
                 onChange={(event) => {
                   setQuery(event.target.value);
@@ -173,13 +176,13 @@ function UserSearchModal({ onLink, onClose, t, knownNames = [] }: UserSearchModa
                   .join("")
                   .toUpperCase();
                 return (
-                  <div key={user.uid || index} className="usearch-result" onClick={() => handleSelect(user)}>
+                  <button type="button" key={user.uid || index} className="usearch-result" onClick={() => handleSelect(user)}>
                     {user.photoURL ? (
                       <img src={user.photoURL} className="usearch-avatar" alt={user.displayName || ""} style={{ objectFit: "cover" }} referrerPolicy="no-referrer" />
                     ) : (
                       <div className="usearch-avatar">{initials}</div>
                     )}
-                    <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ flex: 1, minWidth: 0, textAlign: "left" }}>
                       <div className="usearch-name">{user.displayName || t("noName")}</div>
                       {user.email ? <div className="usearch-email">{user.email}</div> : null}
                       {user._local ? <div className="usearch-email">{t("localPlayer")}</div> : null}
@@ -187,7 +190,7 @@ function UserSearchModal({ onLink, onClose, t, knownNames = [] }: UserSearchModa
                     <span style={{ fontSize: ".75rem", color: "var(--gc,#006D77)", fontWeight: 700 }}>
                       {user._local ? t("addBtn") : t("linkBtn")} →
                     </span>
-                  </div>
+                  </button>
                 );
               })}
             </div>

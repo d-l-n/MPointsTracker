@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 
 import { haptic, mkId } from "../../lib/storage";
 import type { Match, PlayerGroup, TranslationFn } from "../../types";
@@ -59,7 +59,7 @@ interface PokerNewMatchProps {
   onSavePlayerGroups?: (groups: PlayerGroup[]) => void;
 }
 
-export default function PokerNewMatch({
+function PokerNewMatch({
   onSave,
   knownNames,
   draft = null,
@@ -258,6 +258,7 @@ export default function PokerNewMatch({
                 />
                 <button
                   className="btnrm"
+                  aria-label={`${t("delete")} ${player.name || `${t("playerN")} ${index + 1}`}`}
                   onClick={() => {
                     if (players.length > 2) {
                       setPlayers((currentPlayers) => currentPlayers.filter((currentPlayer) => currentPlayer.id !== player.id));
@@ -285,7 +286,7 @@ export default function PokerNewMatch({
           {hasDups && <div style={{ fontSize: ".75rem", color: "#ff4444", marginTop: 8, fontWeight: 600 }}>{t("dupPlayerWarning")}</div>}
 
           <div style={{ marginTop: 14 }}>
-            <span className="flbl">💰 Buy-in por jugador</span>
+            <span className="flbl">{t("pokerBuyinPerPlayer")}</span>
             <div className="pillrow">
               {[50, 100, 200, 500].map((value) => (
                 <button
@@ -315,12 +316,12 @@ export default function PokerNewMatch({
             <div style={{ marginTop: 14 }}>
               <div className="detail-toggle-row" style={{ marginBottom: useBlinds ? 10 : 0 }}>
                 <div className="detail-toggle-copy">
-                  <span className="detail-toggle-label">Usar blinds</span>
+                  <span className="detail-toggle-label">{t("pokerUseBlinds")}</span>
                 </div>
                 <PillSwitch
                   enabled={useBlinds}
                   onToggle={setUseBlinds}
-                  ariaLabel="Usar blinds"
+                  ariaLabel={t("pokerUseBlinds")}
                   testId="poker-blinds-toggle"
                 />
               </div>
@@ -351,7 +352,7 @@ export default function PokerNewMatch({
                         marginBottom: 4,
                       }}
                     >
-                      {label === "SB" ? "Blind pequeño" : "Blind grande"}
+                      {label === "SB" ? t("blindSmall") : t("blindBig")}
                     </div>
                     <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
                       <span style={{ fontSize: ".8rem", color: "var(--tx3)" }}>{t("currency")}</span>
@@ -363,6 +364,7 @@ export default function PokerNewMatch({
                         value={value}
                         onChange={(event) => (setter as (value: number) => void)(parseFloat(event.target.value) || 1)}
                         style={{ width: "100%" }}
+                        aria-label={label === "SB" ? t("blindSmall") : t("blindBig")}
                       />
                     </div>
                   </div>
@@ -448,7 +450,7 @@ export default function PokerNewMatch({
                     <div style={{ fontSize: ".58rem", color: "var(--tx3)", fontWeight: 600 }}>
                       {net >= 0 ? "+" : ""}
                       {t("currency")}
-                      {(net / rounds).toFixed(0)}/ronda
+                      {(net / rounds).toFixed(0)}{t("pokerPerRound")}
                     </div>
                   )}
                 </div>
@@ -598,6 +600,7 @@ export default function PokerNewMatch({
                     value={bets[player.id] || ""}
                     onChange={(event) => setBets((currentBets) => ({ ...currentBets, [player.id]: event.target.value }))}
                     style={{ width: 72, textAlign: "center" }}
+                    aria-label={`Aportes al pozo ${player.name}`}
                   />
                 </div>
                 {bets[player.id] && parseFloat(bets[player.id]) > 0 && (
@@ -650,7 +653,7 @@ export default function PokerNewMatch({
           </div>
 
           <button className="btnpri" disabled={!canCommit} onClick={commitRound} style={{ opacity: canCommit ? 1 : 0.4 }}>
-            ✓ Confirmar mano
+            ✓ {t("confirmHand")}
           </button>
         </div>
       )}
@@ -663,3 +666,5 @@ export default function PokerNewMatch({
     </div>
   );
 }
+
+export default memo(PokerNewMatch)

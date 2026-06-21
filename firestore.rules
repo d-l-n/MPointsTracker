@@ -20,7 +20,7 @@ service cloud.firestore {
     // Solo contiene: displayName, photoURL, lastLogin, publicStats, statsUpdatedAt
     // NO contiene: email, data (partidas), playerGroups
     match /users/{userId} {
-      allow read: if isAuth() || isAdmin();
+      allow read: if isOwner(userId) || isAdmin();
 
       allow create, update: if (isOwner(userId) || isAdmin())
         && request.resource.data.keys().hasOnly([

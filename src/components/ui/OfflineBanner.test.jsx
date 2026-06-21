@@ -1,6 +1,15 @@
 import { describe, expect, test } from "vitest";
 import { render, screen } from "@testing-library/react";
 import OfflineBanner from "./OfflineBanner";
+import { setGlobalT } from "../../data/translations";
+
+setGlobalT((key) => {
+  const map = {
+    offline: "Sin conexion",
+    offlineBannerDesc: "Estás usando datos locales guardados. Los cambios volverán a sincronizarse al reconectar.",
+  };
+  return map[key] || key;
+});
 
 describe("OfflineBanner", () => {
   test("renders with default props", () => {

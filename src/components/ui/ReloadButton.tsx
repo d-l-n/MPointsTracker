@@ -70,7 +70,7 @@ export default function ReloadButton({ t = getGlobalT() as TranslationFn }: Relo
   if (isOffline) {
     return (
       <div
-        title="Sin conexión — la app funciona offline 📶"
+        title={t("offline")}
         style={{
           ...baseIconStyle,
           border: "var(--surface-stroke-width, 1.5px) solid #f4a261",
@@ -88,7 +88,8 @@ export default function ReloadButton({ t = getGlobalT() as TranslationFn }: Relo
     return (
       <button
         onClick={handleClick}
-        title="Nueva versión disponible — tocá para actualizar"
+        title={t("updateAvailable")}
+        aria-label={t("updateAvailable")}
         style={{
           ...baseIconStyle,
           border: "var(--surface-stroke-width, 1.5px) solid #52b788",
@@ -108,6 +109,7 @@ export default function ReloadButton({ t = getGlobalT() as TranslationFn }: Relo
     <button
       onClick={handleClick}
       title={t("reloadAppTitle")}
+      aria-label={t("reloadAppTitle")}
         style={{
           ...baseIconStyle,
           border: "var(--surface-stroke-width, 1.5px) solid var(--bo2)",

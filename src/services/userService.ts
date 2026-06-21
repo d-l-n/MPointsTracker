@@ -20,6 +20,7 @@ import type {
   PublicProfile,
   PublicStatsSummary,
   UserDataDoc,
+  SpotifyPosition,
 } from "../types";
 
 const userRef = (uid: string) => doc(fbDb, "users", uid);
@@ -103,6 +104,16 @@ export const saveSpotifyPreferenceToCloud = async (uid: string, enabled: boolean
     userdataRef(uid),
     {
       spotifyEnabled: enabled ? "1" : "0",
+    },
+    { merge: true },
+  );
+};
+
+export const saveSpotifyPositionToCloud = async (uid: string, position: SpotifyPosition) => {
+  await setDoc(
+    userdataRef(uid),
+    {
+      spotifyPosition: position,
     },
     { merge: true },
   );

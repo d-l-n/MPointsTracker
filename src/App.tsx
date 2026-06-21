@@ -60,6 +60,7 @@ export default function App() {
   const t = useT(lang);
   const changeLang = useCallback((l: string) => { setLang(l); saveLang(l); setFmtDateLang(l); }, []);
   useEffect(() => { setFmtDateLang(lang); setGlobalT(t); }, [lang, t]);
+  useEffect(() => { document.documentElement.lang = lang; }, [lang]);
 
   // ── Toast & debug ──────────────────────────────────────────────────────────
   const { toast, showToast } = useToast();
@@ -92,7 +93,7 @@ export default function App() {
   const {
     user, authChecked, hadPreviousSession, guestMode,
     playerGroups, savePlayerGroups,
-    spotifyEnabled, saveSpotifyPreference,
+    spotifyEnabled, spotifyPosition, saveSpotifyPreference, saveSpotifyPosition,
     signInGoogle, signInWithEmail, signUpWithEmail, sendPasswordReset, signOut,
     enterGuestMode,
   } = useAuth({ addLog, showToast, t, mergeCloudData, mergeSharedMatches });
@@ -256,7 +257,7 @@ export default function App() {
     user, dark, lang, t, showToast,
     data,
     playerGroups, savePlayerGroups,
-    spotifyEnabled, saveSpotifyPreference,
+    spotifyEnabled, spotifyPosition, saveSpotifyPreference, saveSpotifyPosition,
     knownNames, getMatches,
     addMatch, delMatch, editMatch,
     pendingInvite,

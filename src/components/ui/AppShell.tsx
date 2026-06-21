@@ -62,8 +62,9 @@ export default function AppShell({ dark, toast, children, t: _t = (key) => key }
         onTouchEnd={handleTouchEnd}
       >
         <div className="app-bg"><div className="app-bg-shimmer" /></div>
+        <a href="#main-content" className="sr-only skip-link">Saltar al contenido</a>
         <div className="app-content" ref={contentRef}>
-          <div className="app-content-inner">{children}</div>
+          <main className="app-content-inner" id="main-content" tabIndex={-1}>{children}</main>
         </div>
         {showDevelopmentIndicator && (
           <div

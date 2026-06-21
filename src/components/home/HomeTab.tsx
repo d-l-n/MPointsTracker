@@ -1,4 +1,5 @@
 import { memo, useEffect, useMemo, useRef, useState } from "react";
+import { useDebounce } from "../../hooks/useDebounce";
 
 import { buildHomeViewModel } from "./homeModel";
 import HomeActionCard from "./HomeActionCard";
@@ -49,6 +50,7 @@ const HomeTab = memo(function HomeTab({
   sectionHeaderHiddenByScroll,
 }: HomeTabProps) {
   const [search, setSearch] = useState("");
+  const debouncedSearch = useDebounce(search, 300);
   const [activeFilter, setActiveFilter] = useState<"all" | "in-progress" | "favorites" | "uno-family" | "cards" | "tokens" | "casino" | "random">("all");
   const railRef = useRef<HTMLDivElement | null>(null);
   const filterRef = useRef<HTMLDivElement | null>(null);
@@ -64,8 +66,8 @@ const HomeTab = memo(function HomeTab({
     t,
     locale: lang,
     activeFilter,
-    search,
-  }), [activeFilter, data, getDraft, getMatches, lang, search, t]);
+    search: debouncedSearch,
+  }), [activeFilter, data, getDraft, getMatches, lang, debouncedSearch, t]);
 
   useEffect(() => {
     const rail = railRef.current;
@@ -121,8 +123,8 @@ const HomeTab = memo(function HomeTab({
           mainClassName="page-title-block--grow"
           main={(
             <>
-              <div className="big-title desktop-hide">MPOINTS<br />TRACKER</div>
-              <div className="big-title mobile-hide">{t("games").toUpperCase()}</div>
+              <h1 className="big-title desktop-hide">MPOINTS<br />TRACKER</h1>
+              <h1 className="big-title mobile-hide">{t("games").toUpperCase()}</h1>
               <div className="home-sub">{total} {t("matchesSaved")}</div>
             </>
           )}
@@ -256,7 +258,7 @@ const HomeTab = memo(function HomeTab({
       {vm.emptyState && (
         <section className="home-empty-state surface-card" data-testid="home-empty-state">
           <div className="home-section-kicker">{t("games")}</div>
-          <div className="home-section-title">{vm.emptyState.title}</div>
+          <h2 className="home-section-title">{vm.emptyState.title}</h2>
           <p className="home-empty-copy">{vm.emptyState.detail}</p>
         </section>
       )}

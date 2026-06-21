@@ -1,4 +1,4 @@
-import { useEffect, useState, type CSSProperties } from "react";
+import { memo, useEffect, useState, type CSSProperties } from "react";
 
 import { haptic, mkId } from "../../lib/storage";
 import type { Match, PlayerGroup, TranslationFn } from "../../types";
@@ -50,7 +50,7 @@ interface EsquinadosNewMatchProps {
 
 type AccentButtonStyle = CSSProperties & Record<"--gc", string>;
 
-export default function EsquinadosNewMatch({
+function EsquinadosNewMatch({
   onSave,
   knownNames,
   draft = null,
@@ -159,6 +159,7 @@ export default function EsquinadosNewMatch({
                 />
                 <button
                   className="btnrm"
+                  aria-label={`${t("delete")} ${player.name || `${t("playerN")} ${index + 1}`}`}
                   onClick={() => {
                     if (players.length > 2) {
                       setPlayers((currentPlayers) => currentPlayers.filter((currentPlayer) => currentPlayer.id !== player.id));
@@ -235,3 +236,5 @@ export default function EsquinadosNewMatch({
     </div>
   );
 }
+
+export default memo(EsquinadosNewMatch)

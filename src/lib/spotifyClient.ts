@@ -15,12 +15,23 @@ export type SpotifyDevice = {
 };
 
 export type SpotifyTrack = {
+  id?: string;
   name?: string;
+  uri?: string;
   artists?: Array<{ name?: string }>;
   album?: {
     images?: Array<{ url?: string }>;
   };
   duration_ms?: number;
+};
+
+export type SpotifyPlaylist = {
+  name?: string;
+  uri?: string;
+  tracks?: {
+    total?: number;
+  };
+  images?: Array<{ url?: string }>;
 };
 
 export type SpotifyPlaybackState = {
@@ -36,6 +47,16 @@ export type SpotifyQueueState = {
   queue?: SpotifyTrack[];
 };
 
+export type SpotifySearchState = {
+  tracks?: {
+    items?: SpotifyTrack[];
+  };
+};
+
+export type SpotifyPlaylistState = {
+  items?: SpotifyPlaylist[];
+};
+
 export const SPOTIFY_TOKEN_KEY = "bgt_spotify_tokens";
 export const SPOTIFY_VERIFIER_KEY = "bgt_spotify_code_verifier";
 export const SPOTIFY_STATE_KEY = "bgt_spotify_oauth_state";
@@ -43,6 +64,14 @@ export const SPOTIFY_SECURE_CONTEXT_ERROR = "spotify-secure-context-required";
 
 const SPOTIFY_ACCOUNTS_URL = "https://accounts.spotify.com";
 const SPOTIFY_API_URL = "https://api.spotify.com/v1";
+
+function getRedirectUri(redirectPath: string): string {
+  const configured = import.meta.env.VITE_SPOTIFY_REDIRECT_URI;
+  if (configured) {
+    return configured;
+  }
+  return `${window.location.origin}${redirectPath}`;
+}
 
 export function readSpotifyTokens(): SpotifyTokenState | null {
   try {
@@ -71,6 +100,15 @@ export function writeSpotifyTokens(tokens: SpotifyTokenState | null) {
 export function clearSpotifyAuthStorage() {
   try {
     localStorage.removeItem(SPOTIFY_TOKEN_KEY);
+    localStorage.removeItem(SPOTIFY_VERIFIER_KEY);
+    localStorage.removeItem(SPOTIFY_STATE_KEY);
+  } catch {
+    // ignore storage failures
+  }
+}
+
+export function clearSpotifyOAuthStorage() {
+  try {
     localStorage.removeItem(SPOTIFY_VERIFIER_KEY);
     localStorage.removeItem(SPOTIFY_STATE_KEY);
   } catch {
@@ -128,7 +166,7 @@ export async function buildSpotifyAuthUrl({
   const verifier = randomString(webCrypto, 96);
   const state = `mpoints-${randomString(webCrypto, 32)}`;
   const challenge = await createCodeChallenge(webCrypto, verifier);
-  const redirectUri = `${window.location.origin}${redirectPath}`;
+  const redirectUri = getRedirectUri(redirectPath);
 
   localStorage.setItem(SPOTIFY_VERIFIER_KEY, verifier);
   localStorage.setItem(SPOTIFY_STATE_KEY, state);
@@ -155,7 +193,7 @@ export async function exchangeSpotifyCodeForTokens({
   redirectPath: string;
 }): Promise<SpotifyTokenState> {
   const verifier = localStorage.getItem(SPOTIFY_VERIFIER_KEY) || "";
-  const redirectUri = `${window.location.origin}${redirectPath}`;
+  const redirectUri = getRedirectUri(redirectPath);
   const response = await fetch(`${SPOTIFY_ACCOUNTS_URL}/api/token`, {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -171,6 +209,9 @@ export async function exchangeSpotifyCodeForTokens({
     throw new Error("spotify-token-exchange-failed");
   }
   const payload = await response.json() as { access_token: string; refresh_token?: string; expires_in: number };
+  if (typeof payload.access_token !== "string" || typeof payload.expires_in !== "number") {
+    throw new Error("spotify-token-exchange-invalid");
+  }
   return {
     accessToken: payload.access_token,
     refreshToken: payload.refresh_token,
@@ -195,6 +236,9 @@ export async function refreshSpotifyTokens(tokens: SpotifyTokenState, clientId: 
     throw new Error("spotify-token-refresh-failed");
   }
   const payload = await response.json() as { access_token: string; refresh_token?: string; expires_in: number };
+  if (typeof payload.access_token !== "string" || typeof payload.expires_in !== "number") {
+    throw new Error("spotify-token-refresh-invalid");
+  }
   return {
     accessToken: payload.access_token,
     refreshToken: payload.refresh_token || tokens.refreshToken,
@@ -234,6 +278,27 @@ export function createSpotifyApi(getAccessToken: () => Promise<string>) {
       return payload?.devices || [];
     },
     getQueue: () => withToken<SpotifyQueueState>("/me/player/queue"),
+    containsSavedTracks: (ids: string[]) => withToken<boolean[]>(`/me/tracks/contains?ids=${ids.join(",")}`),
+    saveTracks: (ids: string[]) => withToken<null>(`/me/tracks?ids=${ids.join(",")}`, { method: "PUT" }),
+    removeSavedTracks: (ids: string[]) => withToken<null>(`/me/tracks?ids=${ids.join(",")}`, { method: "DELETE" }),
+    searchTracks: async (query: string) => {
+      const params = new URLSearchParams({ q: query, type: "track", limit: "5" });
+      const payload = await withToken<SpotifySearchState>(`/search?${params.toString()}`);
+      return payload?.tracks?.items || [];
+    },
+    getPlaylists: async () => {
+      const payload = await withToken<SpotifyPlaylistState>("/me/playlists?limit=6");
+      return payload?.items || [];
+    },
+    play: ({ uris, contextUri, deviceId }: { uris?: string[]; contextUri?: string; deviceId?: string | null }) => {
+      const params = new URLSearchParams();
+      if (deviceId) params.set("device_id", deviceId);
+      const body = contextUri ? { context_uri: contextUri } : { uris: uris || [] };
+      return withToken<null>(`/me/player/play${params.toString() ? `?${params.toString()}` : ""}`, {
+        method: "PUT",
+        body: JSON.stringify(body),
+      });
+    },
     transferPlayback: (deviceId: string, play = false) => withToken<null>("/me/player", {
       method: "PUT",
       body: JSON.stringify({ device_ids: [deviceId], play }),

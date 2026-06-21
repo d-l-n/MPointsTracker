@@ -18,6 +18,10 @@ interface ConfettiParticle {
 }
 
 function triggerConfetti(gameColor = "#006D77"): void {
+  const prefersReduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const appReduce = document.querySelector('[data-reduce-effects="true"]') !== null;
+  if (prefersReduced || appReduce) return;
+
   if (activeConfettiRaf !== null) {
     cancelAnimationFrame(activeConfettiRaf);
     activeConfettiRaf = null;

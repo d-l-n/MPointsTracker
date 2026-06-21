@@ -149,7 +149,7 @@ export async function generateResultImage(
   ctx.scale(2, 2);
 
   const gameColor = game?.color || "#006D77";
-  const gameName = match.gameName || (game ? getGameName(game.id, t) : "Partida");
+  const gameName = match.gameName || (game ? getGameName(game.id, t) : t("newMatch"));
   const gameEmoji = match.gameEmoji || game?.emoji || "🎮";
   const palette = resolveShareTheme(themeMode, gameColor);
 
@@ -288,7 +288,7 @@ export function ShareResultButton({ match, game, t = ((key: string) => key) as T
         (document.body.classList.contains("light") ? "light" : document.body.classList.contains("oled") ? "oled" : "dark");
       const blob = await generateResultImage(match, game, themeMode, t);
       if (!blob) return;
-      const gameName = match.gameName || (game ? getGameName(game.id, t) : "Partida");
+      const gameName = match.gameName || (game ? getGameName(game.id, t) : t("newMatch"));
       const shareText = buildShareResultText(match);
       const fileName = `mpoints_${gameName.replace(/\s+/g, "_").toLowerCase()}_${Date.now()}.png`;
       const file = new File([blob], fileName, { type: "image/png" });
@@ -341,7 +341,7 @@ export function ShareResultButton({ match, game, t = ((key: string) => key) as T
       }
     >
       {sharing ? "⏳" : "📤"}
-      {t("shareResult") || "Compartir"}
+      {t("shareResult")}
     </button>
   );
 }

@@ -145,6 +145,7 @@ function FeedbackPage({ user, showToast, t = getGlobalT() as TranslationFn }: Fe
               }
               value={message}
               onChange={(event) => setMessage(event.target.value.slice(0, FEEDBACK_MAX_CHARS))}
+              aria-label={t("messageLabel")}
             />
             <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 4 }}>
               <span

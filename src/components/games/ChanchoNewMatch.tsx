@@ -1,4 +1,4 @@
-import { useEffect, useState, type CSSProperties } from "react";
+import { memo, useEffect, useState, type CSSProperties } from "react";
 
 import { haptic, mkId } from "../../lib/storage";
 import type { Match, PlayerGroup, TranslationFn } from "../../types";
@@ -56,7 +56,7 @@ interface ChanchoNewMatchProps {
 
 type AccentButtonStyle = CSSProperties & Record<"--gc", string>;
 
-export default function ChanchoNewMatch({
+function ChanchoNewMatch({
   onSave,
   knownNames,
   linkedPlayers = [],
@@ -210,6 +210,7 @@ export default function ChanchoNewMatch({
                 />
                 <button
                   className="btnrm"
+                  aria-label={`${t("delete")} ${player.name || `${t("playerN")} ${index + 1}`}`}
                   onClick={() => {
                     if (players.length > 2) {
                       setPlayers((currentPlayers) => currentPlayers.filter((currentPlayer) => currentPlayer.id !== player.id));
@@ -299,3 +300,5 @@ export default function ChanchoNewMatch({
     </div>
   );
 }
+
+export default memo(ChanchoNewMatch)

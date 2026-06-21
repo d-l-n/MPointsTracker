@@ -1,8 +1,11 @@
+import { getGlobalT } from "../../data/translations";
+
 interface OfflineBannerProps {
   compact?: boolean;
 }
 
 export default function OfflineBanner({ compact = false }: OfflineBannerProps) {
+  const t = getGlobalT();
   return (
     <div
       className="offline-banner glass"
@@ -20,9 +23,9 @@ export default function OfflineBanner({ compact = false }: OfflineBannerProps) {
         📴
       </span>
       <div style={{ minWidth: 0 }}>
-        <div style={{ fontSize: ".8rem", fontWeight: 800, color: "var(--tx)" }}>Sin conexion</div>
+        <div style={{ fontSize: ".8rem", fontWeight: 800, color: "var(--tx)" }}>{t("offline")}</div>
         <div style={{ fontSize: ".72rem", color: "var(--tx2)", marginTop: 2 }}>
-          Estás usando datos locales guardados. Los cambios volverán a sincronizarse al reconectar.
+          {t("offlineBannerDesc")}
         </div>
       </div>
     </div>

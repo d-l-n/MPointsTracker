@@ -1,4 +1,5 @@
 import { isRouteErrorResponse, useNavigate, useRouteError } from "react-router-dom";
+import { getGlobalT } from "../data/translations";
 
 function getErrorMessage(error: unknown): string {
   if (isRouteErrorResponse(error)) {
@@ -13,7 +14,7 @@ function getErrorMessage(error: unknown): string {
     return error;
   }
 
-  return "Error inesperado";
+  return getGlobalT()("errorUnexpected");
 }
 
 export default function AppErrorBoundary() {
@@ -21,26 +22,27 @@ export default function AppErrorBoundary() {
   const navigate = useNavigate();
   const errorMessage = getErrorMessage(error);
   const showDetails = import.meta.env.DEV && errorMessage;
+  const t = getGlobalT();
 
   return (
     <main className="route-error-page" role="alert">
       <section className="route-error-card">
         <div className="route-error-mark" aria-hidden="true">!</div>
         <div className="route-error-copy">
-          <h1>Algo salió mal</h1>
-          <p>La app encontró un error inesperado. Podés volver al inicio o recargar la pantalla.</p>
+          <h1>{t("errorTitle")}</h1>
+          <p>{t("errorDesc")}</p>
         </div>
         <div className="route-error-actions">
           <button className="btnpri route-error-primary" onClick={() => navigate("/", { replace: true })}>
-            Volver al inicio
+            {t("errorBack")}
           </button>
           <button className="btnsec route-error-secondary" onClick={() => window.location.reload()}>
-            Reintentar
+            {t("errorRetry")}
           </button>
         </div>
         {showDetails ? (
           <details className="route-error-details">
-            <summary>Detalle técnico</summary>
+            <summary>{t("errorDetails")}</summary>
             <pre>{errorMessage}</pre>
           </details>
         ) : null}

@@ -30,7 +30,7 @@ const AppHeader = memo(function AppHeader({
   hidden = false,
 }: AppHeaderProps) {
   return (
-    <div
+    <header
       className={joinClasses("hdr page-header-compact app-layout-header", hidden && "chrome--hidden", className)}
       data-app-header="pill"
       data-testid={testId}
@@ -40,13 +40,13 @@ const AppHeader = memo(function AppHeader({
           <>
             {leading}
             <div className={mainClassName}>
-              {main || <div className={titleClassName}>{title}</div>}
+              {main || <h1 className={titleClassName}>{title}</h1>}
             </div>
             {actions ? <div className="app-layout-header-actions">{actions}</div> : null}
           </>
         )}
       </div>
-    </div>
+    </header>
   );
 });
 

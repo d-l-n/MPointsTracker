@@ -1,5 +1,6 @@
-import { useState, type CSSProperties } from "react";
+import React, { useEffect, useState, type CSSProperties } from "react";
 
+import { useFocusTrap } from "../../hooks/useFocusTrap";
 import type { TranslationFn } from "../../types";
 
 type FinishChoice = "no_winner" | "manual";
@@ -36,13 +37,29 @@ export default function EarlyFinishModal({
 }: EarlyFinishModalProps) {
   const [choice, setChoice] = useState<FinishChoice | null>(null);
   const [selectedWinner, setSelectedWinner] = useState<string | null>(null);
+  const dialogRef = useFocusTrap();
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onCancel();
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [onCancel]);
 
   const confirmDisabled = choice === null || (choice === "manual" && !selectedWinner);
 
   return (
-    <div className="modal-overlay" onClick={onCancel} data-testid="early-finish-modal">
-      <div className="modal-box modal-box--strong early-finish-modal-box" onClick={(event) => event.stopPropagation()}>
-        <div className="modal-title">{t("finishMatchEarlyTitle")}</div>
+    <div className="modal-overlay" onClick={onCancel} data-testid="early-finish-modal" aria-hidden="true">
+      <div
+        ref={dialogRef as React.RefObject<HTMLDivElement>}
+        className="modal-box modal-box--strong early-finish-modal-box"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="early-finish-title"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <div id="early-finish-title" className="modal-title">{t("finishMatchEarlyTitle")}</div>
         <div className="modal-msg">{t("finishMatchEarlyMsg")}</div>
 
         <div className="rgap" style={{ marginTop: 10 }}>

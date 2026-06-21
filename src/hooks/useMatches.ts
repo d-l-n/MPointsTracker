@@ -28,7 +28,7 @@ export function useMatches({ userRef, dark, showToast, t }: UseMatchesOptions) {
 
   useEffect(() => {
     const ok = persist({ ...data, __theme: dark } as AppStorageData);
-    if (ok === false) showToast("⚠️ Sin espacio para guardar localmente");
+    if (ok === false) showToast(t("localStorageNoSpace"));
   }, [data, dark]); // eslint-disable-line react-hooks/exhaustive-deps -- showToast excluded intentionally
 
   useEffect(() => {

@@ -157,7 +157,7 @@ export default function SaveGroupButton({
         >
           {t("saveGroupSaveBtn")}
         </button>
-        <button className="btnsec" style={{ padding: "0 12px" }} onClick={() => setOpen(false)}>
+        <button className="btnsec" style={{ padding: "0 12px" }} onClick={() => setOpen(false)} aria-label={t("cancel")}>
           ✕
         </button>
       </div>

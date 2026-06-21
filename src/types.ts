@@ -201,10 +201,13 @@ export interface PublicStatsSummary {
   byGame: Record<string, PublicGameStats>;
 }
 
+export type SpotifyPosition = "center" | "left" | "right" | "draggable";
+
 export interface UserDataDoc {
   data?: string;
   playerGroups?: string;
   spotifyEnabled?: string | boolean;
+  spotifyPosition?: SpotifyPosition;
   updatedAt?: number;
   [key: string]: unknown;
 }
@@ -247,7 +250,9 @@ export interface AppContextValue {
   playerGroups: PlayerGroup[];
   savePlayerGroups: (groups: PlayerGroup[]) => Promise<void> | void;
   spotifyEnabled: boolean;
+  spotifyPosition: SpotifyPosition;
   saveSpotifyPreference: (enabled: boolean) => Promise<void> | void;
+  saveSpotifyPosition: (pos: SpotifyPosition) => Promise<void> | void;
   knownNames: string[];
   getMatches: (id: string) => Match[];
   addMatch: (gid: string, match: Match & Record<string, unknown>) => void;

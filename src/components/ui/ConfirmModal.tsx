@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import { getGlobalT } from "../../data/translations";
+import { useFocusTrap } from "../../hooks/useFocusTrap";
 
 interface ConfirmModalProps {
   title?: React.ReactNode;
@@ -38,10 +39,28 @@ function ConfirmModal({
   const confirmText = confirmLabel ?? getGlobalT()("delete");
   const cancelText = cancelLabel ?? getGlobalT()("cancel");
   const secondaryText = secondaryLabel ?? null;
+  const dialogRef = useFocusTrap();
+
+  // Close on Escape
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") (onOverlayClick ?? onCancel)();
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [onCancel, onOverlayClick]);
+
   return (
-    <div className="modal-overlay" onClick={onOverlayClick ?? onCancel}>
-      <div className="modal-box" onClick={(event) => event.stopPropagation()}>
-        <div className="modal-title">{title}</div>
+    <div className="modal-overlay" onClick={onOverlayClick ?? onCancel} aria-hidden="true">
+      <div
+        ref={dialogRef as React.RefObject<HTMLDivElement>}
+        className="modal-box"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="confirm-modal-title"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <div id="confirm-modal-title" className="modal-title">{title}</div>
         <div className="modal-msg">{msg}</div>
         <div className={`modal-actions${onSecondaryAction ? " modal-actions--stacked" : ""}`}>
           {onSecondaryAction ? (

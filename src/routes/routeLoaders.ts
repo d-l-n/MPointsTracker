@@ -1,7 +1,6 @@
 import { redirect, type LoaderFunctionArgs } from "react-router-dom";
 
 import { GAMES } from "../data/games";
-import { preloadGameComponentById } from "../pages/gameDetailRegistry";
 import type { GameId } from "../types";
 
 interface HistoryRouteData {
@@ -29,8 +28,6 @@ export async function gameRouteLoader({ params }: LoaderFunctionArgs) {
   if (!GAMES[gameId as GameId]) {
     throw redirect("/");
   }
-
-  await preloadGameComponentById(gameId);
 
   return { gameId };
 }

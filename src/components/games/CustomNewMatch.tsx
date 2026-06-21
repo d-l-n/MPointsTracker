@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 
 import { mkId, haptic } from "../../lib/storage";
 import { getGameName } from "../../data/games";
@@ -56,7 +56,7 @@ interface CustomNewMatchProps {
 
 const EMOJI_PRESETS = ["🎮", "🃏", "🎲", "🎯", "🧩", "♟️", "🎰", "🏆", "⚡", "🔥", "🌟", "💎"];
 
-export default function CustomNewMatch({
+function CustomNewMatch({
   game,
   onSave,
   knownNames,
@@ -160,6 +160,7 @@ export default function CustomNewMatch({
             </button>
           ))}
           <input
+            id="custom-emoji"
             className="inp"
             placeholder="✏️"
             value={EMOJI_PRESETS.includes(customEmoji) ? "" : customEmoji}
@@ -167,10 +168,12 @@ export default function CustomNewMatch({
               if (event.target.value) setCustomEmoji(event.target.value.slice(-2));
             }}
             style={{ maxWidth: 60, textAlign: "center", fontSize: "1.3rem" }}
+            aria-label={t("customGameEmoji")}
           />
         </div>
-        <span className="flbl">{t("customGameName")}</span>
+        <label htmlFor="custom-name" className="flbl">{t("customGameName")}</label>
         <input
+          id="custom-name"
           className="inp"
           placeholder={t("customGame")}
           value={customName}
@@ -218,6 +221,7 @@ export default function CustomNewMatch({
                 />
                 <button
                   className="btnrm"
+                  aria-label={`${t("delete")} ${player.name || `${t("playerN")} ${index + 1}`}`}
                   onClick={() => {
                     if (players.length > 2) {
                       setPlayers((currentPlayers) => currentPlayers.filter((currentPlayer) => currentPlayer.id !== player.id));
@@ -242,9 +246,10 @@ export default function CustomNewMatch({
           )}
 
           <div style={{ marginTop: 14 }}>
-            <span className="flbl">{t("customMeta")}</span>
+            <label htmlFor="custom-meta" className="flbl">{t("customMeta")}</label>
             <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
               <input
+                id="custom-meta"
                 className="inp"
                 type="number"
                 min="0"
@@ -321,6 +326,7 @@ export default function CustomNewMatch({
                       placeholder="0"
                       value={roundScores[player.id] || ""}
                       onChange={(event) => setRoundScores((currentScores) => ({ ...currentScores, [player.id]: event.target.value }))}
+                      aria-label={`${t("registerRound")} ${rounds + 1} ${player.name}`}
                     />
                     <span className="rdlbl">{t("ptsLabel")}</span>
                   </div>
@@ -374,3 +380,5 @@ export default function CustomNewMatch({
     </div>
   );
 }
+
+export default memo(CustomNewMatch)

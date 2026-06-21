@@ -471,7 +471,9 @@ OLED y Monet conviven: OLED domina neutrales/superficies y Monet sigue tiñendo 
 
 ## Integración Spotify
 
-La opción Spotify vive en Ajustes > Preferencias y viene desactivada por defecto. Al activarla, la app muestra un mini reproductor global con OAuth PKCE, Web Playback SDK y Spotify Web API. El reproductor muestra canción, artista, portada, dispositivo activo, progreso, cola disponible, volumen, shuffle, repeat, anterior/siguiente, play/pause, desconexión y transferencia al navegador cuando el SDK registra un `device_id`.
+La opción Spotify vive en Ajustes > Preferencias y viene desactivada por defecto. Al activarla, la app muestra un mini reproductor global con OAuth PKCE, Web Playback SDK y Spotify Web API. El reproductor muestra canción, artista, portada, dispositivo activo, progreso, cola desplegable, volumen en vivo, shuffle, repeat, anterior/siguiente, play/pause, sincronización de canción guardada, búsqueda de canciones, playlists guardadas, desconexión y transferencia al navegador cuando el SDK registra un `device_id`. Al scrollear, el reproductor se pliega en un botón flotante con la portada activa y se vuelve a desplegar al tocarlo.
+
+Para mejorar la experiencia en dispositivos móviles y evitar obstrucciones, el reproductor cuenta con características dedicadas: al tocar fuera del reproductor expandido, este se cierra automáticamente; al hacer scroll en la página, también se colapsa. Además, la posición de la "bolita" colapsada se puede configurar (Centro, Izquierda, Derecha, Arrastrable). La preferencia de posición se guarda localmente en `bgt_spotify_position` y, si hay usuario autenticado, en la nube bajo la propiedad `spotifyPosition` de Firestore.
 
 Para habilitar la conexión real hay que configurar `VITE_SPOTIFY_CLIENT_ID` con el Client ID de una app registrada en Spotify y agregar los redirect URI de la app:
 
@@ -479,7 +481,9 @@ Para habilitar la conexión real hay que configurar `VITE_SPOTIFY_CLIENT_ID` con
 - Desarrollo local: `http://127.0.0.1:5173/settings`
 - Si usás `localhost` en vez de `127.0.0.1`, agregá también `http://localhost:5173/settings`
 
-Spotify exige cuenta Premium para reproducir desde integraciones web. La preferencia `bgt_spotify_enabled` se guarda en `localStorage` y, si hay usuario autenticado, también en `userdata/{uid}.spotifyEnabled` para restaurarla en otros dispositivos. Los tokens OAuth quedan solo en `localStorage` del dispositivo y se borran al desconectar Spotify o cerrar sesión.
+Spotify exige cuenta Premium para reproducir desde integraciones web. La preferencia `bgt_spotify_enabled` se guarda en `localStorage` y, si hay usuario autenticado, también en `userdata/{uid}.spotifyEnabled` para restaurarla en otros dispositivos. Los tokens OAuth quedan solo en `localStorage` del dispositivo y se borran al desconectar Spotify, cerrar sesión o cuando Spotify rechaza el refresh del token. El callback OAuth valida `state`, consume el `code_verifier` una sola vez y limpia `code`, `state` y `error` de la URL conservando otros parámetros de la pantalla.
+
+Scopes usados por el mini reproductor: `streaming`, `user-read-playback-state`, `user-modify-playback-state`, `user-read-currently-playing`, `user-library-read`, `user-library-modify`, `playlist-read-private` y `playlist-read-collaborative`. Si una sesión fue autorizada antes de agregar biblioteca/playlists, el usuario debe desconectar y volver a conectar Spotify para conceder esos permisos.
 
 ---
 
@@ -491,12 +495,12 @@ Spotify exige cuenta Premium para reproducir desde integraciones web. La prefere
 | `bgt_theme_mode` | `"light"` / `"dark"` / `"system"` |
 | `bgt_theme_accent` | `"default"` / `"monet"` |
 | `bgt_spotify_enabled` | `"1"` / `"0"` |
+| `bgt_spotify_position` | `"center"` / `"left"` / `"right"` / `"draggable"` |
 | `bgt_spotify_tokens` | Tokens OAuth PKCE de Spotify locales |
 | `bgt_spotify_code_verifier` | Verifier temporal del login Spotify |
 | `bgt_spotify_oauth_state` | State temporal del login Spotify |
 | `bgt_wakelock` | `"1"` si wake lock activo |
 | `bgt_oled` | `"1"` si modo OLED activo |
-| `bgt_nav_order` | Array JSON con orden del nav |
 | `bgt_splash_seen` | `"1"` si ya se mostró el splash |
 | `bgt_lang` | Idioma guardado |
 | `bgt_drafts` | Drafts de partida por juego (`{ [gameId]: draft }`) |

@@ -77,9 +77,9 @@ function RulesPage({
     <div className="page">
       {visibleGroups.map((group) => (
         <div key={group.label} style={{ marginBottom: 6 }}>
-          <div className="champ-sec-title" style={{ marginBottom: 10, marginTop: 4 }}>
+          <h2 className="champ-sec-title" style={{ marginBottom: 10, marginTop: 4 }}>
             {group.label}
-          </div>
+          </h2>
           {group.ids.map((id) => {
             const game = rulesById[id];
             if (!game) return null;
@@ -107,7 +107,7 @@ function RulesPage({
                   <div className="rule-body">
                     {game.sections.map((section, index) => (
                       <div key={section.title || index} className="rule-section">
-                        <div className="rule-stitle">{section.title}</div>
+                        <h3 className="rule-stitle">{section.title}</h3>
                         <div className="rule-text">{section.text}</div>
                       </div>
                     ))}

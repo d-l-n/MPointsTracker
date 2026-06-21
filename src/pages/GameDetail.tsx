@@ -175,9 +175,9 @@ function GameDetail({
       >
         <AppHeader className="detail-header detail-header--with-tabs">
           <div className="detail-header-row">
-            <button className="ibtn" onClick={handleBack}>←</button>
+            <button className="ibtn" onClick={handleBack} aria-label={t("back")}>←</button>
             <div className="page-title-block page-title-block--grow">
-              <span className="htitle detail-title">{getGameName(game.id, t)}</span>
+              <h1 className="htitle detail-title">{getGameName(game.id, t)}</h1>
               <span className="hsub">{matches.length} {t("matchesPlayed")}</span>
             </div>
             <div className="detail-toolbar">
@@ -194,15 +194,19 @@ function GameDetail({
               </div>
             </div>
           </div>
-          <div className="tabs detail-tabs">
+          <div className="tabs detail-tabs" role="tablist" aria-label={t("gameTabs")}>
             {[["new", t("newMatch"), tab === "new"], ["stats", t("homeActionStats"), isStatsVisible]].map(([id, label, isActive]) => (
               <button
-                key={id}
+                key={id as string}
+                role="tab"
+                aria-selected={isActive as boolean}
+                aria-controls={`tabpanel-${id}`}
+                id={`tab-${id}`}
                 className={`tab detail-tab${isActive ? " active" : ""}`}
-                onClick={() => handleTabChange(id)}
+                onClick={() => handleTabChange(id as string)}
                 data-testid={`tab-${id}`}
               >
-                {label}
+                {label as string}
               </button>
             ))}
           </div>
@@ -210,7 +214,7 @@ function GameDetail({
       </div>
       <div className="tbody">
         {tab === "new" && (
-          <div key="tab-new">
+          <div key="tab-new" role="tabpanel" id="tabpanel-new" aria-labelledby="tab-new">
             <GameTabContent
               game={game} matchKey={matchKey} onAddMatch={async (m: GameDetailMatch) => {
                 const dur = Math.round(elapsed / 60); // minutes
@@ -271,7 +275,7 @@ function GameDetail({
           </div>
         )}
         {isStatsVisible && (
-          <div key="tab-stats" data-testid="detail-stats-shell">
+          <div key="tab-stats" role="tabpanel" id="tabpanel-stats" aria-labelledby="tab-stats" data-testid="detail-stats-shell">
             {game.type === "racha_perdida"
               ? <RachaPerdidaStatsTab matches={matches} t={t} onOpenHistory={onOpenHistory ? () => onOpenHistory(game.id) : null} />
               : <StatsTab matches={matches} t={t} onOpenHistory={onOpenHistory ? () => onOpenHistory(game.id) : null} />}

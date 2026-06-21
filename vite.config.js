@@ -1,11 +1,24 @@
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 
-// The service worker in /public/sw.js is copied as-is by Vite
-// (files in public/ are not processed, just copied to dist/)
+function validateEnvPlugin() {
+  return {
+    name: "validate-env",
+    enforce: "pre",
+    configResolved(config) {
+      const env = loadEnv(config.mode, process.cwd(), "VITE_");
+      const required = ["VITE_SPOTIFY_CLIENT_ID"];
+      for (const key of required) {
+        if (!env[key]) {
+          throw new Error(`Missing required env var: ${key} — check .env.local`);
+        }
+      }
+    },
+  };
+}
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [validateEnvPlugin(), react()],
   build: {
     rolldownOptions: {
       output: {
@@ -14,6 +27,7 @@ export default defineConfig({
     },
   },
   server: {
-    host: true, // expone en red local para testing en dispositivos
+    host: true,
+    allowedHosts: ["trapeze-manifesto-mustiness.ngrok-free.dev"],
   },
 });

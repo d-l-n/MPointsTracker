@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 
 import { haptic, mkId } from "../../lib/storage";
 import type { Match, PlayerGroup, TranslationFn } from "../../types";
@@ -52,7 +52,7 @@ interface TrucoNewMatchProps {
   onSavePlayerGroups?: (groups: PlayerGroup[]) => void;
 }
 
-export default function TrucoNewMatch({
+function TrucoNewMatch({
   onSave,
   knownNames,
   linkedPlayers = [],
@@ -179,10 +179,12 @@ export default function TrucoNewMatch({
               {teamNames.map((name, index) => (
                 <input
                   key={`team-${index}`}
+                  id={`truco-team-name-${index}`}
                   className="inp"
                   placeholder={`${t("team")} ${index + 1}`}
                   value={name}
                   onChange={(event) => setTeamNames((currentTeamNames) => currentTeamNames.map((currentValue, currentIndex) => (currentIndex === index ? event.target.value : currentValue)) as [string, string])}
+                  aria-label={`${t("team")} ${index + 1}`}
                 />
               ))}
             </div>
@@ -242,6 +244,7 @@ export default function TrucoNewMatch({
                   />
                   <button
                     className="btnrm"
+                    aria-label={`${t("delete")} ${player.name || `${t("playerN")} ${index + 1}`}`}
                     onClick={() => {
                       if (players.length > 2) {
                         setPlayers((currentPlayers) => currentPlayers.filter((currentPlayer) => currentPlayer.id !== player.id));
@@ -309,13 +312,13 @@ export default function TrucoNewMatch({
               <div className="rdrow" key={`rd-${label}`}>
                 <span className="rdname">{label}</span>
                 <div className="stepper">
-                  <button className="stepbtn" onClick={() => setAdds((currentAdds) => currentAdds.map((value, currentIndex) => (currentIndex === index ? Math.max(0, value - 1) : value)) as [number, number])} data-testid={`team-minus-${index}`}>
+                  <button className="stepbtn" onClick={() => setAdds((currentAdds) => currentAdds.map((value, currentIndex) => (currentIndex === index ? Math.max(0, value - 1) : value)) as [number, number])} data-testid={`team-minus-${index}`} aria-label={`${t("subtract")} ${label}`}>
                     −
                   </button>
                   <span className="stepval" data-testid={`team-adds-${index}`}>
                     {adds[index]}
                   </span>
-                  <button className="stepbtn" onClick={() => setAdds((currentAdds) => currentAdds.map((value, currentIndex) => (currentIndex === index ? value + 1 : value)) as [number, number])} data-testid={`team-plus-${index}`}>
+                  <button className="stepbtn" onClick={() => setAdds((currentAdds) => currentAdds.map((value, currentIndex) => (currentIndex === index ? value + 1 : value)) as [number, number])} data-testid={`team-plus-${index}`} aria-label={`${t("add")} ${label}`}>
                     +
                   </button>
                 </div>
@@ -378,3 +381,5 @@ export default function TrucoNewMatch({
     </div>
   );
 }
+
+export default memo(TrucoNewMatch)

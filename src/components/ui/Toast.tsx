@@ -4,5 +4,5 @@ interface ToastProps {
 }
 
 export default function Toast({ msg, show }: ToastProps) {
-  return <div className={`toast${show ? " show" : ""}`}>{msg}</div>;
+  return <div className={`toast${show ? " show" : ""}`} aria-live="polite">{msg}</div>;
 }

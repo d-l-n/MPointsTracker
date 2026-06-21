@@ -1,6 +1,7 @@
 import { addDoc, collection } from "firebase/firestore";
 
 import { fbDb } from "../lib/firebase";
+import { getGlobalT } from "../data/translations";
 import type { Match, SharedMatchRecipient } from "../types";
 
 interface SharedByUser {
@@ -28,7 +29,7 @@ export const shareMatchWithPlayers = async (
   const sharedMatch = {
     ...cleanMatch,
     _gameId: gameId,
-    _sharedBy: sharedBy?.displayName || sharedBy?.email || "Alguien",
+    _sharedBy: sharedBy?.displayName || sharedBy?.email || getGlobalT()("someone"),
     _sharedByUid: sharedBy?.uid || null,
     _sharedAt: Date.now(),
   };

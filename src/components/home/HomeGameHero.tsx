@@ -1,7 +1,9 @@
 import { useEffect, useId, useState } from "react";
 import type { SyntheticEvent } from "react";
+import { getGlobalT } from "../../data/translations";
 
 function renderFamilyLayers(family: string) {
+  const t = getGlobalT();
   switch (family) {
     case "uno":
       return (
@@ -303,9 +305,9 @@ function renderGameSignals(gameId?: string) {
           <text x="216" y="52" textAnchor="middle" fill="var(--hero-signal)" fontFamily="Arial, sans-serif" fontWeight="700" fontSize="9">A</text>
           <text x="216" y="76" textAnchor="middle" fill="var(--hero-signal)" fontFamily="Arial, sans-serif" fontWeight="700" fontSize="9">B</text>
           <text x="216" y="100" textAnchor="middle" fill="var(--hero-signal)" fontFamily="Arial, sans-serif" fontWeight="700" fontSize="9">C</text>
-          <text x="240" y="52" textAnchor="middle" fill="var(--hero-shadow)" fontFamily="Arial, sans-serif" fontSize="8" opacity=".6">País</text>
-          <text x="240" y="76" textAnchor="middle" fill="var(--hero-shadow)" fontFamily="Arial, sans-serif" fontSize="8" opacity=".6">Color</text>
-          <text x="240" y="100" textAnchor="middle" fill="var(--hero-shadow)" fontFamily="Arial, sans-serif" fontSize="8" opacity=".6">Fruta</text>
+          <text x="240" y="52" textAnchor="middle" fill="var(--hero-shadow)" fontFamily="Arial, sans-serif" fontSize="8" opacity=".6">{t("country")}</text>
+          <text x="240" y="76" textAnchor="middle" fill="var(--hero-shadow)" fontFamily="Arial, sans-serif" fontSize="8" opacity=".6">{t("color")}</text>
+          <text x="240" y="100" textAnchor="middle" fill="var(--hero-shadow)" fontFamily="Arial, sans-serif" fontSize="8" opacity=".6">{t("fruit")}</text>
           <text x="264" y="52" textAnchor="middle" fill="var(--hero-shadow)" fontFamily="Arial, sans-serif" fontSize="7" opacity=".5">___</text>
           <text x="264" y="76" textAnchor="middle" fill="var(--hero-shadow)" fontFamily="Arial, sans-serif" fontSize="7" opacity=".5">___</text>
           <text x="264" y="100" textAnchor="middle" fill="var(--hero-shadow)" fontFamily="Arial, sans-serif" fontSize="7" opacity=".5">___</text>

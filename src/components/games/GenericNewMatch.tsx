@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 
 import { haptic, mkId } from "../../lib/storage";
 import type { GameDefinition, Match, PlayerGroup, TranslationFn } from "../../types";
@@ -82,7 +82,7 @@ interface GenericNewMatchProps {
 const BASTA_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 const BASTA_GOAL = 3;
 
-export default function GenericNewMatch({
+function GenericNewMatch({
   game,
   onSave,
   knownNames,
@@ -366,6 +366,7 @@ export default function GenericNewMatch({
                 />
                 <button
                   className="btnrm"
+                  aria-label={`${t("delete")} ${player.name || `${t("playerN")} ${index + 1}`}`}
                   onClick={() => {
                     if (players.length > 2) {
                       setPlayers((currentPlayers) => currentPlayers.filter((currentPlayer) => currentPlayer.id !== player.id));
@@ -570,8 +571,9 @@ export default function GenericNewMatch({
           {isBasta && (
             <div style={{ display: "grid", gap: 10, marginBottom: 12 }}>
               <div>
-                <span className="flbl" style={{ marginBottom: "6px" }}>{t("bastaThemeLabel")}</span>
+                <label htmlFor="basta-theme-input" className="flbl" style={{ marginBottom: "6px" }}>{t("bastaThemeLabel")}</label>
                 <input
+                  id="basta-theme-input"
                   className="rdinp"
                   type="text"
                   placeholder={t("bastaThemePlaceholder")}
@@ -661,6 +663,7 @@ export default function GenericNewMatch({
                         value={roundScores[player.id] || ""}
                         onChange={(event) => setRoundScores((currentScores) => ({ ...currentScores, [player.id]: event.target.value }))}
                         data-testid={`round-score-${player.id}`}
+                        aria-label={`${cfg.winLabel || t("roundLog")} ${player.name}`}
                       />
                       <span className="rdlbl">{cfg.hasNeg ? t("ptsNegative") : t("ptsLabel")}</span>
                     </div>
@@ -689,6 +692,7 @@ export default function GenericNewMatch({
                           placeholder="0"
                           value={bets[player.id] || ""}
                           onChange={(event) => setBets((currentBets) => ({ ...currentBets, [player.id]: event.target.value }))}
+                          aria-label={`${t("betAmount")} ${player.name}`}
                         />
                       </div>
                     </div>
@@ -740,3 +744,5 @@ export default function GenericNewMatch({
     </div>
   );
 }
+
+export default memo(GenericNewMatch)

@@ -51,8 +51,14 @@ const iconButtonStyle: CSSProperties = {
 };
 
 const authLogoStyle: CSSProperties = {
-  cursor: "default",
+  cursor: "pointer",
   userSelect: "none",
+  background: "none",
+  border: "none",
+  padding: 0,
+  fontFamily: "inherit",
+  display: "block",
+  width: "100%",
 };
 
 const backLinkStyle: CSSProperties = {
@@ -165,11 +171,11 @@ function EmailAuthScreen({
   if (mode === "signin") {
     return (
       <div className="auth-screen">
-        <div className="auth-logo" onClick={onLogoTap} style={authLogoStyle}>
+        <button type="button" className="auth-logo" onClick={onLogoTap} style={authLogoStyle}>
           MPOINTS
           <br />
           TRACKER
-        </div>
+        </button>
         <LoginForm
           t={t}
           onSignIn={onSignIn}
@@ -190,23 +196,35 @@ function EmailAuthScreen({
   if (mode === "signup") {
     return (
       <div className="auth-screen">
-        <div className="auth-logo" onClick={onLogoTap} style={authLogoStyle}>
+        <button type="button" className="auth-logo" onClick={onLogoTap} style={authLogoStyle}>
           MPOINTS
           <br />
           TRACKER
-        </div>
+        </button>
         <div className="auth-form">
-          <input className="inp" type="text" placeholder={t("namePlaceholder")} value={name} onChange={handleNameChange} autoComplete="name" />
-          <input className="inp" type="email" placeholder={t("emailPlaceholder")} value={email} onChange={handleEmailChange} autoComplete="email" />
-          <input
-            className="inp"
-            type="password"
-            placeholder={t("passwordPlaceholder")}
-            value={password}
-            onChange={handlePasswordChange}
-            autoComplete="new-password"
-          />
-          {err && <div className="auth-err">{err}</div>}
+          <div className="inp-group">
+            <label htmlFor="signup-name" className="inp-label">{t("namePlaceholder")}</label>
+            <input id="signup-name" className="inp" type="text" placeholder={t("namePlaceholder")} value={name} onChange={handleNameChange} autoComplete="name" aria-invalid={!!err} />
+          </div>
+          <div className="inp-group">
+            <label htmlFor="signup-email" className="inp-label">{t("emailPlaceholder")}</label>
+            <input id="signup-email" className="inp" type="email" placeholder={t("emailPlaceholder")} value={email} onChange={handleEmailChange} autoComplete="email" aria-invalid={!!err} />
+          </div>
+          <div className="inp-group">
+            <label htmlFor="signup-password" className="inp-label">{t("passwordPlaceholder")}</label>
+            <input
+              id="signup-password"
+              className="inp"
+              type="password"
+              placeholder={t("passwordPlaceholder")}
+              value={password}
+              onChange={handlePasswordChange}
+              autoComplete="new-password"
+              aria-invalid={!!err}
+              aria-describedby={err ? "signup-error" : undefined}
+            />
+          </div>
+          {err && <div id="signup-error" className="auth-err" aria-live="assertive">{err}</div>}
           <button className="btnpri" style={primaryButtonStyle} disabled={loading || !email || !password} onClick={handleSignUp}>
             {loading ? "..." : t("signUp")}
           </button>
@@ -221,18 +239,21 @@ function EmailAuthScreen({
   if (mode === "reset") {
     return (
       <div className="auth-screen">
-        <div className="auth-logo" onClick={onLogoTap} style={authLogoStyle}>
+        <button type="button" className="auth-logo" onClick={onLogoTap} style={authLogoStyle}>
           MPOINTS
           <br />
           TRACKER
-        </div>
+        </button>
         <div className="auth-form">
           {resetDone ? (
             <div style={resetDoneStyle}>{t("resetSent")}</div>
           ) : (
             <>
-              <input className="inp" type="email" placeholder={t("emailPlaceholder")} value={email} onChange={handleEmailChange} autoComplete="email" />
-              {err && <div className="auth-err">{err}</div>}
+              <div className="inp-group">
+                <label htmlFor="reset-email" className="inp-label">{t("emailPlaceholder")}</label>
+                <input id="reset-email" className="inp" type="email" placeholder={t("emailPlaceholder")} value={email} onChange={handleEmailChange} autoComplete="email" aria-invalid={!!err} aria-describedby={err ? "reset-error" : undefined} />
+              </div>
+              {err && <div id="reset-error" className="auth-err" aria-live="assertive">{err}</div>}
               <button className="btnpri" style={primaryButtonStyle} disabled={loading || !email} onClick={handleReset}>
                 {loading ? "..." : t("forgotPassword")}
               </button>
@@ -274,26 +295,26 @@ function EmailAuthScreen({
           </div>
         )}
         {onDarkChange && (
-          <button onClick={onDarkChange} style={{ ...iconButtonStyle, fontSize: "1rem" }}>
+          <button onClick={onDarkChange} style={{ ...iconButtonStyle, fontSize: "1rem" }} aria-label={dark ? t("themeToggleLight") : t("themeToggleDark")}>
             {dark ? "🌙" : "☀️"}
           </button>
         )}
         {onClose && (
-          <button onClick={onClose} style={{ ...iconButtonStyle, color: "var(--tx2)", fontSize: "1.1rem" }}>
+          <button onClick={onClose} style={{ ...iconButtonStyle, color: "var(--tx2)", fontSize: "1.1rem" }} aria-label={t("cancel")}>
             ✕
           </button>
         )}
       </div>
-      <div className="auth-logo" onClick={onLogoTap} style={authLogoStyle}>
+      <button type="button" className="auth-logo" onClick={onLogoTap} style={authLogoStyle}>
         MPOINTS
         <br />
         TRACKER
-      </div>
+      </button>
       <div className="auth-sub">{t("registroTitle")}</div>
       <div className="auth-desc">{t("authDesc")}</div>
       {!isOnline && (
         <div data-testid="offline-auth-copy" style={offlineCopyStyle}>
-          Sin conexion. Podés seguir con datos locales guardados o entrar como invitado.
+          {t("offlineAuthCopy")}
         </div>
       )}
       <button className="btn-google" onClick={onGoogle}>

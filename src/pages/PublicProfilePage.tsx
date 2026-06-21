@@ -285,7 +285,8 @@ function PublicProfilePage({
     setPublicStats(null);
     setTab("stats");
 
-    const testProfile = typeof window !== "undefined" ? window.__MP_TEST_PUBLIC_PROFILES__?.[uid] : null;
+    const isDevMode = typeof import.meta !== "undefined" && import.meta.env?.DEV;
+    const testProfile = isDevMode && typeof window !== "undefined" ? window.__MP_TEST_PUBLIC_PROFILES__?.[uid] : null;
     if (testProfile) {
       setProfile(normalizePublicProfile(testProfile) as PublicProfile);
       setPublicStats(testProfile.publicStats || null);
@@ -379,19 +380,27 @@ function PublicProfilePage({
           {photoURL ? <img src={photoURL} alt="" className="public-profile-avatar-image" /> : displayName.slice(0, 2).toUpperCase()}
         </div>
         <div className="public-profile-meta">
-          <div className="public-profile-title">{displayName.toUpperCase()}</div>
+          <h2 className="public-profile-title">{displayName.toUpperCase()}</h2>
           {isSelf && <div className="public-profile-eyebrow">{t("profileThisIsYou")}</div>}
           {isSelf && myUser?.email && <div className="public-profile-email">{myUser.email}</div>}
         </div>
       </div>
 
       {!isSelf && (
-        <div className="public-profile-tabs">
+        <div className="public-profile-tabs" role="tablist" aria-label={t("profileTabs")}>
           {[
             { key: "stats" as const, label: t("stats") },
             { key: "versus" as const, label: t("profileVersus") },
           ].map(({ key, label }) => (
-            <button key={key} className={`public-profile-tab${tab === key ? " active" : ""}`} onClick={() => setTab(key)}>
+            <button
+              key={key}
+              role="tab"
+              aria-selected={tab === key}
+              aria-controls={`profile-tabpanel-${key}`}
+              id={`profile-tab-${key}`}
+              className={`public-profile-tab${tab === key ? " active" : ""}`}
+              onClick={() => setTab(key)}
+            >
               {label}
             </button>
           ))}
@@ -399,7 +408,7 @@ function PublicProfilePage({
       )}
 
       {(tab === "stats" || isSelf) && (
-        <>
+        <div role={!isSelf ? "tabpanel" : undefined} id={!isSelf ? "profile-tabpanel-stats" : undefined} aria-labelledby={!isSelf ? "profile-tab-stats" : undefined}>
           <div>
             <div className="public-profile-section-label">{t("profileGlobalStats").toUpperCase()}</div>
             <div className="public-profile-stats-grid">
@@ -424,10 +433,11 @@ function PublicProfilePage({
           ) : (
             <div className="public-profile-empty">{t("profileNoStats")}</div>
           )}
-        </>
+        </div>
       )}
 
       {tab === "versus" && !isSelf && (
+        <div role="tabpanel" id="profile-tabpanel-versus" aria-labelledby="profile-tab-versus">
         <div className="public-profile-panel surface-card public-profile-versus-panel" data-testid="public-profile-versus-panel">
           <div className="public-profile-section-label public-profile-section-label--tight">{t("profileHead2Head")}</div>
           {versusGames.length > 0 ? (
@@ -452,6 +462,7 @@ function PublicProfilePage({
           ) : (
             <div className="public-profile-empty public-profile-empty--compact">{t("profileNoSharedMatches")}</div>
           )}
+        </div>
         </div>
       )}
 

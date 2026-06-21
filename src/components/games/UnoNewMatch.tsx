@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 
 import { haptic, mkId } from "../../lib/storage";
 import type { GameDefinition, Match, PlayerGroup, TranslationFn, UnoRosterEvent } from "../../types";
@@ -95,7 +95,7 @@ type ScoreTableEntry = {
   calc: (roundInput: UnoRoundInput) => number;
 };
 
-export default function UnoNewMatch({
+function UnoNewMatch({
   game,
   onSave,
   knownNames,
@@ -464,6 +464,7 @@ export default function UnoNewMatch({
                 />
                 <button
                   className="btnrm"
+                  aria-label={`${t("delete")} ${player.name || `${t("playerN")} ${index + 1}`}`}
                   onClick={() => {
                     if (players.length > 2) {
                       setPlayers((currentPlayers) => currentPlayers.filter((currentPlayer) => currentPlayer.id !== player.id));
@@ -689,3 +690,5 @@ export default function UnoNewMatch({
     </div>
   );
 }
+
+export default memo(UnoNewMatch)

@@ -7,16 +7,8 @@ interface ProtectedRouteProps {
   children: ReactNode;
 }
 
-function hasStoredSessionHint(): boolean {
-  try {
-    return Boolean(localStorage.getItem("bgt_last_uid")) && !localStorage.getItem("bgt_guest_mode");
-  } catch {
-    return false;
-  }
-}
-
 export default function ProtectedRoute({ children }: ProtectedRouteProps) {
-  if (fbAuth.currentUser || hasStoredSessionHint()) {
+  if (fbAuth.currentUser) {
     return <>{children}</>;
   }
 

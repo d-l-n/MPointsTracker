@@ -36,8 +36,8 @@ const HASHED_ASSET_PATTERNS = [
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_SHELL).then((cache) =>
-      // Solo cacheamos el HTML raíz; los assets se cachean dinámicamente
-      cache.addAll(["/"])
+      // Cacheamos HTML raíz + rutas principales para navegación offline
+      cache.addAll(["/", "/rules", "/champions", "/history"])
     ).then(() => self.skipWaiting()) // activar inmediatamente
   );
 });
@@ -218,14 +218,14 @@ function offlineFallbackHTML() {
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>MPoints Tracker — Sin conexión</title>
   <style>
-    body { font-family: system-ui, sans-serif; background: #0f0f12; color: #e2e8f0;
+    body { font-family: system-ui, sans-serif; background: #041012; color: #eefcff;
            display: flex; align-items: center; justify-content: center; min-height: 100dvh;
            margin: 0; flex-direction: column; gap: 12px; text-align: center; padding: 24px; }
     .icon { font-size: 3rem; }
     h1 { font-size: 1.4rem; margin: 0; }
-    p { color: #94a3b8; font-size: .9rem; margin: 0; }
+    p { color: #b7d7dc; font-size: .9rem; margin: 0; }
     button { margin-top: 16px; padding: 12px 24px; border-radius: 12px; border: none;
-             background: #7b6fff; color: #fff; font-size: 1rem; cursor: pointer; }
+             background: #006d77; color: #fff; font-size: 1rem; cursor: pointer; }
   </style>
 </head>
 <body>

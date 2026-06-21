@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 
 import { haptic, mkId } from "../../lib/storage";
 import type { Match, PlayerGroup, TranslationFn } from "../../types";
@@ -155,6 +155,7 @@ function CellInput({ row, value, onChange, color, "data-testid": dataTestId }: C
           max={row.max}
           placeholder="0"
           autoFocus
+          aria-label={row.label}
           style={{
             width: 50,
             height: 34,
@@ -184,6 +185,7 @@ function CellInput({ row, value, onChange, color, "data-testid": dataTestId }: C
           onClick={() => {
             onChange("X");
           }}
+          aria-label={t("clearSearch")}
           style={{
             height: 34,
             padding: "0 8px",
@@ -235,6 +237,7 @@ function CellInput({ row, value, onChange, color, "data-testid": dataTestId }: C
       ))}
       <button
         onClick={() => setOpen(false)}
+        aria-label={t("cancel")}
         style={{
           height: 34,
           padding: "0 8px",
@@ -251,7 +254,7 @@ function CellInput({ row, value, onChange, color, "data-testid": dataTestId }: C
   );
 }
 
-export default function GeneralaNewMatch({
+function GeneralaNewMatch({
   onSave,
   knownNames,
   draft = null,
@@ -400,6 +403,7 @@ export default function GeneralaNewMatch({
                 />
                 <button
                   className="btnrm"
+                  aria-label={`${t("delete")} ${player.name || `${t("playerN")} ${index + 1}`}`}
                   onClick={() => {
                     if (players.length > 2) {
                       setPlayers((currentPlayers) => currentPlayers.filter((currentPlayer) => currentPlayer.id !== player.id));
@@ -452,7 +456,7 @@ export default function GeneralaNewMatch({
         </div>
       )}
 
-      {gameOver && winner && <div className="wnr" style={{ background: color }}>🎲 {winner.name.toUpperCase()} GANÓ</div>}
+      {gameOver && winner && <div className="wnr" style={{ background: color }}>🎲 {winner.name.toUpperCase()} {t("won")}</div>}
 
       {named.length >= 2 && !hasDuplicates && (
         <div className="sec">
@@ -604,3 +608,5 @@ export default function GeneralaNewMatch({
     </div>
   );
 }
+
+export default memo(GeneralaNewMatch)

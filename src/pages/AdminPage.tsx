@@ -389,6 +389,7 @@ function AdminUserCard({ u, i, normTs, t = identity }: AdminUserCardProps) {
           src={u.profile.photoURL}
           referrerPolicy="no-referrer"
           onError={() => setImgFailed(true)}
+          alt={`${t("adminAvatarPrefix")} ${u.profile.displayName || u.profile.email || t("playerN")}`}
           style={{
             width: 38,
             height: 38,
@@ -586,20 +587,28 @@ function AdminPage({ showToast, t = identity }: AdminPageProps) {
 
   return (
     <div className="admin-page">
-      <div className="admin-tabs">
+      <div className="admin-tabs" role="tablist" aria-label="Admin tabs">
         {[
           ["reports", t("adminTabReports")],
           ["users", t("adminTabUsers")],
           ["stats", t("adminTabStats")],
         ].map(([id, label]) => (
-          <button key={id} className={`admin-tab${adminTab === id ? " active" : ""}`} onClick={() => setAdminTab(id as "reports" | "users" | "stats")}>
+          <button
+            key={id}
+            role="tab"
+            aria-selected={adminTab === id}
+            aria-controls={`admin-tabpanel-${id}`}
+            id={`admin-tab-${id}`}
+            className={`admin-tab${adminTab === id ? " active" : ""}`}
+            onClick={() => setAdminTab(id as "reports" | "users" | "stats")}
+          >
             {label}
           </button>
         ))}
       </div>
-      {adminTab === "reports" ? <AdminReports showToast={showToast} t={t} /> : null}
-      {adminTab === "users" ? <AdminUsers showToast={showToast} t={t} /> : null}
-      {adminTab === "stats" ? <AdminStats showToast={showToast} t={t} /> : null}
+      {adminTab === "reports" ? <div role="tabpanel" id="admin-tabpanel-reports" aria-labelledby="admin-tab-reports"><AdminReports showToast={showToast} t={t} /></div> : null}
+      {adminTab === "users" ? <div role="tabpanel" id="admin-tabpanel-users" aria-labelledby="admin-tab-users"><AdminUsers showToast={showToast} t={t} /></div> : null}
+      {adminTab === "stats" ? <div role="tabpanel" id="admin-tabpanel-stats" aria-labelledby="admin-tab-stats"><AdminStats showToast={showToast} t={t} /></div> : null}
     </div>
   );
 }

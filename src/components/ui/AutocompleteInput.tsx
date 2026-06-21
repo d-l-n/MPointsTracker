@@ -7,6 +7,8 @@ interface AutocompleteInputProps {
   suggestions?: string[];
   className?: string;
   style?: CSSProperties;
+  label?: string;
+  id?: string;
 }
 
 const containerStyle: CSSProperties = {
@@ -20,6 +22,8 @@ export default function AutocompleteInput({
   suggestions: rawSuggestions = [],
   className = "inp",
   style,
+  label,
+  id,
 }: AutocompleteInputProps) {
   const [open, setOpen] = useState(false);
   const suggestions = rawSuggestions.filter((suggestion) => suggestion.toLowerCase().includes(value.toLowerCase()) && suggestion !== value);
@@ -36,8 +40,10 @@ export default function AutocompleteInput({
   };
 
   return (
-    <div className="autocomplete" style={containerStyle}>
+    <div className={label ? "inp-group autocomplete" : "autocomplete"} style={containerStyle}>
+      {label && id && <label htmlFor={id} className="inp-label">{label}</label>}
       <input
+        id={id}
         className={className}
         style={style}
         placeholder={placeholder}
@@ -49,14 +55,16 @@ export default function AutocompleteInput({
       {show && (
         <div className="ac-dropdown">
           {suggestions.map((suggestion) => (
-            <div
+            <button
+              type="button"
               key={suggestion}
               className="ac-item"
-              onMouseDown={() => selectSuggestion(suggestion)}
-              onTouchStart={() => selectSuggestion(suggestion)}
+              onMouseDown={(e) => { e.preventDefault(); selectSuggestion(suggestion); }}
+              onTouchStart={(e) => { e.preventDefault(); selectSuggestion(suggestion); }}
+              style={{ width: "100%", textAlign: "left", background: "none", border: "none", fontFamily: "inherit", cursor: "pointer" }}
             >
               {suggestion}
-            </div>
+            </button>
           ))}
         </div>
       )}

@@ -1,4 +1,4 @@
-import { memo, useState } from "react";
+import { memo, useState, useMemo } from "react";
 
 import { GAMES } from "../../data/games";
 import { APP_VERSION } from "../../lib/storage";
@@ -35,6 +35,7 @@ import GameDetail from "../../pages/GameDetail";
 import AdminPage from "../../pages/AdminPage";
 import PublicProfilePage from "../../pages/PublicProfilePage";
 import GlobalHistoryPage from "../../pages/GlobalHistoryPage";
+import { SEO } from "../seo/SEO";
 
 interface AppUser {
   uid?: string;
@@ -210,7 +211,7 @@ const PostSaveRematchBanner = memo(function PostSaveRematchBanner({
       {rematchState.lastSavedMatch && (
         <ShareResultButton match={rematchState.lastSavedMatch} game={game} t={t} />
       )}
-      <button className="detail-rematch-dismiss" onClick={onDismiss}>✕</button>
+      <button className="detail-rematch-dismiss" onClick={onDismiss} aria-label={t("dismissRematch")}>✕</button>
     </div>
   );
 });
@@ -301,6 +302,34 @@ export default function AppLayout({
   setNavLeaveTarget,
   resetGameSession,
 }: AppLayoutProps) {
+  const seoTitle = useMemo(() => {
+    if (isLoginRoute) return t("login");
+    if (historyView) return t("globalHistory");
+    if (selected && GAMES[selected]) return GAMES[selected].name;
+    if (nav === "home") return null;
+    if (nav === "rules") return t("rules");
+    if (nav === "champs") return t("champions");
+    if (nav === "h2h") return t("headToHead");
+    if (nav === "settings") return t("settings");
+    return null;
+  }, [nav, selected, historyView, isLoginRoute, t]);
+
+  const seoDescription = useMemo(() => {
+    if (selected && GAMES[selected]) {
+      const g = GAMES[selected];
+      return `Registrá partidas de ${g.name}, seguí estadísticas y rankings. ${g.tagline || ""}`.trim();
+    }
+    if (nav === "rules") return "Reglas y puntuaciones de todos los juegos disponibles en MPoints Tracker: UNO, Truco, Chinchón, Rummy y más.";
+    if (nav === "champs") return "Rankings globales y salón de la fama. Mirá quién lidera entre tus amigos en cada juego.";
+    if (nav === "settings") return "Configuración, perfil, preferencias y más opciones de MPoints Tracker.";
+    if (historyView) return "Historial global de todas las partidas registradas. Buscá y filtrá por juego.";
+    return undefined;
+  }, [nav, selected, historyView]);
+
+  const seoImage = selected && GAMES[selected]?.coverImage
+    ? `https://mpoints-tracker.pages.dev${GAMES[selected].coverImage!}`
+    : undefined;
+
   function hasDraftPlayer(): boolean {
     const draft = getDraft(selected || "");
     if (!draft || typeof draft !== "object") return false;
@@ -335,9 +364,9 @@ export default function AppLayout({
         <ReloadButton t={t} />
         {user && <SyncDot syncing={syncing} error={syncError} t={t} isOnline={isOnline} />}
         {user && (
-          <span className="app-layout-avatar-trigger" onClick={() => handleNav("about")} title={t("viewProfile")}>
+          <button type="button" className="app-layout-avatar-trigger" onClick={() => handleNav("about")} title={t("viewProfile")} aria-label={t("viewProfile")}>
             <UserAvatar user={user} />
-          </span>
+          </button>
         )}
         {!user && (
           <button
@@ -410,7 +439,7 @@ export default function AppLayout({
         <InstallBanner dark={dark} t={t} />
         {showDebug && (
           <div className="debug-panel">
-            <button className="debug-close" onClick={() => setShowDebug(false)}>✕</button>
+            <button className="debug-close" onClick={() => setShowDebug(false)} aria-label={t("closeDebugPanel")}>✕</button>
             <div className="debug-panel-entry ok">
               v{APP_VERSION} · isIOS={String(isIOS)} · {navigator.userAgent.slice(0, 60)}
             </div>
@@ -443,7 +472,14 @@ export default function AppLayout({
   }
 
   return (
-    <AppShell dark={dark} toast={toast} t={t}>
+    <>
+      <SEO
+        title={seoTitle}
+        description={seoDescription}
+        image={seoImage}
+        url={selected ? `https://mpoints-tracker.pages.dev/game/${selected}` : undefined}
+      />
+      <AppShell dark={dark} toast={toast} t={t}>
       <InstallBanner dark={dark} t={t} />
       {pendingInvite && nav === "home" && !selected && (
         <div
@@ -465,6 +501,7 @@ export default function AppLayout({
             data-testid="pending-invite-dismiss"
             onClick={dismissPendingInvite}
             className="pending-invite-dismiss"
+            aria-label={t("dismissInvite")}
           >
             ✕
           </button>
@@ -521,7 +558,7 @@ export default function AppLayout({
             <AppHeader
               testId="history-subpage-header"
               hidden={sectionHeaderHiddenByScroll}
-              leading={<button className="ibtn page-back-btn" onClick={closeHistoryView}><span className="ibtn-glyph">←</span></button>}
+              leading={<button className="ibtn page-back-btn" onClick={closeHistoryView} aria-label={t("back")}><span className="ibtn-glyph">←</span></button>}
               title={t("globalHistory").toUpperCase()}
               actions={standardHeaderActions(false)}
             />
@@ -599,7 +636,7 @@ export default function AppLayout({
               />
               <div className="home-utility-shell champs-utility-shell">
                 <div className="champ-hero">
-                  <div className="champ-htitle">{t("hallOfFame")}</div>
+                  <h2 className="champ-htitle">{t("hallOfFame")}</h2>
                   <div className="champ-sub">{t("rankingsGlobal")}</div>
                 </div>
               </div>
@@ -616,19 +653,19 @@ export default function AppLayout({
               {profileUid ? (
                 <AppHeader
                   hidden={sectionHeaderHiddenByScroll}
-                  leading={<button className="ibtn page-back-btn" onClick={closeProfile}><span className="ibtn-glyph">←</span></button>}
+                  leading={<button className="ibtn page-back-btn" onClick={closeProfile} aria-label={t("back")}><span className="ibtn-glyph">←</span></button>}
                   title={t("viewProfile").toUpperCase()}
                   actions={(
                     <div className="user-row">
                       {user && <SyncDot syncing={syncing} error={syncError} t={t} isOnline={isOnline} />}
-                      {user && <span className="app-layout-avatar-trigger" onClick={closeProfile}><UserAvatar user={user} /></span>}
+                      {user && <button type="button" className="app-layout-avatar-trigger" onClick={closeProfile} aria-label={t("viewProfile")}><UserAvatar user={user} /></button>}
                     </div>
                   )}
                 />
               ) : settingsSubPage ? (
                 <AppHeader
                   hidden={sectionHeaderHiddenByScroll}
-                  leading={<button className="ibtn page-back-btn" onClick={() => openSettingsSubPage(settingsSubPage === "apptheme" || settingsSubPage === "advanced" ? "prefs" : null)}><span className="ibtn-glyph">←</span></button>}
+                  leading={<button className="ibtn page-back-btn" onClick={() => openSettingsSubPage(settingsSubPage === "apptheme" || settingsSubPage === "advanced" ? "prefs" : null)} aria-label={t("back")}><span className="ibtn-glyph">←</span></button>}
                   titleClassName="app-layout-settings-title"
                   title={settingsSubPage === "prefs" ? t("settingsPrefs")
                     : settingsSubPage === "apptheme" ? t("settingsAppTheme")
@@ -636,8 +673,7 @@ export default function AppLayout({
                     : t("settingsAbout")}
                   actions={(
                     <div className="user-row">
-                      {user && <SyncDot syncing={syncing} error={syncError} t={t} isOnline={isOnline} />}
-                      {user && <span className="app-layout-avatar-trigger" onClick={() => openSettingsSubPage(null)}><UserAvatar user={user} /></span>}
+                      {user && <button type="button" className="app-layout-avatar-trigger" onClick={() => openSettingsSubPage(null)} aria-label={t("viewProfile")}><UserAvatar user={user} /></button>}
                       {!user && <button className="btn-signout app-layout-connect-btn" onClick={() => setShowAuthModal("main")}>{t("connect")}</button>}
                     </div>
                   )}
@@ -688,10 +724,16 @@ export default function AppLayout({
         <nav
           className={`nav${navOpen ? " nav--open" : ""}${navHiddenByScroll ? " nav--hidden" : ""}`}
           data-game-accent={accentGameId}
+          aria-label={t("mainNavigation")}
         >
           <div className="nav-top">
-            <button className="nav-hamburger" onClick={() => setNavOpen((current) => !current)} title={navOpen ? t("closeMenu") : t("openMenu")}>
-              {navOpen ? "✕" : "☰"}
+            <button
+              className="nav-hamburger"
+              aria-label={navOpen ? t("closeMenu") : t("openMenu")}
+              onClick={() => setNavOpen((current) => !current)}
+              title={navOpen ? t("closeMenu") : t("openMenu")}
+            >
+              <span aria-hidden="true">{navOpen ? "✕" : "☰"}</span>
             </button>
             <div className="nav-brand">
               <span className="nav-brand-title">MPOINTS</span>
@@ -732,7 +774,7 @@ export default function AppLayout({
       {showNavOverlay && <div className="nav-overlay" onClick={() => setNavOpen(false)} />}
 
       {showAuthModal && showAuthModal !== "google" && (
-        <div className="app-layout-auth-modal-shell">
+        <div className="app-layout-auth-modal-shell" role="dialog" aria-modal="true" aria-label={t("connect")}>
           <EmailAuthScreen
             t={t}
             initialMode={showAuthModal}
@@ -762,9 +804,9 @@ export default function AppLayout({
       )}
 
       {navLeaveTarget && (
-        <div className="nav-leave-overlay" style={selectedGame ? ({ "--gc": selectedGame.color } as Record<string, string>) : undefined}>
+        <div className="nav-leave-overlay" role="dialog" aria-modal="true" aria-labelledby="nav-leave-title" style={selectedGame ? ({ "--gc": selectedGame.color } as Record<string, string>) : undefined}>
           <div className="nav-leave-dialog">
-            <div className="nav-leave-title">{t("draftTitle")}</div>
+            <div id="nav-leave-title" className="nav-leave-title">{t("draftTitle")}</div>
             <div className="nav-leave-message">{t("draftMsg")}</div>
             <div className="nav-leave-actions">
               <button className="btnsec nav-leave-keep" onClick={() => setNavLeaveTarget(null)}>{t("draftKeep")}</button>
@@ -777,5 +819,6 @@ export default function AppLayout({
       <SpotifyMiniPlayer />
       <ScrollToTop />
     </AppShell>
+    </>
   );
 }

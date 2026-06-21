@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type CSSProperties } from "react";
+import { memo, useEffect, useMemo, useState, type CSSProperties } from "react";
 
 import { mkId, haptic } from "../../lib/storage";
 import { fmtDate } from "../../lib/stats";
@@ -50,7 +50,7 @@ interface RachaPerdidaNewMatchProps {
 
 const LOSER_SLOT = "racha_loser";
 
-export default function RachaPerdidaNewMatch({
+function RachaPerdidaNewMatch({
   onSave,
   knownNames,
   linkedPlayers = [],
@@ -147,6 +147,7 @@ export default function RachaPerdidaNewMatch({
             value={penalty}
             onChange={(event) => setPenalty(event.target.value.slice(0, 300))}
             style={{ minHeight: 90 }}
+            aria-label={t("whoMustDo")}
           />
           {penalty.length > 0 &&
             pastPenalties.filter((suggestion) => suggestion.toLowerCase().includes(penalty.toLowerCase()) && suggestion !== penalty).length > 0 && (
@@ -235,3 +236,5 @@ export default function RachaPerdidaNewMatch({
     </div>
   );
 }
+
+export default memo(RachaPerdidaNewMatch)

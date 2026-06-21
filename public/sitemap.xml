@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://mpoints-tracker.pages.dev/</loc><priority>1.0</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://mpoints-tracker.pages.dev/rules</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://mpoints-tracker.pages.dev/champions</loc><priority>0.7</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://mpoints-tracker.pages.dev/settings</loc><priority>0.5</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://mpoints-tracker.pages.dev/history</loc><priority>0.5</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://mpoints-tracker.pages.dev/login</loc><priority>0.3</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://mpoints-tracker.pages.dev/game/uno</loc><priority>0.9</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://mpoints-tracker.pages.dev/game/uno_no_mercy</loc><priority>0.8</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://mpoints-tracker.pages.dev/game/uno_flip</loc><priority>0.8</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://mpoints-tracker.pages.dev/game/uno_dos</loc><priority>0.7</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://mpoints-tracker.pages.dev/game/truco</loc><priority>0.9</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://mpoints-tracker.pages.dev/game/chancho</loc><priority>0.7</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://mpoints-tracker.pages.dev/game/esquinados</loc><priority>0.7</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://mpoints-tracker.pages.dev/game/chin</loc><priority>0.7</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://mpoints-tracker.pages.dev/game/chinchon</loc><priority>0.8</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://mpoints-tracker.pages.dev/game/rummy</loc><priority>0.7</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://mpoints-tracker.pages.dev/game/poker</loc><priority>0.7</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://mpoints-tracker.pages.dev/game/blackjack</loc><priority>0.7</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://mpoints-tracker.pages.dev/game/burako</loc><priority>0.7</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://mpoints-tracker.pages.dev/game/generala</loc><priority>0.7</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://mpoints-tracker.pages.dev/game/ajedrez</loc><priority>0.6</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://mpoints-tracker.pages.dev/game/racha_perdida</loc><priority>0.7</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://mpoints-tracker.pages.dev/game/sushi_do</loc><priority>0.7</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://mpoints-tracker.pages.dev/game/portion_counter</loc><priority>0.7</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://mpoints-tracker.pages.dev/game/basta_dym</loc><priority>0.7</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://mpoints-tracker.pages.dev/game/monopoly</loc><priority>0.6</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://mpoints-tracker.pages.dev/game/life</loc><priority>0.6</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://mpoints-tracker.pages.dev/game/custom</loc><priority>0.5</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://mpoints-tracker.pages.dev/game/canasta</loc><priority>0.7</priority><changefreq>weekly</changefreq></url>
+</urlset>

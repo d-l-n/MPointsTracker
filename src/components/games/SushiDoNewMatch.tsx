@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState, type CSSProperties } from "react";
+import { memo, useCallback, useEffect, useMemo, useState, type CSSProperties } from "react";
 
 import { haptic, mkId } from "../../lib/storage";
 import type { GameDefinition, Match, PlayerGroup, TranslationFn } from "../../types";
@@ -123,7 +123,7 @@ function buildScores(players: PlayerInputState[], previousScores: Record<string,
   }, {});
 }
 
-export default function SushiDoNewMatch({
+function SushiDoNewMatch({
   game,
   onSave,
   knownNames,
@@ -485,11 +485,13 @@ export default function SushiDoNewMatch({
                       <div style={{ color: "var(--tx2)" }}>{flavor?.points} {t("ptsLabel")}</div>
                     </div>
                     <select
+                      id={`sushi-do-flavor-select-${index}`}
                       className="inp"
                       data-testid={`sushi-do-flavor-select-${index}`}
                       value={flavorKey}
                       onChange={(event) => replaceFlavorAt(index, event.target.value)}
                       style={{ marginTop: 10 }}
+                      aria-label={`${t("sushiDoFlavors")} ${index + 1}`}
                     >
                       {getFlavorOptions(index).map((option: SushiFlavor) => (
                         <option key={option.key} value={option.key}>
@@ -689,3 +691,5 @@ export default function SushiDoNewMatch({
     </div>
   );
 }
+
+export default memo(SushiDoNewMatch)

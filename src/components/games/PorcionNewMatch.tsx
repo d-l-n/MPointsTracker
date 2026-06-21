@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 
 import { PORTION_FOODS, getPortionFoodByKey } from "../../data/portionFoods";
 import { haptic, mkId } from "../../lib/storage";
@@ -84,7 +84,7 @@ function toTestId(value = "") {
   );
 }
 
-export default function PorcionNewMatch({
+function PorcionNewMatch({
   game,
   onSave,
   knownNames,
@@ -266,6 +266,7 @@ export default function PorcionNewMatch({
                 />
                 <button
                   className="btnrm"
+                  aria-label={`${t("delete")} ${player.name || `${t("playerN")} ${index + 1}`}`}
                   onClick={() => {
                     if (players.length > 2) {
                       setPlayers((currentPlayers) => currentPlayers.filter((currentPlayer) => currentPlayer.id !== player.id));
@@ -593,3 +594,5 @@ export default function PorcionNewMatch({
     </div>
   );
 }
+
+export default memo(PorcionNewMatch)

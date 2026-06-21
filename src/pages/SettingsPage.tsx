@@ -113,6 +113,8 @@ interface PrefsSubPageProps {
   onToggleReduceEffects: (value: boolean) => void;
   spotifyEnabled: boolean;
   onToggleSpotify: (value: boolean) => void;
+  spotifyPosition: "center" | "left" | "right" | "draggable";
+  onSpotifyPositionChange: (value: "center" | "left" | "right" | "draggable") => void;
   lang: string;
   onLangChange: (lang: string) => void;
   playerGroups: PlayerGroup[];
@@ -245,14 +247,14 @@ function AppThemeSubPage({
   t,
 }: AppThemeSubPageProps) {
   const modes: { id: ThemeMode; label: string }[] = [
-    { id: "light", label: t("themeLight") || "Claro" },
-    { id: "dark", label: t("themeDark") || "Oscuro" },
-    { id: "system", label: t("themeSystem") || "Sistema" },
+    { id: "light", label: t("themeLight") },
+    { id: "dark", label: t("themeDark") },
+    { id: "system", label: t("themeSystem") },
   ];
 
   return (
     <div className="page">
-      <SectionLabel label={t("themeModeLabel") || "Modo de color"} />
+      <SectionLabel label={t("themeModeLabel")} />
       <div className="about-card" style={{ marginBottom: "18px" }}>
         <div style={{ padding: "14px 0 10px" }}>
           <div style={{ display: "flex", gap: 8 }}>
@@ -292,7 +294,7 @@ function AppThemeSubPage({
         <SettingsToggleRow
           title={t("oledMode")}
           desc={t("oledModeDesc")}
-          note={!dark ? (t("oledOnlyDark") || "Solo afecta al modo oscuro") : null}
+          note={!dark ? t("oledOnlyDark") : null}
           enabled={oledEnabled}
           onToggle={onToggleOled}
           switchTestId="oled-toggle"
@@ -379,6 +381,8 @@ function PrefsSubPage({
   onToggleReduceEffects,
   spotifyEnabled,
   onToggleSpotify,
+  spotifyPosition,
+  onSpotifyPositionChange,
   lang,
   onLangChange,
   playerGroups,
@@ -449,6 +453,23 @@ function PrefsSubPage({
           testId="spotify-preference-row"
           switchTestId="spotify-preference-toggle"
         />
+        {spotifyEnabled && (
+          <div className="about-row" style={{ marginTop: "12px", borderTop: "1px solid var(--bo2)", paddingTop: "12px", display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 8 }}>
+            <span className="about-label" style={{ fontSize: ".82rem", color: "var(--tx2)", fontWeight: 600 }}>{t("spotifyPosition")}</span>
+            <select
+              value={spotifyPosition}
+              onChange={(e) => onSpotifyPositionChange(e.target.value as "center" | "left" | "right" | "draggable")}
+              className="inp"
+              style={{ padding: "6px 10px", fontSize: ".85rem", width: "100%", maxWidth: "200px" }}
+              data-testid="spotify-position-select"
+            >
+              <option value="center">{t("spotifyPosCenter")}</option>
+              <option value="left">{t("spotifyPosLeft")}</option>
+              <option value="right">{t("spotifyPosRight")}</option>
+              <option value="draggable">{t("spotifyPosDraggable")}</option>
+            </select>
+          </div>
+        )}
       </div>
 
       <SectionLabel label={t("language")} />
@@ -552,13 +573,16 @@ function PrefsSubPage({
               </div>
             ))}
           <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 10 }}>
-            <input
-              className="inp"
-              aria-label={t("groupNamePlaceholder")}
-              placeholder={t("groupNamePlaceholder")}
-              value={newGroupName}
-              onChange={(event) => setNewGroupName(event.target.value)}
-            />
+            <div className="inp-group">
+              <label htmlFor="new-group-name" className="inp-label">{t("groupNamePlaceholder")}</label>
+              <input
+                id="new-group-name"
+                className="inp"
+                placeholder={t("groupNamePlaceholder")}
+                value={newGroupName}
+                onChange={(event) => setNewGroupName(event.target.value)}
+              />
+            </div>
             {newGroupPlayers.map((player, playerIndex) => (
               <div key={playerIndex} style={{ display: "flex", alignItems: "center", gap: 6, background: "var(--glass)", border: "1px solid var(--glass-border)", borderRadius: "var(--rxs)", padding: "6px 10px" }}>
                 <span style={{ flex: 1, fontSize: ".82rem", color: "var(--tx)", fontWeight: player.uid ? 700 : 400 }}>
@@ -588,19 +612,22 @@ function PrefsSubPage({
                 </button>
               </div>
             ))}
-            <input
-              className="inp"
-              aria-label={t("playerNamePlaceholder")}
-              placeholder={t("playerNamePlaceholder")}
-              value={newPlayerInput}
-              onChange={(event) => setNewPlayerInput(event.target.value)}
-              onKeyDown={(event) => {
-                if (event.key === "Enter" && newPlayerInput.trim()) {
-                  setNewGroupPlayers((players) => [...players, { name: newPlayerInput.trim(), uid: null }]);
-                  setNewPlayerInput("");
-                }
-              }}
-            />
+            <div className="inp-group">
+              <label htmlFor="new-group-player" className="inp-label">{t("playerNamePlaceholder")}</label>
+              <input
+                id="new-group-player"
+                className="inp"
+                placeholder={t("playerNamePlaceholder")}
+                value={newPlayerInput}
+                onChange={(event) => setNewPlayerInput(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" && newPlayerInput.trim()) {
+                    setNewGroupPlayers((players) => [...players, { name: newPlayerInput.trim(), uid: null }]);
+                    setNewPlayerInput("");
+                  }
+                }}
+              />
+            </div>
             {newPlayerInput.trim() && (
               <button
                 className="btndash"
@@ -685,7 +712,7 @@ function AboutSubPage({ user, showToast, t }: AboutSubPageProps) {
   return (
     <div className="page">
       <div className="about-intro">
-        <div className="about-intro-title">MPoints Tracker</div>
+        <h2 className="about-intro-title">MPoints Tracker</h2>
         <div className="about-intro-text">{t("appTagline")} {t("appSyncDesc")}</div>
       </div>
 
@@ -730,13 +757,17 @@ function SettingsPage({
     playerGroups = [],
     savePlayerGroups,
     spotifyEnabled,
+    spotifyPosition,
     saveSpotifyPreference,
+    saveSpotifyPosition,
   } = useAppContext() as AppContextValue & {
     user: AppUser | null;
     showToast?: (msg: string, duration?: number) => void;
     playerGroups?: PlayerGroup[];
     spotifyEnabled: boolean;
+    spotifyPosition: "center" | "left" | "right" | "draggable";
     saveSpotifyPreference: (enabled: boolean) => Promise<void> | void;
+    saveSpotifyPosition: (position: "center" | "left" | "right" | "draggable") => Promise<void> | void;
   };
   const [editingName, setEditingName] = useState(false);
   const [nameVal, setNameVal] = useState(user?.displayName || "");
@@ -882,6 +913,10 @@ function SettingsPage({
         onToggleSpotify={(enabled) => {
           void saveSpotifyPreference(enabled);
           showToast?.(enabled ? t("spotifyEnabledToast") : t("spotifyDisabledToast"));
+        }}
+        spotifyPosition={spotifyPosition}
+        onSpotifyPositionChange={(position) => {
+          void saveSpotifyPosition(position);
         }}
         showToast={showToast}
         lang={lang}

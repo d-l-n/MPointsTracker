@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type CSSProperties } from "react";
+import { memo, useEffect, useMemo, useState, type CSSProperties } from "react";
 
 import { haptic, mkId } from "../../lib/storage";
 import type { Match, PlayerGroup, TranslationFn } from "../../types";
@@ -46,7 +46,7 @@ interface ChinNewMatchProps {
 
 type AccentButtonStyle = CSSProperties & Record<"--gc", string>;
 
-export default function ChinNewMatch({
+function ChinNewMatch({
   onSave,
   knownNames,
   draft = null,
@@ -225,3 +225,5 @@ export default function ChinNewMatch({
     </div>
   );
 }
+
+export default memo(ChinNewMatch)

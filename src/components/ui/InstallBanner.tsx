@@ -24,9 +24,17 @@ function InstallBanner({ dark: _dark, t = ((key: string) => key) as TranslationF
   const showTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const DISMISSED_KEY = "bgt_install_dismissed";
+  /** Re-show the banner after 30 days so users who uninstall can be prompted again */
+  const DISMISS_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 
   useEffect(() => {
-    if (localStorage.getItem(DISMISSED_KEY)) return;
+    const raw = localStorage.getItem(DISMISSED_KEY);
+    if (raw) {
+      const ts = parseInt(raw, 10);
+      if (!isNaN(ts) && Date.now() - ts < DISMISS_TTL_MS) return;
+      // TTL expired — remove stale flag so the banner can show again
+      localStorage.removeItem(DISMISSED_KEY);
+    }
     if (window.matchMedia("(display-mode: standalone)").matches) return;
 
     const iosNavigator = window.navigator as Navigator & { standalone?: boolean };
@@ -65,7 +73,7 @@ function InstallBanner({ dark: _dark, t = ((key: string) => key) as TranslationF
       setHiding(false);
       hideTimerRef.current = null;
     }, 300);
-    localStorage.setItem(DISMISSED_KEY, "1");
+    localStorage.setItem(DISMISSED_KEY, String(Date.now()));
   };
 
   const handleInstall = async () => {
@@ -83,7 +91,7 @@ function InstallBanner({ dark: _dark, t = ((key: string) => key) as TranslationF
   if (mode === "ios") {
     return (
       <div className={`ios-hint${hiding ? " hiding" : ""}`}>
-        <button className="ios-hint-close" onClick={dismiss}>
+        <button className="ios-hint-close" onClick={dismiss} aria-label={t("cancel")}>
           ✕
         </button>
         <div className="ios-hint-title">📲 {t("installTitle")}</div>
@@ -102,7 +110,7 @@ function InstallBanner({ dark: _dark, t = ((key: string) => key) as TranslationF
       <button className="install-banner-btn" onClick={handleInstall}>
         {t("installBtn")}
       </button>
-      <button className="install-banner-close" onClick={dismiss}>
+      <button className="install-banner-close" onClick={dismiss} aria-label={t("cancel")}>
         ✕
       </button>
     </div>

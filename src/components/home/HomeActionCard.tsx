@@ -64,7 +64,7 @@ export default function HomeActionCard({
           </div>
           <div className="home-card-title-row">
             <div>
-              <div className="home-card-title">{getGameName(card.game.id, t)}</div>
+              <h3 className="home-card-title">{getGameName(card.game.id, t)}</h3>
               <div className="home-card-meta">{card.metadata}</div>
             </div>
             {statusLabel ? (

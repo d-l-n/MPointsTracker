@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 
 import { haptic, mkId } from "../../lib/storage";
 import type { Match, PlayerGroup, TranslationFn } from "../../types";
@@ -53,7 +53,7 @@ interface BurakoNewMatchProps {
 
 const GOAL = 2000;
 
-export default function BurakoNewMatch({
+function BurakoNewMatch({
   onSave,
   knownNames,
   linkedPlayers = [],
@@ -170,10 +170,12 @@ export default function BurakoNewMatch({
               {teamNames.map((name, index) => (
                 <input
                   key={`team-${index}`}
+                  id={`burako-team-name-${index}`}
                   className="inp"
                   placeholder={`${t("team")} ${index + 1}`}
                   value={name}
                   onChange={(event) => setTeamNames((currentTeamNames) => currentTeamNames.map((currentValue, currentIndex) => (currentIndex === index ? event.target.value : currentValue)) as [string, string])}
+                  aria-label={`${t("team")} ${index + 1}`}
                 />
               ))}
             </div>
@@ -233,6 +235,7 @@ export default function BurakoNewMatch({
                   />
                   <button
                     className="btnrm"
+                    aria-label={`${t("delete")} ${player.name || `${t("playerN")} ${index + 1}`}`}
                     onClick={() => {
                       if (players.length > 2) {
                         setPlayers((currentPlayers) => currentPlayers.filter((currentPlayer) => currentPlayer.id !== player.id));
@@ -307,11 +310,13 @@ export default function BurakoNewMatch({
                 <div className="rdfields">
                   <div className="rdfrow">
                     <input
+                      id={`burako-round-score-${index}`}
                       className="rdinp"
                       type="number"
                       placeholder="0"
                       value={roundInputs[index] || ""}
                       onChange={(event) => setRoundInputs((currentInputs) => currentInputs.map((currentValue, currentIndex) => (currentIndex === index ? Number(event.target.value) : currentValue)) as [number, number])}
+                      aria-label={`${t("roundLabel")} ${label}`}
                     />
                     <span className="rdlbl">{t("ptsCanBeNegative")}</span>
                   </div>
@@ -376,3 +381,5 @@ export default function BurakoNewMatch({
     </div>
   );
 }
+
+export default memo(BurakoNewMatch)
