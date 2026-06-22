@@ -47,3 +47,18 @@ vite-dev.pid
 # Backup files
 *.zip
 *.tgz
+
+# Markdown files (except README)
+*.md
+!/README.md
+
+# AI agent configuration
+.agents/
+.opencode/
+opencode.json
+AGENTS.md
+skills/
+hooks/
+ponytail-audit-plan.md
+docs/agents/
+docs/superpowers/
