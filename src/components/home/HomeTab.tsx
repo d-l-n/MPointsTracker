@@ -137,7 +137,7 @@ const HomeTab = memo(function HomeTab({
                 <ReloadButton t={t} />
                 {user && <SyncDot syncing={syncing} error={syncError} t={t} />}
                 {user && (
-                  <button type="button" className="home-avatar-btn" onClick={() => handleNav("about")} title={t("viewProfile")}>
+                  <button type="button" className="home-avatar-btn" onClick={() => handleNav("about")} title={t("viewProfile")} aria-label={t("viewProfile")}>
                     <UserAvatar user={user} />
                   </button>
                 )}

@@ -6,7 +6,6 @@ import { useLoaderData, useLocation, useNavigate } from "react-router-dom";
 
 import { detectLang, saveLang, useT, setGlobalT } from "./data/translations";
 import { GAMES } from "./data/games";
-import { ADMIN_UID } from "./lib/storage";
 import { setFmtDateLang } from "./lib/stats";
 import { shareMatchWithPlayers } from "./services/matchService";
 import { triggerConfetti } from "./lib/confetti";
@@ -84,14 +83,14 @@ export default function App() {
 
   const {
     data, syncing, syncError,
-    getMatches, addMatch, delMatch, editMatch,
+    getMatches, addMatch, delMatch, editMatch, importData,
     mergeSharedMatches, mergeCloudData,
     total, knownNames,
   } = useMatches({ userRef, dark, showToast, t });
 
   // ── Auth ───────────────────────────────────────────────────────────────────
   const {
-    user, authChecked, hadPreviousSession, guestMode,
+    user, isAdmin, authChecked, hadPreviousSession, guestMode,
     playerGroups, savePlayerGroups,
     spotifyEnabled, spotifyPosition, saveSpotifyPreference, saveSpotifyPosition,
     signInGoogle, signInWithEmail, signUpWithEmail, sendPasswordReset, signOut,
@@ -101,7 +100,6 @@ export default function App() {
   // Keep userRef in sync so useMatches cloud-save uses latest user
   useEffect(() => { userRef.current = user; }, [user]);
 
-  const isAdmin = user?.uid === ADMIN_UID;
   const {
     selected,
     activeGame,
@@ -139,6 +137,7 @@ export default function App() {
         source: typeof loaderData.source === "string" ? loaderData.source : undefined,
         gameId: typeof loaderData.gameId === "string" ? loaderData.gameId : undefined,
         lockGameFilter: loaderData.lockGameFilter === true,
+        playerFilter: typeof loaderData.playerFilter === "string" ? loaderData.playerFilter : "",
       };
     }
 
@@ -303,6 +302,7 @@ export default function App() {
         setGameTab={setGameTab}
         gameMatchKey={gameMatchKey}
         getMatches={getMatches}
+        importData={importData}
         clearDraft={clearDraft}
         handleGameAddMatch={handleGameAddMatch}
         openHistoryView={openHistoryView}

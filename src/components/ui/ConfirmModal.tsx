@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 
 import { getGlobalT } from "../../data/translations";
-import { useFocusTrap } from "../../hooks/useFocusTrap";
 
 interface ConfirmModalProps {
   title?: React.ReactNode;
@@ -39,7 +38,6 @@ function ConfirmModal({
   const confirmText = confirmLabel ?? getGlobalT()("delete");
   const cancelText = cancelLabel ?? getGlobalT()("cancel");
   const secondaryText = secondaryLabel ?? null;
-  const dialogRef = useFocusTrap();
 
   // Close on Escape
   useEffect(() => {
@@ -51,14 +49,15 @@ function ConfirmModal({
   }, [onCancel, onOverlayClick]);
 
   return (
-    <div className="modal-overlay" onClick={onOverlayClick ?? onCancel} aria-hidden="true">
+    <div style={{ position: "fixed", inset: 0, zIndex: 500, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
+      <div className="modal-overlay" inert onClick={onOverlayClick ?? onCancel} aria-hidden="true" style={{ position: "absolute", inset: 0 }} />
       <div
-        ref={dialogRef as React.RefObject<HTMLDivElement>}
         className="modal-box"
         role="dialog"
         aria-modal="true"
         aria-labelledby="confirm-modal-title"
         onClick={(event) => event.stopPropagation()}
+        autoFocus
       >
         <div id="confirm-modal-title" className="modal-title">{title}</div>
         <div className="modal-msg">{msg}</div>

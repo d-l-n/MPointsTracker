@@ -91,6 +91,7 @@ interface PublicProfilePageProps {
   myUser?: AppUser | null;
   onSignOut?: (keepLocal?: boolean) => void;
   onSignIn?: (mode: "google" | "signin") => void;
+  onOpenHistoryForPlayer?: (playerName: string) => void;
   showToast?: (msg: string, duration?: number) => void;
 }
 
@@ -266,6 +267,7 @@ function PublicProfilePage({
   myUser,
   onSignOut,
   onSignIn: _onSignIn,
+  onOpenHistoryForPlayer,
 }: PublicProfilePageProps) {
   const [profile, setProfile] = useState<PublicProfile | null>(null);
   const [publicStats, setPublicStats] = useState<PublicStatsSummary | null>(null);
@@ -463,6 +465,17 @@ function PublicProfilePage({
             <div className="public-profile-empty public-profile-empty--compact">{t("profileNoSharedMatches")}</div>
           )}
         </div>
+        </div>
+      )}
+
+      {!isSelf && onOpenHistoryForPlayer && (
+        <div className="public-profile-action-stack">
+          <button
+            className="public-profile-action-btn"
+            onClick={() => onOpenHistoryForPlayer(displayName)}
+          >
+            {t("profileViewSharedHistory")}
+          </button>
         </div>
       )}
 

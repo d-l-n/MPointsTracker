@@ -7,6 +7,7 @@ interface HistoryRouteData {
   source: string;
   gameId: string;
   lockGameFilter: boolean;
+  playerFilter: string;
 }
 
 interface SettingsRouteData {
@@ -38,6 +39,7 @@ export async function historyRouteLoader({ request }: LoaderFunctionArgs): Promi
     source: url.searchParams.get("source") || "home",
     gameId: normalizeGameId(url.searchParams.get("gameId")),
     lockGameFilter: url.searchParams.get("lock") === "1",
+    playerFilter: url.searchParams.get("player") || "",
   };
 }
 

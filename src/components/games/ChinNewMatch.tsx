@@ -1,16 +1,10 @@
 import { memo, useEffect, useMemo, useState, type CSSProperties } from "react";
 
 import { haptic, mkId } from "../../lib/storage";
-import type { Match, PlayerGroup, TranslationFn } from "../../types";
+import type { LinkedPlayer, Match, PlayerGroup, TranslationFn } from "../../types";
 import LinkedPlayerInput from "../auth/LinkedPlayerInput";
 import GroupPicker from "../ui/GroupPicker";
 import SaveGroupButton from "../ui/SaveGroupButton";
-
-interface LinkedPlayer {
-  uid?: string | null;
-  name?: string;
-  playerId?: string;
-}
 
 interface ChinRoundHistoryEntry {
   wins: [number, number];

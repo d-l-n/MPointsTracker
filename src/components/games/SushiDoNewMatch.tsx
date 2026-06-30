@@ -1,7 +1,7 @@
 import { memo, useCallback, useEffect, useMemo, useState, type CSSProperties } from "react";
 
 import { haptic, mkId } from "../../lib/storage";
-import type { GameDefinition, Match, PlayerGroup, TranslationFn } from "../../types";
+import type { GameDefinition, LinkedPlayer, Match, PlayerGroup, TranslationFn } from "../../types";
 import GroupPicker from "../ui/GroupPicker";
 import SaveGroupButton from "../ui/SaveGroupButton";
 import LinkedPlayerInput from "../auth/LinkedPlayerInput";
@@ -15,12 +15,6 @@ import {
   getSuggestedSushiDoFlavors,
   getSushiDoFlavorByKey,
 } from "../../data/sushiDo";
-
-interface LinkedPlayer {
-  uid?: string | null;
-  name?: string;
-  playerId?: string;
-}
 
 interface PlayerInputState {
   id: string;

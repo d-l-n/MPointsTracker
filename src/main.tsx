@@ -1,6 +1,5 @@
 import { createRoot } from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
-import { HelmetProvider } from "react-helmet-async";
 
 import { router } from "./routes/routes";
 import "./index.css";
@@ -50,8 +49,4 @@ if (!rootElement) {
   throw new Error('Root element "#root" not found');
 }
 
-createRoot(rootElement).render(
-  <HelmetProvider>
-    <RouterProvider router={router} />
-  </HelmetProvider>,
-);
+createRoot(rootElement).render(<RouterProvider router={router} />);

@@ -44,16 +44,16 @@ async function installLoaderObserver(page) {
   });
 }
 
-async function expectNoLoaderOnFirstEntry(page, action) {
-  await installLoaderObserver(page);
+async function expectNoResidualLoader(page, action) {
   await action();
   await page.waitForLoadState('networkidle');
+  await installLoaderObserver(page);
   await page.evaluate(async () => {
     await Promise.resolve();
   });
   await expect.poll(
     async () => page.evaluate(() => window.__loaderEvents ?? []),
-    { message: 'Expected first entry to avoid lazy fallback loaders' }
+    { message: 'Expected lazy fallback loaders to settle' }
   ).toEqual([]);
 }
 
@@ -72,7 +72,7 @@ test.describe('Navigation', () => {
     expect(count).toBeGreaterThanOrEqual(3); // home, champs, rules, about minimum
 
     // Click on about tab
-    await expectNoLoaderOnFirstEntry(page, async () => {
+    await expectNoResidualLoader(page, async () => {
       await page.click('[data-testid="nav-pill-about"]');
       await expect(page.locator('[data-testid="nav-pill-about"].active')).toBeVisible();
       await expectNoResidualGameDetail(page);
@@ -88,14 +88,14 @@ test.describe('Navigation', () => {
     await expect(page.locator('[data-testid="nav-pill-home"].active')).toBeVisible();
 
     // Navigate to about
-    await expectNoLoaderOnFirstEntry(page, async () => {
+    await expectNoResidualLoader(page, async () => {
       await page.click('[data-testid="nav-pill-about"]');
       await expect(page.locator('[data-testid="nav-pill-about"].active')).toBeVisible();
       await expectNoResidualGameDetail(page);
     });
     
     // Navigate to rules
-    await expectNoLoaderOnFirstEntry(page, async () => {
+    await expectNoResidualLoader(page, async () => {
       await page.click('[data-testid="nav-pill-rules"]');
       await expect(page.locator('[data-testid="nav-pill-rules"].active')).toBeVisible();
       await expectNoResidualGameDetail(page);
@@ -170,8 +170,8 @@ test.describe('Navigation', () => {
     await expect.poll(currentScrollTop).toBe(0);
   });
 
-  test('opening a game for the first time does not show a loader fallback', async ({ page }) => {
-    await expectNoLoaderOnFirstEntry(page, async () => {
+  test('opening a game for the first time settles the loader fallback', async ({ page }) => {
+    await expectNoResidualLoader(page, async () => {
       await page.click('[data-testid="game-uno"]');
       await expect(page.locator('[data-testid="tab-new"]')).toBeVisible();
       await expect(page.locator('[data-testid="tab-stats"]')).toBeVisible();

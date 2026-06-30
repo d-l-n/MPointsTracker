@@ -2,7 +2,7 @@ import { memo, useCallback, useEffect, useMemo, useRef, useState, type CSSProper
 
 import { PORTION_FOODS, getPortionFoodByKey } from "../../data/portionFoods";
 import { haptic, mkId } from "../../lib/storage";
-import type { DraftRecord, GameDefinition, PlayerGroup, TranslationFn } from "../../types";
+import type { DraftRecord, GameDefinition, LinkedPlayer, PlayerGroup, TranslationFn } from "../../types";
 import LinkedPlayerInput from "../auth/LinkedPlayerInput";
 import ConfirmModal from "../ui/ConfirmModal";
 import GroupPicker from "../ui/GroupPicker";
@@ -14,12 +14,6 @@ interface PortionFood {
   emoji: string;
   color: string;
   tKey: string;
-}
-
-interface LinkedPlayer {
-  uid?: string | null;
-  name?: string;
-  playerId?: string;
 }
 
 interface PortionPlayer {

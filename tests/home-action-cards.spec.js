@@ -121,7 +121,7 @@ test.describe('Home action cards', () => {
         isScrollable: true,
       });
 
-    await filterRow.getByRole('button', { name: /cl[aá]sicos|classics/i }).click();
+    await filterRow.getByRole('button', { name: /cartas|cards/i }).click();
     await page.getByLabel(/buscar juego o partida|search game or match/i).fill('zzz');
 
     await expect(page.locator('[data-testid="home-empty-state"]')).toBeVisible();
@@ -320,7 +320,7 @@ test.describe('Home action cards', () => {
 
     await appContent.evaluate((el) => {
       el.scrollTop = 640;
-      el.dispatchEvent(new Event('scroll'));
+      el.dispatchEvent(new Event('scroll', { bubbles: true }));
     });
 
     await expect(nav).toHaveClass(/nav--hidden/);

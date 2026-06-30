@@ -32,10 +32,10 @@ function VersionTapper() {
 
   return (
     <>
-      <span className="about-value" style={{ cursor: "pointer", userSelect: "none" }} onClick={handleTap} title="🃏">
+      <button type="button" className="about-value" style={{ cursor: "pointer", userSelect: "none", background: "none", border: "none", padding: 0, font: "inherit", color: "inherit" }} onClick={handleTap} title="🃏" aria-label={`${APP_VERSION}${hint}`}>
         v{APP_VERSION}
         {hint}
-      </span>
+      </button>
       {show ? <BlackjackCPU onClose={() => setShow(false)} /> : null}
     </>
   );

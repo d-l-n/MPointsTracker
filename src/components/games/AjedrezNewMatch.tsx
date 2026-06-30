@@ -1,17 +1,11 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { haptic, mkId } from "../../lib/storage";
-import type { Match, PlayerGroup, TranslationFn } from "../../types";
+import type { LinkedPlayer, Match, PlayerGroup, TranslationFn } from "../../types";
 import LinkedPlayerInput from "../auth/LinkedPlayerInput";
 import SaveGroupButton from "../ui/SaveGroupButton";
 import GroupPicker from "../ui/GroupPicker";
 import PillSwitch from "../ui/PillSwitch";
-
-interface LinkedPlayer {
-  uid?: string | null;
-  name?: string;
-  playerId?: string;
-}
 
 interface ChessHistoryEntry {
   winner: string | null;

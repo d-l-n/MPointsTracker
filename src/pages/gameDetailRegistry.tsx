@@ -1,26 +1,10 @@
-import type { ComponentType } from "react";
+import { lazy } from "react";
+import type { ComponentType, LazyExoticComponent } from "react";
 
 import { GAMES } from "../data/games";
 import type { GameId, GameType } from "../types";
 
-import UnoNewMatch from "../components/games/UnoNewMatch";
-import TrucoNewMatch from "../components/games/TrucoNewMatch";
-import ChinNewMatch from "../components/games/ChinNewMatch";
-import EsquinadosNewMatch from "../components/games/EsquinadosNewMatch";
-import AjedrezNewMatch from "../components/games/AjedrezNewMatch";
-import ChanchoNewMatch from "../components/games/ChanchoNewMatch";
-import BurakoNewMatch from "../components/games/BurakoNewMatch";
-import RachaPerdidaNewMatch from "../components/games/RachaPerdidaNewMatch";
-import PokerNewMatch from "../components/games/PokerNewMatch";
-import BlackjackNewMatch from "../components/games/BlackjackNewMatch";
-import GenericNewMatch from "../components/games/GenericNewMatch";
-import GeneralaNewMatch from "../components/games/GeneralaNewMatch";
-import SushiDoNewMatch from "../components/games/SushiDoNewMatch";
-import PorcionNewMatch from "../components/games/PorcionNewMatch";
-import CustomNewMatch from "../components/games/CustomNewMatch";
-import CanastaNewMatch from "../components/games/CanastaNewMatch";
-
-type GameComponent = ComponentType<Record<string, unknown>>;
+type GameComponent = LazyExoticComponent<ComponentType<Record<string, unknown>>>;
 type GameLoaderKey =
   | "uno"
   | "truco"
@@ -40,22 +24,22 @@ type GameLoaderKey =
   | "canasta";
 
 const GAME_COMPONENTS: Record<GameLoaderKey, GameComponent> = {
-  uno: UnoNewMatch,
-  truco: TrucoNewMatch,
-  chin: ChinNewMatch,
-  esquinados: EsquinadosNewMatch,
-  ajedrez: AjedrezNewMatch,
-  chancho: ChanchoNewMatch,
-  burako: BurakoNewMatch,
-  racha_perdida: RachaPerdidaNewMatch,
-  poker: PokerNewMatch,
-  blackjack: BlackjackNewMatch,
-  generic: GenericNewMatch,
-  generala: GeneralaNewMatch,
-  sushi_do: SushiDoNewMatch,
-  porcion: PorcionNewMatch,
-  custom: CustomNewMatch,
-  canasta: CanastaNewMatch,
+  uno: lazy(() => import("../components/games/UnoNewMatch")),
+  truco: lazy(() => import("../components/games/TrucoNewMatch")),
+  chin: lazy(() => import("../components/games/ChinNewMatch")),
+  esquinados: lazy(() => import("../components/games/EsquinadosNewMatch")),
+  ajedrez: lazy(() => import("../components/games/AjedrezNewMatch")),
+  chancho: lazy(() => import("../components/games/ChanchoNewMatch")),
+  burako: lazy(() => import("../components/games/BurakoNewMatch")),
+  racha_perdida: lazy(() => import("../components/games/RachaPerdidaNewMatch")),
+  poker: lazy(() => import("../components/games/PokerNewMatch")),
+  blackjack: lazy(() => import("../components/games/BlackjackNewMatch")),
+  generic: lazy(() => import("../components/games/GenericNewMatch")),
+  generala: lazy(() => import("../components/games/GeneralaNewMatch")),
+  sushi_do: lazy(() => import("../components/games/SushiDoNewMatch")),
+  porcion: lazy(() => import("../components/games/PorcionNewMatch")),
+  custom: lazy(() => import("../components/games/CustomNewMatch")),
+  canasta: lazy(() => import("../components/games/CanastaNewMatch")),
 };
 
 function resolveLoaderKey(gameType: GameType): GameLoaderKey {
@@ -107,5 +91,4 @@ export function getGameComponent(gameType: GameType) {
   const loaderKey = resolveLoaderKey(gameType);
   return GAME_COMPONENTS[loaderKey];
 }
-
 

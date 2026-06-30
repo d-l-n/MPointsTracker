@@ -1,6 +1,5 @@
 import React, { useEffect, useState, type ChangeEvent, type CSSProperties } from "react";
 
-import { useFocusTrap } from "../../hooks/useFocusTrap";
 import type { Match, PlayerResult, TranslationFn } from "../../types";
 import ConfirmModal from "./ConfirmModal";
 
@@ -35,7 +34,6 @@ export default function EditMatchModal({
   const [penalty, setPenalty] = useState(match.penalty || "");
   const [streakType, setStreakType] = useState(match.streakType || "");
   const [note, setNote] = useState(match.note || "");
-  const dialogRef = useFocusTrap();
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -117,14 +115,15 @@ export default function EditMatchModal({
   };
 
   return (
-    <div style={overlayStyle} onClick={onClose}>
+    <div style={{ position: "fixed", inset: 0, zIndex: 600, display: "flex", alignItems: "center", justifyContent: "center", padding: 16, overflowY: "auto" }}>
+      <div style={{ ...overlayStyle, position: "absolute" }} inert onClick={onClose} />
       <div
-        ref={dialogRef as React.RefObject<HTMLDivElement>}
         style={boxStyle}
         role="dialog"
         aria-modal="true"
         aria-label={t("editMatch")}
         onClick={(event) => event.stopPropagation()}
+        autoFocus
       >
         <div style={{ fontFamily: "'Bebas Neue',sans-serif", fontSize: "1.3rem", letterSpacing: "2px", color: "var(--tx)" }}>
           {t("editMatch")}

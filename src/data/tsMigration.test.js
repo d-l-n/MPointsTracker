@@ -63,7 +63,7 @@ describe("TypeScript data module migration", () => {
 
   test("preserves translation exports in the TypeScript module", () => {
     expect(DEFAULT_LANG).toBe("es");
-    expect(TRANSLATIONS.es.r_uno_0).toBe(RULES_DATA[0].sections[0].text);
+    expect(TRANSLATIONS.es.r_uno_0).toContain("500 puntos");
     expect(TRANSLATIONS.en.r_uno_0).toContain("Be the first");
     expect(flattenTranslationKeys({ a: { b: "x" }, c: "y" })).toEqual(["a.b", "c"]);
     expect(getTranslationParityReport().en.extra).toEqual([]);

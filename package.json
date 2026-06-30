@@ -10,7 +10,7 @@
     "typecheck": "node ./scripts/typecheck.mjs",
     "verify:local": "node ./scripts/verify-local.mjs",
     "preview": "vite preview",
-    "deploy": "npm run build && wrangler pages deploy dist --project-name=mpoints-tracker",
+    "deploy": "npm run build && npx wrangler pages deploy dist --project-name=mpoints-tracker",
     "test": "playwright test",
     "test:unit": "vitest run",
     "test:layout": "playwright test --project=mobile-small --project=mobile-large --project=tablet --project=foldable-open --project=foldable-closed --project=desktop --project=layout-legacy",
@@ -25,7 +25,6 @@
     "qrcode": "^1.5.4",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
-    "react-helmet-async": "^3.0.0",
     "react-router-dom": "^7.14.2"
   },
   "devDependencies": {
@@ -35,6 +34,8 @@
     "@testing-library/react": "^16.3.2",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
+    "@typescript-eslint/eslint-plugin": "^8.62.0",
+    "@typescript-eslint/parser": "^8.62.0",
     "@vitejs/plugin-react": "^6.0.0",
     "@vitest/coverage-v8": "^4.1.7",
     "eslint": "^9.39.4",
@@ -43,10 +44,9 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.4.0",
-    "sharp": "^0.33.5",
     "jsdom": "^29.1.1",
+    "typescript": "^6.0.3",
     "vite": "^8.0.0",
-    "vitest": "^4.1.6",
-    "wrangler": "^4.80.0"
+    "vitest": "^4.1.6"
   }
 }

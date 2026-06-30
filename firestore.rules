@@ -8,8 +8,7 @@ service cloud.firestore {
     }
 
     function isAdmin() {
-      return isAuth()
-          && request.auth.uid == "5UpEw50cQXcNnZQS4i7AaDQzY7J2";
+      return isAuth() && request.auth.token.admin == true;
     }
 
     function isOwner(userId) {
@@ -52,7 +51,8 @@ service cloud.firestore {
 
     // ── invites/{code} — reservado para invites persistidos ────────────────
     match /invites/{code} {
-      allow read: if true;
+      allow read: if resource.data.expiresAt is int
+        && resource.data.expiresAt > request.time.toMillis();
 
       allow create: if isAuth()
         && request.resource.data.keys().hasOnly([

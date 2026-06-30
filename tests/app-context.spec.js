@@ -18,10 +18,8 @@ test.describe('AppContext refactor', () => {
 
     expect(appSource).toContain('data,');
     expect(appSource).toContain('addMatch, delMatch, editMatch,');
-    expect(contextSource).toContain('data');
-    expect(contextSource).toContain('addMatch');
-    expect(contextSource).toContain('delMatch');
-    expect(contextSource).toContain('editMatch');
+    expect(contextSource).toContain('AppContextValue');
+    expect(read('src/types.ts')).toContain('addMatch');
   });
 
   test('deep pages read shared values from AppContext instead of prop drilling', () => {

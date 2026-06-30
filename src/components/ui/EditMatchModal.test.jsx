@@ -51,7 +51,7 @@ describe("EditMatchModal", () => {
     const onClose = vi.fn();
     const { container } = render(<EditMatchModal match={baseMatch()} onSave={vi.fn()} onClose={onClose} t={t} />);
 
-    const overlay = container.firstChild;
+    const overlay = container.querySelector("[inert]");
     fireEvent.click(overlay);
     expect(onClose).toHaveBeenCalledOnce();
   });

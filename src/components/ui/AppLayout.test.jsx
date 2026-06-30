@@ -354,8 +354,7 @@ describe("AppLayout", () => {
     expect(source).toContain('import AdminPage from "../../pages/AdminPage"');
     expect(source).toContain('import PublicProfilePage from "../../pages/PublicProfilePage"');
     expect(source).toContain('import GlobalHistoryPage from "../../pages/GlobalHistoryPage"');
-    expect(source).not.toContain("lazy(()");
-    expect(source).not.toContain("<Suspense");
-    expect(source).not.toContain("</Suspense>");
+    // ponytail: SpotifyMiniPlayer moved to lazy, page components stay eager
+    expect(source).toContain("const SpotifyMiniPlayer = lazy(()");
   });
 });

@@ -87,7 +87,7 @@ export default function LoginForm({ t, onSignIn, onShowReset, onShowSignup, onBa
   return (
     <form className="auth-form" action={handleSubmit}>
       <div className="inp-group">
-        <label htmlFor="login-email" className="inp-label">{t("emailPlaceholder")}</label>
+        <label id="login-email-label" htmlFor="login-email" className="inp-label">{t("emailPlaceholder")}</label>
         <input
           id="login-email"
           className="inp"
@@ -96,10 +96,11 @@ export default function LoginForm({ t, onSignIn, onShowReset, onShowSignup, onBa
           placeholder={t("emailPlaceholder")}
           autoComplete="email"
           aria-invalid={!!error}
+          aria-labelledby="login-email-label"
         />
       </div>
       <div className="inp-group">
-        <label htmlFor="login-password" className="inp-label">{t("passwordPlaceholder")}</label>
+        <label id="login-password-label" htmlFor="login-password" className="inp-label">{t("passwordPlaceholder")}</label>
         <input
           id="login-password"
           className="inp"
@@ -108,6 +109,7 @@ export default function LoginForm({ t, onSignIn, onShowReset, onShowSignup, onBa
           placeholder={t("passwordPlaceholder")}
           autoComplete="current-password"
           aria-invalid={!!error}
+          aria-labelledby="login-password-label"
           aria-describedby={error ? "login-error" : undefined}
         />
       </div>

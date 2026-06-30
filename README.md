@@ -505,6 +505,12 @@ Scopes usados por el mini reproductor: `streaming`, `user-read-playback-state`, 
 | `bgt_lang` | Idioma guardado |
 | `bgt_drafts` | Drafts de partida por juego (`{ [gameId]: draft }`) |
 
+### Backup e historial
+
+En Ajustes > Preferencias > Avanzado se puede exportar un backup JSON completo de partidas e importar ese mismo formato en otro dispositivo. La importación reemplaza los datos locales de partidas con las claves de juegos válidas del archivo y luego usa el flujo normal de persistencia/sync.
+
+El Historial permite exportar como JSON el resultado filtrado actual por jugador, juego y fecha.
+
 ---
 
 ## Modelo UNO

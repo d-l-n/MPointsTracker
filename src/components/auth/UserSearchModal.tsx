@@ -1,5 +1,4 @@
 import React, { useState, type KeyboardEvent } from "react";
-import { useFocusTrap } from "../../hooks/useFocusTrap";
 import { doc, getDoc, collection, getDocs } from "firebase/firestore";
 
 import { fbDb, fbAuth } from "../../lib/firebase";
@@ -105,11 +104,10 @@ function UserSearchModal({ onLink, onClose, t, knownNames = [] }: UserSearchModa
     return <QRScanner onScan={handleScan} onClose={() => setShowScanner(false)} t={t} />;
   }
 
-  const dialogRef = useFocusTrap();
-
   return (
-    <div className="usearch-overlay" ref={dialogRef as React.RefObject<HTMLDivElement>} role="dialog" aria-modal="true" aria-labelledby="usearch-title" onClick={onClose} onKeyDown={(e) => e.key === "Escape" && onClose()}>
-      <div className="usearch-sheet" onClick={(event) => event.stopPropagation()}>
+    <div style={{ position: "fixed", inset: 0, zIndex: 700, display: "flex", alignItems: "flex-end", justifyContent: "center", padding: 0 }}>
+      <div className="usearch-overlay" inert onClick={onClose} style={{ position: "absolute", inset: 0 }} />
+      <div className="usearch-sheet" onClick={(event) => event.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="usearch-title">
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <span id="usearch-title" className="usearch-title">{t("searchTitle")}</span>
           <button onClick={onClose} style={{ background: "none", border: "none", color: "var(--tx3)", cursor: "pointer", fontSize: "1.2rem", lineHeight: 1 }} aria-label={t("cancel")}>

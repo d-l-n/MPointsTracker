@@ -1,6 +1,6 @@
 import type { Match, UnoRosterEvent } from "../types";
 
-interface UnoRosterSummarySource extends Pick<Match, "rosterEvents"> {}
+type UnoRosterSummarySource = Pick<Match, "rosterEvents">;
 
 function getPortableRound(event: UnoRosterEvent): number {
   return Number.isFinite(event.effectiveRound) && event.effectiveRound > 0 ? Math.trunc(event.effectiveRound) : 1;

@@ -203,15 +203,15 @@ function EmailAuthScreen({
         </button>
         <div className="auth-form">
           <div className="inp-group">
-            <label htmlFor="signup-name" className="inp-label">{t("namePlaceholder")}</label>
-            <input id="signup-name" className="inp" type="text" placeholder={t("namePlaceholder")} value={name} onChange={handleNameChange} autoComplete="name" aria-invalid={!!err} />
+            <label id="signup-name-label" htmlFor="signup-name" className="inp-label">{t("namePlaceholder")}</label>
+            <input id="signup-name" className="inp" type="text" placeholder={t("namePlaceholder")} value={name} onChange={handleNameChange} autoComplete="name" aria-invalid={!!err} aria-labelledby="signup-name-label" />
           </div>
           <div className="inp-group">
-            <label htmlFor="signup-email" className="inp-label">{t("emailPlaceholder")}</label>
-            <input id="signup-email" className="inp" type="email" placeholder={t("emailPlaceholder")} value={email} onChange={handleEmailChange} autoComplete="email" aria-invalid={!!err} />
+            <label id="signup-email-label" htmlFor="signup-email" className="inp-label">{t("emailPlaceholder")}</label>
+            <input id="signup-email" className="inp" type="email" placeholder={t("emailPlaceholder")} value={email} onChange={handleEmailChange} autoComplete="email" aria-invalid={!!err} aria-labelledby="signup-email-label" />
           </div>
           <div className="inp-group">
-            <label htmlFor="signup-password" className="inp-label">{t("passwordPlaceholder")}</label>
+            <label id="signup-password-label" htmlFor="signup-password" className="inp-label">{t("passwordPlaceholder")}</label>
             <input
               id="signup-password"
               className="inp"
@@ -221,6 +221,7 @@ function EmailAuthScreen({
               onChange={handlePasswordChange}
               autoComplete="new-password"
               aria-invalid={!!err}
+              aria-labelledby="signup-password-label"
               aria-describedby={err ? "signup-error" : undefined}
             />
           </div>
@@ -250,8 +251,8 @@ function EmailAuthScreen({
           ) : (
             <>
               <div className="inp-group">
-                <label htmlFor="reset-email" className="inp-label">{t("emailPlaceholder")}</label>
-                <input id="reset-email" className="inp" type="email" placeholder={t("emailPlaceholder")} value={email} onChange={handleEmailChange} autoComplete="email" aria-invalid={!!err} aria-describedby={err ? "reset-error" : undefined} />
+                <label id="reset-email-label" htmlFor="reset-email" className="inp-label">{t("emailPlaceholder")}</label>
+                <input id="reset-email" className="inp" type="email" placeholder={t("emailPlaceholder")} value={email} onChange={handleEmailChange} autoComplete="email" aria-invalid={!!err} aria-labelledby="reset-email-label" aria-describedby={err ? "reset-error" : undefined} />
               </div>
               {err && <div id="reset-error" className="auth-err" aria-live="assertive">{err}</div>}
               <button className="btnpri" style={primaryButtonStyle} disabled={loading || !email} onClick={handleReset}>

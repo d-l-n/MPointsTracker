@@ -45,7 +45,7 @@ export default function BootShell({ stage, copy, loadingLabel }: BootShellProps)
         </div>
 
         {loadingLabel ? (
-          <div className="boot-loading-copy" data-testid="boot-loading-copy">
+          <div className="boot-loading-copy" data-testid="boot-loading-copy" role="status">
             {loadingLabel}
           </div>
         ) : null}

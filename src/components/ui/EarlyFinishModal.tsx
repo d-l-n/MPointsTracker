@@ -1,6 +1,5 @@
 import React, { useEffect, useState, type CSSProperties } from "react";
 
-import { useFocusTrap } from "../../hooks/useFocusTrap";
 import type { TranslationFn } from "../../types";
 
 type FinishChoice = "no_winner" | "manual";
@@ -37,7 +36,6 @@ export default function EarlyFinishModal({
 }: EarlyFinishModalProps) {
   const [choice, setChoice] = useState<FinishChoice | null>(null);
   const [selectedWinner, setSelectedWinner] = useState<string | null>(null);
-  const dialogRef = useFocusTrap();
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -50,14 +48,15 @@ export default function EarlyFinishModal({
   const confirmDisabled = choice === null || (choice === "manual" && !selectedWinner);
 
   return (
-    <div className="modal-overlay" onClick={onCancel} data-testid="early-finish-modal" aria-hidden="true">
+    <div style={{ position: "fixed", inset: 0, zIndex: 500, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
+      <div className="modal-overlay" inert onClick={onCancel} data-testid="early-finish-modal" aria-hidden="true" style={{ position: "absolute", inset: 0 }} />
       <div
-        ref={dialogRef as React.RefObject<HTMLDivElement>}
         className="modal-box modal-box--strong early-finish-modal-box"
         role="dialog"
         aria-modal="true"
         aria-labelledby="early-finish-title"
         onClick={(event) => event.stopPropagation()}
+        autoFocus
       >
         <div id="early-finish-title" className="modal-title">{t("finishMatchEarlyTitle")}</div>
         <div className="modal-msg">{t("finishMatchEarlyMsg")}</div>

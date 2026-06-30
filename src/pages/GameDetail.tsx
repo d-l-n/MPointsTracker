@@ -1,4 +1,4 @@
-import { useState, memo, useCallback, useEffect, useRef } from "react";
+import { Suspense, useState, memo, useCallback, useEffect, useRef } from "react";
 import type { CSSProperties } from "react";
 import StatsTab from "./StatsTab";
 import RachaPerdidaStatsTab from "./RachaPerdidaStatsTab";
@@ -9,14 +9,7 @@ import AppHeader from "../components/ui/AppHeader";
 import { useAppContext } from "../context/AppContext";
 import { getGameComponent } from "./gameDetailRegistry";
 import { getGameName } from "../data/games";
-import type { AppContextValue, DraftRecord, GameDefinition, Match, TranslationFn } from "../types";
-
-interface LinkedPlayer {
-  uid?: string | null;
-  name?: string;
-  playerId?: string;
-  [key: string]: unknown;
-}
+import type { AppContextValue, DraftRecord, GameDefinition, LinkedPlayer, Match, TranslationFn } from "../types";
 
 interface DraftPlayer {
   name?: string | null;
@@ -89,12 +82,14 @@ const GameTabContent = memo(function GameTabContent({
   const GameComponent = getGameComponent(game.type);
 
   return (
-    <GameComponent
-      key={matchKey}
-      {...commonProps}
-      game={game}
-      matches={matches}
-    />
+    <Suspense fallback={<div className="empty" role="status"><div className="etxt">{t("loadingGame")}</div></div>}>
+      <GameComponent
+        key={matchKey}
+        {...commonProps}
+        game={game}
+        matches={matches}
+      />
+    </Suspense>
   );
 });
 
@@ -119,10 +114,21 @@ function GameDetail({
   const [elapsed, setElapsed] = useState(0); // seconds
   const activeRematchState = rematchState?.gameId === game.id ? rematchState : null;
   const isStatsVisible = tab === "stats";
+  const TAB_IDS = ["new", "stats"] as const;
 
   const handleTabChange = useCallback((newTab: "new" | "stats") => {
     onTabChange?.(newTab);
   }, [onTabChange]);
+
+  const handleTabKeyDown = useCallback((e: React.KeyboardEvent) => {
+    const idx = TAB_IDS.indexOf(tab);
+    let next: typeof TAB_IDS[number] | null = null;
+    if (e.key === "ArrowRight") next = TAB_IDS[(idx + 1) % TAB_IDS.length];
+    else if (e.key === "ArrowLeft") next = TAB_IDS[(idx - 1 + TAB_IDS.length) % TAB_IDS.length];
+    else if (e.key === "Home") next = TAB_IDS[0];
+    else if (e.key === "End") next = TAB_IDS[TAB_IDS.length - 1];
+    if (next) { e.preventDefault(); handleTabChange(next); }
+  }, [tab, handleTabChange]);
 
   const handleBack = useCallback(() => {
     onBack();
@@ -194,7 +200,7 @@ function GameDetail({
               </div>
             </div>
           </div>
-          <div className="tabs detail-tabs" role="tablist" aria-label={t("gameTabs")}>
+          <div className="tabs detail-tabs" role="tablist" aria-label={t("gameTabs")} onKeyDown={handleTabKeyDown}>
             {[["new", t("newMatch"), tab === "new"], ["stats", t("homeActionStats"), isStatsVisible]].map(([id, label, isActive]) => (
               <button
                 key={id as string}

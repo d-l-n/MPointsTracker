@@ -127,6 +127,8 @@ export {
   FALLBACK_LANG,
   SUPPORTED_LANGS,
   TRANSLATIONS,
+  flattenTranslationKeys,
+  getTranslationParityReport,
   getGlobalT,
   detectLang,
   saveLang,

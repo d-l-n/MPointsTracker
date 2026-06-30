@@ -1,17 +1,11 @@
 import { memo, useEffect, useState } from "react";
 
 import { haptic, mkId } from "../../lib/storage";
-import type { GameDefinition, Match, PlayerGroup, TranslationFn } from "../../types";
+import type { GameDefinition, LinkedPlayer, Match, PlayerGroup, TranslationFn } from "../../types";
 import GroupPicker from "../ui/GroupPicker";
 import SaveGroupButton from "../ui/SaveGroupButton";
 import EarlyFinishSaveAction from "../ui/EarlyFinishSaveAction";
 import LinkedPlayerInput from "../auth/LinkedPlayerInput";
-
-interface LinkedPlayer {
-  uid?: string | null;
-  name?: string;
-  playerId?: string;
-}
 
 interface PlayerInputState {
   id: string;

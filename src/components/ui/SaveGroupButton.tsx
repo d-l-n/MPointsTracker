@@ -141,6 +141,7 @@ export default function SaveGroupButton({
           className="inp"
           style={{ flex: 1 }}
           placeholder={t("saveGroupNamePlaceholder")}
+          aria-label={t("saveGroupNamePlaceholder")}
           value={groupName}
           autoFocus
           onChange={(event) => setGroupName(event.target.value)}

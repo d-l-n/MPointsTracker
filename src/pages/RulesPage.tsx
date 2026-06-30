@@ -90,6 +90,7 @@ function RulesPage({
                   type="button"
                   className="rule-game-hdr"
                   aria-expanded={expanded}
+                  aria-label={getGameName(game.id, t)}
                   onClick={() => setOpen((current) => ({ ...current, [game.id]: !current[game.id] }))}
                 >
                   <div className="rule-game-copy">

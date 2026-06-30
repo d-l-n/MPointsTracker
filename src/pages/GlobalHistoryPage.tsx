@@ -33,12 +33,23 @@ interface ConfirmState {
 
 interface GlobalHistoryPageProps {
   initialGameFilter?: string;
+  initialPlayerFilter?: string;
   lockGameFilter?: boolean;
 }
 
 const VIRTUAL_ITEM_ESTIMATE = 212;
 const VIRTUAL_OVERSCAN = 6;
 const VIRTUAL_THRESHOLD = 40;
+
+function downloadJson(filename: string, value: unknown) {
+  const blob = new Blob([JSON.stringify(value, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = filename;
+  anchor.click();
+  URL.revokeObjectURL(url);
+}
 
 /**
  * GlobalHistoryPage
@@ -49,11 +60,12 @@ const VIRTUAL_THRESHOLD = 40;
  */
 function GlobalHistoryPage({
   initialGameFilter = "all",
+  initialPlayerFilter = "",
   lockGameFilter = false,
 }: GlobalHistoryPageProps) {
   const { data = {}, t = ((k: string) => k) as TranslationFn, delMatch, editMatch } = useAppContext() as AppContextValue;
 
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(initialPlayerFilter);
   const [dateFilter, setDateFilter] = useState("all");
   const [gameFilter, setGameFilter] = useState(initialGameFilter || "all");
   const [confirm, setConfirm] = useState<ConfirmState | null>(null); // { gid, mid }
@@ -87,6 +99,10 @@ function GlobalHistoryPage({
   useEffect(() => {
     setGameFilter(initialGameFilter || "all");
   }, [initialGameFilter]);
+
+  useEffect(() => {
+    setSearch(initialPlayerFilter || "");
+  }, [initialPlayerFilter]);
 
   useEffect(() => {
     const nextScrollContainer = document.querySelector(".app-content");
@@ -221,6 +237,14 @@ function GlobalHistoryPage({
             {filtered.length} {t("results")}
           </span>
         )}
+        <button
+          type="button"
+          className="filter-btn"
+          disabled={filtered.length === 0}
+          onClick={() => downloadJson(`mpoints_history_${new Date().toISOString().slice(0, 10)}.json`, filtered)}
+        >
+          {t("exportFilteredHistory")}
+        </button>
       </div>
 
       {/* Game filters */}

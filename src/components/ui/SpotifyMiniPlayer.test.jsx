@@ -18,6 +18,12 @@ const translations = {
   spotifySecureContextRequired: "Conexion segura requerida para conectar Spotify.",
   spotifyShuffle: "Aleatorio",
   spotifyRepeat: "Repetir",
+  spotifyPrevious: "Anterior",
+  spotifyPlayPause: "Reproducir o pausar",
+  spotifyNext: "Siguiente",
+  moreOptions: "Más opciones",
+  spotifyExit: "Salir de Spotify",
+  spotifyDisabledToast: "Ocultar Spotify",
   spotifyTransferHere: "Usar acá",
   spotifyTransferred: "Reproducción transferida",
   spotifyVolume: "Volumen",
@@ -404,8 +410,7 @@ describe("SpotifyMiniPlayer", () => {
     await renderSpotifyMiniPlayer();
     const player = await screen.findByTestId("spotify-mini-player");
 
-    Object.defineProperty(window, "scrollY", { value: 180, configurable: true });
-    fireEvent.scroll(window);
+    fireEvent.wheel(window, { deltaY: 180 });
 
     await waitFor(() => {
       expect(player).toHaveClass("spotify-mini-player--collapsed");
@@ -511,7 +516,7 @@ describe("SpotifyMiniPlayer", () => {
     });
 
     expect(screen.getByText("New Song")).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "spotifyNext" }));
+    fireEvent.click(screen.getByRole("button", { name: translations.spotifyNext }));
 
     await waitFor(() => {
       expect(screen.getByText("New Song")).toBeInTheDocument();

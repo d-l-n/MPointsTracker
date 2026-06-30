@@ -1,4 +1,5 @@
 import { buildStats } from "../lib/stats";
+import { buildInsights } from "../lib/insights";
 import { formatUnoRosterSummary } from "../lib/unoRosterSummary";
 import type { Match, TranslationFn } from "../types";
 
@@ -38,6 +39,7 @@ function StatsTab({
   onOpenHistory = null,
 }: StatsTabProps) {
   const players = buildStats(matches as Match[]);
+  const insights = buildInsights(matches as Match[]);
   const totalRounds = matches.reduce((s, m) => s + (m.rounds || 0), 0);
   const durations = matches.filter(m => m.duration > 0).map(m => m.duration);
   const avgDuration = durations.length ? Math.round(durations.reduce((s, d) => s + d, 0) / durations.length) : null;
@@ -52,8 +54,24 @@ function StatsTab({
         <div className="scard surface-card--dense" data-testid="stat-total-rounds"><div className="sv">{totalRounds}</div><div className="sl">{t("rounds")}</div></div>
         {avgDuration != null && <div className="scard surface-card--dense"><div className="sv">{avgDuration}</div><div className="sl">{t("avgDuration")} ({t("durationMin")})</div></div>}
       </div>
+      {(insights.topWinner || insights.mostPlayedMatchup) && (
+        <div className="sgrid detail-stats-grid">
+          {insights.topWinner && (
+            <div className="scard surface-card--dense" data-testid="stat-top-winner">
+              <div className="sv">{insights.topWinner.name}</div>
+              <div className="sl">{t("insightTopWinner")} · {insights.topWinner.wins} W</div>
+            </div>
+          )}
+          {insights.mostPlayedMatchup && (
+            <div className="scard surface-card--dense" data-testid="stat-top-matchup">
+              <div className="sv">{insights.mostPlayedMatchup.names.join(" vs ")}</div>
+              <div className="sl">{t("insightMostPlayedMatchup")} · {insights.mostPlayedMatchup.count}</div>
+            </div>
+          )}
+        </div>
+      )}
       {!matches.length && (
-        <div className="stats-empty surface-card surface-card--dense">
+        <div className="stats-empty surface-card surface-card--dense" aria-live="polite">
           <div className="home-section-kicker">{t("homeActionStats")}</div>
           <div className="etxt">{t("noStats")}</div>
         </div>

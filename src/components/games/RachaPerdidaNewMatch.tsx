@@ -2,16 +2,10 @@ import { memo, useEffect, useMemo, useState, type CSSProperties } from "react";
 
 import { mkId, haptic } from "../../lib/storage";
 import { fmtDate } from "../../lib/stats";
-import type { Match, PlayerGroup, TranslationFn } from "../../types";
+import type { LinkedPlayer, Match, PlayerGroup, TranslationFn } from "../../types";
 import LinkedPlayerInput from "../auth/LinkedPlayerInput";
 import ConfirmModal from "../ui/ConfirmModal";
 import AutocompleteInput from "../ui/AutocompleteInput";
-
-interface LinkedPlayer {
-  uid?: string | null;
-  name: string;
-  playerId?: string;
-}
 
 interface RachaPerdidaDraft {
   loser?: string;

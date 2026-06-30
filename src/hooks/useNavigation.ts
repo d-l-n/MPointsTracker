@@ -9,6 +9,7 @@ interface HistoryViewState {
   source: string;
   gameId: string;
   lockGameFilter: boolean;
+  playerFilter?: string;
   key: string;
 }
 
@@ -29,6 +30,7 @@ interface RouteLoaderState {
   gameId?: string;
   source?: string;
   lockGameFilter?: boolean;
+  playerFilter?: string;
   profileUid?: string | null;
   section?: string | null;
 }
@@ -58,16 +60,19 @@ export function buildHistoryPath({
   source,
   gameId = "all",
   lockGameFilter = false,
+  playerFilter = "",
 }: {
   source: string;
   gameId?: string;
   lockGameFilter?: boolean;
+  playerFilter?: string;
 }): string {
   const params = new URLSearchParams({
     source,
     gameId,
     lock: lockGameFilter ? "1" : "0",
   });
+  if (playerFilter) params.set("player", playerFilter);
   return `/history?${params.toString()}`;
 }
 
@@ -150,6 +155,7 @@ export function getRouteState(
     const source = routeLoaderState?.source ?? (params.get("source") || "home");
     const gameId = routeLoaderState?.gameId ?? (params.get("gameId") || "all");
     const lockGameFilter = routeLoaderState?.lockGameFilter ?? (params.get("lock") === "1");
+    const playerFilter = routeLoaderState?.playerFilter ?? (params.get("player") || "");
 
     return {
       nav: "home",
@@ -158,7 +164,8 @@ export function getRouteState(
         source,
         gameId,
         lockGameFilter,
-        key: `${source}:${gameId}:${lockGameFilter ? "1" : "0"}`,
+        playerFilter,
+        key: `${source}:${gameId}:${lockGameFilter ? "1" : "0"}:${playerFilter}`,
       },
       profileUid: null,
       settingsSubPage: null,
@@ -284,8 +291,8 @@ export function useNavigation({
   }, [isAdmin, location.pathname, location.search, onRouteSelectedChange, routeLoaderState]);
 
   const openHistoryView = useCallback(
-    ({ source, gameId = "all", lockGameFilter = false }: { source: string; gameId?: string; lockGameFilter?: boolean }) => {
-      navigate(buildHistoryPath({ source, gameId, lockGameFilter }));
+    ({ source, gameId = "all", lockGameFilter = false, playerFilter = "" }: { source: string; gameId?: string; lockGameFilter?: boolean; playerFilter?: string }) => {
+      navigate(buildHistoryPath({ source, gameId, lockGameFilter, playerFilter }));
     },
     [navigate],
   );

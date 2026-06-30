@@ -1198,13 +1198,6 @@ html:not(.dark) .btnsec.nav-leave-discard:hover{color:#5A1E35;border-color:rgba(
 .early-finish-option.is-selected{border-color:color-mix(in srgb,var(--gc,#006D77) 38%,transparent);background:color-mix(in srgb,var(--gc,#006D77) 16%,var(--content-surface));color:var(--tx);box-shadow:0 0 0 1px color-mix(in srgb,var(--gc,#006D77) 16%,transparent) inset}
 .early-finish-option:hover{border-color:color-mix(in srgb,var(--gc,#006D77) 28%,transparent);color:var(--tx)}
 
-/* ── AUTOCOMPLETE ── */
-.autocomplete{position:relative}
-.ac-dropdown{position:absolute;top:100%;left:0;right:0;z-index:100;background:var(--bg2);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border:1px solid var(--glass-border);border-radius:var(--rxs);margin-top:3px;overflow:hidden}
-.ac-item{padding:9px 12px;font-size:.88rem;color:var(--tx2);cursor:pointer}
-.ac-item:hover{background:color-mix(in srgb,var(--gc) 10%,transparent);color:var(--tx)}
-
-
 /* ── ABOUT INTRO ── */
 .about-intro{background:var(--content-surface);backdrop-filter:var(--content-blur);-webkit-backdrop-filter:var(--content-blur);border:1px solid var(--content-border);border-radius:var(--r);padding:18px 18px 16px;margin-bottom:14px;display:flex;flex-direction:column;gap:10px;box-shadow:var(--content-shadow)}
 .about-intro-title{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:2.5px;font-weight:800;color:var(--tx);text-shadow:var(--ts-title)}

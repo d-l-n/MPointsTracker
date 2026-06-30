@@ -70,7 +70,7 @@ interface AdminUserCardProps extends TranslatorProps {
   normTs: (value: TimestampLike) => string | null;
 }
 
-interface AdminPageProps extends ToastProps {}
+type AdminPageProps = ToastProps;
 
 const FB_TYPE_META: Record<FeedbackType, { tKey: string; color: string }> = {
   bug: { tKey: "fbTypes.bug.name", color: "#E63946" },
@@ -584,10 +584,21 @@ function AdminStats({ showToast, t = identity }: ToastProps) {
 
 function AdminPage({ showToast, t = identity }: AdminPageProps) {
   const [adminTab, setAdminTab] = useState<"reports" | "users" | "stats">("reports");
+  const ADMIN_TAB_IDS = ["reports", "users", "stats"] as const;
+
+  const handleAdminTabKeyDown = useCallback((e: React.KeyboardEvent) => {
+    const idx = ADMIN_TAB_IDS.indexOf(adminTab);
+    let next: typeof ADMIN_TAB_IDS[number] | null = null;
+    if (e.key === "ArrowRight") next = ADMIN_TAB_IDS[(idx + 1) % ADMIN_TAB_IDS.length];
+    else if (e.key === "ArrowLeft") next = ADMIN_TAB_IDS[(idx - 1 + ADMIN_TAB_IDS.length) % ADMIN_TAB_IDS.length];
+    else if (e.key === "Home") next = ADMIN_TAB_IDS[0];
+    else if (e.key === "End") next = ADMIN_TAB_IDS[ADMIN_TAB_IDS.length - 1];
+    if (next) { e.preventDefault(); setAdminTab(next); }
+  }, [adminTab]);
 
   return (
     <div className="admin-page">
-      <div className="admin-tabs" role="tablist" aria-label="Admin tabs">
+      <div className="admin-tabs" role="tablist" aria-label="Admin tabs" onKeyDown={handleAdminTabKeyDown}>
         {[
           ["reports", t("adminTabReports")],
           ["users", t("adminTabUsers")],

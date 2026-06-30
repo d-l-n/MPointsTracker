@@ -105,7 +105,7 @@ test.describe("Public profile navigation", () => {
     await expectSettingsDashboard(page);
     await expect(page).toHaveURL(/\/settings$/);
 
-    await page.getByRole("button", { name: /ver perfil|view profile/i }).click();
+    await page.locator(".settings-profile-view-btn").click();
     await expectPublicProfile(page, "Ana Self");
     await expect(page).toHaveURL(/\/settings\?profile=user-ana$/);
 

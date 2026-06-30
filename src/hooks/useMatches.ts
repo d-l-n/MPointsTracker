@@ -109,6 +109,10 @@ export function useMatches({ userRef, dark, showToast, t }: UseMatchesOptions) {
     [showToast, t],
   );
 
+  const importData = useCallback((nextData: MatchStore) => {
+    setData(nextData);
+  }, []);
+
   const mergeSharedMatches = useCallback((toMerge: Record<string, StoredMatch[]>) => {
     setData((previousData) => {
       const nextData: MatchStore = { ...previousData };
@@ -153,6 +157,7 @@ export function useMatches({ userRef, dark, showToast, t }: UseMatchesOptions) {
     addMatch,
     delMatch,
     editMatch,
+    importData,
     mergeSharedMatches,
     mergeCloudData,
     total,

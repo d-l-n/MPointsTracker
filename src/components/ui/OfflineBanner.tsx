@@ -10,6 +10,7 @@ export default function OfflineBanner({ compact = false }: OfflineBannerProps) {
     <div
       className="offline-banner glass"
       data-testid="offline-banner"
+      role="status"
       style={{
         margin: compact ? "12px 16px 0" : "0 0 12px",
         padding: compact ? "10px 12px" : "12px 14px",

@@ -64,17 +64,20 @@ test.describe('Reusable switch surfaces', () => {
     const { before: oledBefore, after: oledAfter } = await toggleSwitch(oledToggle);
     expect(oledAfter.backgroundColor).not.toBe(oledBefore.backgroundColor);
 
+    await page.goto('/');
     await openGame(page, 'tokens', 'ajedrez');
     const chessTimerToggle = page.getByTestId('chess-timer-toggle');
     const { before: chessBefore, after: chessAfter } = await toggleSwitch(chessTimerToggle);
     expect(chessAfter.backgroundColor).not.toBe(chessBefore.backgroundColor);
 
+    await page.goto('/');
     await openGame(page, 'casino', 'blackjack');
     await fillPlayers(page, ['Ana', 'Beto']);
     const blackjackToggle = page.getByTestId('blackjack-auto-rotate-toggle');
     const { before: blackjackBefore, after: blackjackAfter } = await toggleSwitch(blackjackToggle);
     expect(blackjackAfter.backgroundColor).not.toBe(blackjackBefore.backgroundColor);
 
+    await page.goto('/');
     await openGame(page, 'casino', 'poker');
     await fillPlayers(page, ['Ana', 'Beto']);
     const pokerToggle = page.getByTestId('poker-blinds-toggle');

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, type KeyboardEvent } from "react";
 import { buildStats } from "../lib/stats";
 import { GAMES, getGameName } from "../data/games";
 import { fbDb } from "../lib/firebase";
@@ -61,9 +61,21 @@ function PlayerChip({ name, isWinner, gameColor, nameUidMap, onViewProfile }: Pl
   const uid = nameUidMap[name];
   const clickable = uid && onViewProfile;
   const gc = gameColor || "#888";
+  const handleKey = clickable
+    ? (e: KeyboardEvent) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          e.stopPropagation();
+          onViewProfile(uid);
+        }
+      }
+    : undefined;
   return (
     <span
       onClick={clickable ? (e) => { e.stopPropagation(); onViewProfile(uid); } : undefined}
+      onKeyDown={handleKey}
+      role={clickable ? "button" : undefined}
+      tabIndex={clickable ? 0 : undefined}
       style={{
         fontSize: ".72rem", padding: "2px 9px", borderRadius: 12,
         background: isWinner ? `color-mix(in srgb,${gc} 20%,var(--bg3))` : "var(--bg3)",
@@ -155,7 +167,10 @@ function ChampsPage({ onViewProfile }: ChampsPageProps) {
                 return (
                   <div key={p.name}
                     className={`podium-row ${MEDAL_CLS[i] || ""}`}
+                    role={clickable ? "button" : undefined}
+                    tabIndex={clickable ? 0 : undefined}
                     onClick={clickable ? () => handleViewProfile(uid) : undefined}
+                    onKeyDown={clickable ? (e: KeyboardEvent) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); handleViewProfile(uid); } } : undefined}
                     style={{ cursor: clickable ? "pointer" : "default", transition: "opacity .15s" }}
                   >
                     <span className="medal">{MEDALS[i] || i + 1}</span>
@@ -198,7 +213,10 @@ function ChampsPage({ onViewProfile }: ChampsPageProps) {
                       const clickable = uid && onViewProfile;
                       return (
                         <div key={p.name} className="cbg-row"
+                          role={clickable ? "button" : undefined}
+                          tabIndex={clickable ? 0 : undefined}
                           onClick={clickable ? () => handleViewProfile(uid) : undefined}
+                          onKeyDown={clickable ? (e: KeyboardEvent) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); handleViewProfile(uid); } } : undefined}
                           style={{ cursor: clickable ? "pointer" : "default", transition: "background .15s" }}
                           onMouseEnter={e => { if (clickable) e.currentTarget.style.background = "var(--ibg)"; }}
                           onMouseLeave={e => { if (clickable) e.currentTarget.style.background = ""; }}

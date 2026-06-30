@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import jsQR from "jsqr";
 
-import { useFocusTrap } from "../../hooks/useFocusTrap";
 import type { TranslationFn } from "../../types";
 
 interface QRPayload {
@@ -77,11 +76,10 @@ function QRScanner({ onScan, onClose, t }: QRScannerProps) {
     return () => stopCamera();
   }, [onScan, t]);
 
-  const dialogRef = useFocusTrap();
-
   return (
-    <div className="qr-modal" ref={dialogRef as React.RefObject<HTMLDivElement>} role="dialog" aria-modal="true" aria-labelledby="qr-title" onClick={onClose} onKeyDown={(e) => e.key === "Escape" && onClose()}>
-      <div className="qr-box" onClick={(event) => event.stopPropagation()}>
+    <div style={{ position: "fixed", inset: 0, zIndex: 600, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 24, gap: 16 }}>
+      <div className="qr-modal" inert onClick={onClose} style={{ position: "absolute", inset: 0 }} />
+      <div className="qr-box" onClick={(event) => event.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="qr-title" autoFocus>
         <div id="qr-title" className="qr-title">📷 {t("scanQR")}</div>
         {error ? (
           <div style={{ color: "#ff4444", fontSize: ".8rem", textAlign: "center" }}>{error}</div>

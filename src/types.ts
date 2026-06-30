@@ -139,6 +139,12 @@ export interface DynamicThemeContract {
 
 export type TranslationFn = (key: string) => string;
 
+export interface LinkedPlayer {
+  uid?: string | null;
+  name?: string;
+  playerId?: string;
+}
+
 export interface ToastState {
   msg: string;
   show: boolean;

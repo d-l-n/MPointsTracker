@@ -1,18 +1,12 @@
 import { memo, useEffect, useState, type CSSProperties } from "react";
 
 import { haptic, mkId } from "../../lib/storage";
-import type { Match, PlayerGroup, TranslationFn } from "../../types";
+import type { LinkedPlayer, Match, PlayerGroup, TranslationFn } from "../../types";
 import LinkedPlayerInput from "../auth/LinkedPlayerInput";
 import GroupPicker from "../ui/GroupPicker";
 import SaveGroupButton from "../ui/SaveGroupButton";
 
 const CHANCHO_WORD = "CHANCHO";
-
-interface LinkedPlayer {
-  uid?: string | null;
-  name?: string;
-  playerId?: string;
-}
 
 interface PlayerInputState {
   id: string;

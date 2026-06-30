@@ -17,6 +17,7 @@ const SyncDot = memo(function SyncDot({ syncing, error, t, isOnline = true }: Sy
     <span
       className={`sync-dot${syncing ? " syncing" : error ? " error" : ""}`}
       title={syncing ? t("syncing") : error ? t("syncError") : t("synced")}
+      aria-live="polite"
     />
   );
 });

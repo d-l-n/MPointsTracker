@@ -29,7 +29,7 @@ test.describe('UNO Game', () => {
     await expect(page.locator('.sbrow').filter({ hasText: 'Carla' }).locator('.sbscore')).toHaveText('0');
 
     await page.getByTestId('edit-roster').click();
-    await page.getByTestId('leave-player').filter({ hasText: 'Beto' }).click();
+    await page.getByRole('button', { name: /remove beto|eliminar beto|borrar beto/i }).click();
     await page.getByTestId('keep-player-record').click();
 
     await expect(page.locator('.sbrow').filter({ hasText: 'Beto' }).locator('.sbscore')).toHaveText('0');

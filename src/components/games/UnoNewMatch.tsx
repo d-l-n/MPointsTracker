@@ -1,7 +1,7 @@
 import { memo, useEffect, useRef, useState } from "react";
 
 import { haptic, mkId } from "../../lib/storage";
-import type { GameDefinition, Match, PlayerGroup, TranslationFn, UnoRosterEvent } from "../../types";
+import type { GameDefinition, LinkedPlayer, Match, PlayerGroup, TranslationFn, UnoRosterEvent } from "../../types";
 import GroupPicker from "../ui/GroupPicker";
 import SaveGroupButton from "../ui/SaveGroupButton";
 import ConfirmModal from "../ui/ConfirmModal";
@@ -9,12 +9,6 @@ import EarlyFinishSaveAction from "../ui/EarlyFinishSaveAction";
 import LinkedPlayerInput from "../auth/LinkedPlayerInput";
 import MercyEliminator from "./MercyEliminator";
 import { SCORE_TABLES } from "../../data/scoreTables";
-
-interface LinkedPlayer {
-  uid?: string | null;
-  name?: string;
-  playerId?: string;
-}
 
 interface PlayerInputState {
   id: string;

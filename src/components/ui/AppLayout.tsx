@@ -1,4 +1,4 @@
-import { memo, useState, useMemo } from "react";
+import { lazy, memo, Suspense, useState, useMemo } from "react";
 
 import { GAMES } from "../../data/games";
 import { APP_VERSION } from "../../lib/storage";
@@ -7,6 +7,7 @@ import type {
   DraftRecord,
   GameDefinition,
   Match,
+  MatchStore,
   PlayerGroup,
   ThemeAccentMode,
   ThemeMode,
@@ -22,9 +23,10 @@ import UserAvatar from "./UserAvatar";
 import SplashScreen from "./SplashScreen";
 import BootShell from "./BootShell";
 import InstallBanner from "./InstallBanner";
+import OfflineBanner from "./OfflineBanner";
 import ScrollToTop from "./ScrollToTop";
 import { ShareResultButton } from "./ShareResultCard";
-import SpotifyMiniPlayer from "./SpotifyMiniPlayer";
+const SpotifyMiniPlayer = lazy(() => import("./SpotifyMiniPlayer"));
 import EmailAuthScreen from "../auth/EmailAuthScreen";
 import HomeTab from "../home/HomeTab";
 import { scrollCurrentSectionToTop } from "../../hooks/useNavigation";
@@ -46,6 +48,7 @@ interface HistoryViewState {
   source: string;
   gameId: string;
   lockGameFilter: boolean;
+  playerFilter?: string;
   key: string;
 }
 
@@ -53,13 +56,6 @@ interface NavItem {
   id: string;
   label: string;
   icon: string;
-}
-
-interface LinkedPlayer {
-  name: string;
-  uid?: string | null;
-  playerId?: string;
-  [key: string]: unknown;
 }
 
 interface RematchState {
@@ -107,9 +103,10 @@ interface AppLayoutProps {
   setGameTab: (tab: string) => void;
   gameMatchKey: number;
   getMatches: (gameId: string) => Match[];
+  importData: (data: MatchStore) => void;
   clearDraft: (gameId: string) => void;
   handleGameAddMatch: (match: Match & Record<string, unknown>) => Promise<void> | void;
-  openHistoryView: (options: { source: string; gameId?: string; lockGameFilter?: boolean }) => void;
+  openHistoryView: (options: { source: string; gameId?: string; lockGameFilter?: boolean; playerFilter?: string }) => void;
   handleRematchRequest: (payload?: RematchState) => void;
   postSaveRematch: RematchState | null;
   setPostSaveRematch: (value: RematchState | null) => void;
@@ -253,6 +250,7 @@ export default function AppLayout({
   setGameTab,
   gameMatchKey,
   getMatches,
+  importData,
   clearDraft,
   handleGameAddMatch,
   openHistoryView,
@@ -400,6 +398,9 @@ export default function AppLayout({
     setProfileUid(null);
     navigate("/settings");
   };
+  const openHistoryForPlayer = (playerName: string) => {
+    navigate(`/history?source=profile&gameId=all&lock=0&player=${encodeURIComponent(playerName)}`);
+  };
   const sectionTransitionKey = historyView
     ? `history-${historyView.key}`
     : `${nav}-${selected || "root"}-${profileUid || "self"}-${settingsSubPage || "main"}`;
@@ -437,6 +438,7 @@ export default function AppLayout({
     return (
       <AppShell dark={dark} toast={toast} t={t}>
         <InstallBanner dark={dark} t={t} />
+        {!isOnline && <OfflineBanner t={t} />}
         {showDebug && (
           <div className="debug-panel">
             <button className="debug-close" onClick={() => setShowDebug(false)} aria-label={t("closeDebugPanel")}>✕</button>
@@ -574,6 +576,7 @@ export default function AppLayout({
             <div key={historyView.key}>
               <GlobalHistoryPage
                 initialGameFilter={historyView.gameId}
+                initialPlayerFilter={historyView.playerFilter || ""}
                 lockGameFilter={historyView.lockGameFilter}
               />
             </div>
@@ -688,6 +691,7 @@ export default function AppLayout({
                   t={t}
                   myData={data}
                   myUser={user}
+                  onOpenHistoryForPlayer={openHistoryForPlayer}
                   onSignOut={signOut}
                   onSignIn={(mode) => setShowAuthModal(mode || "main")}
                   showToast={showToast}
@@ -695,6 +699,7 @@ export default function AppLayout({
               ) : (
                 <SettingsPage
                   data={data}
+                  onImportData={importData}
                   onSignOut={signOut}
                   onSignIn={(mode) => setShowAuthModal(mode || "main")}
                   onViewProfile={openProfile}
@@ -816,8 +821,9 @@ export default function AppLayout({
           </div>
         </div>
       )}
-      <SpotifyMiniPlayer />
+      <Suspense fallback={null}><SpotifyMiniPlayer /></Suspense>
       <ScrollToTop />
+      <footer className="app-footer" />
     </AppShell>
     </>
   );

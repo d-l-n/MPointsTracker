@@ -55,6 +55,7 @@ type TestAuthUser = Partial<User> & {
   displayName?: string | null;
   email?: string | null;
   photoURL?: string | null;
+  admin?: boolean;
 };
 
 declare global {
@@ -135,6 +136,7 @@ export function useAuth({
   const [playerGroups, setPlayerGroups] = useState<PlayerGroup[]>(readStoredPlayerGroups);
   const [spotifyEnabled, setSpotifyEnabled] = useState<boolean>(readStoredSpotifyEnabled);
   const [spotifyPosition, setSpotifyPosition] = useState<SpotifyPosition>(readStoredSpotifyPosition);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const hadPreviousSession = readHadPreviousSession();
   const [authChecked, setAuthChecked] = useState(hadPreviousSession);
@@ -160,6 +162,13 @@ export function useAuth({
       setUser(currentUser);
       setAuthChecked(true);
       localStorage.setItem("bgt_last_uid", currentUser.uid);
+
+      try {
+        const token = await currentUser.getIdTokenResult();
+        setIsAdmin(token.claims.admin === true);
+      } catch {
+        setIsAdmin(false);
+      }
 
       try {
         await saveUserProfile(currentUser.uid, currentUser);
@@ -271,6 +280,7 @@ export function useAuth({
         handledUid.current = syntheticUser.uid;
         setGuestMode(false);
         setUser(syntheticUser);
+        setIsAdmin(testUser.admin === true);
         setAuthChecked(true);
         setPlayerGroups(readStoredPlayerGroups());
         localStorage.removeItem("bgt_guest_mode");
@@ -320,6 +330,7 @@ export function useAuth({
         } else {
           handledUid.current = null;
           setUser(null);
+          setIsAdmin(false);
           setAuthChecked(true);
           addLog("signed out — showing login screen");
         }
@@ -426,6 +437,7 @@ export function useAuth({
       }
       clearSpotifyAuthStorage();
       setUser(null);
+      setIsAdmin(false);
       showToast(t("sessionClosed"));
     },
     [showToast, t],
@@ -499,6 +511,7 @@ export function useAuth({
 
   return {
     user,
+    isAdmin,
     authChecked,
     hadPreviousSession,
     guestMode,
