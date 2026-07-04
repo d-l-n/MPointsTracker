@@ -295,6 +295,9 @@ const en = {
   "authDesc": "Sign in to sync your matches across all your devices.",
   "continueGoogle": "Continue with Google",
   "useWithout": "Use without account (local only)",
+  "localAccountTitle": "Continue without an account?",
+  "localAccountMsg": "Without an account, your matches are only saved on this device. With Google or email you can sync across devices, recover your data if you change phones and share stats with friends.",
+  "localAccountConfirm": "Continue anyway",
   "continueEmail": "Continue with email",
   "emailPlaceholder": "Email",
   "passwordPlaceholder": "Password",
@@ -1002,6 +1005,9 @@ const en = {
   "spotifyPosLeft": "Left",
   "spotifyPosition": "Player position",
   "spotifyPosRight": "Right",
+  "onboardingTitle": "Welcome to MPoints",
+  "onboardingMsg": "Track scores from UNO, Truco, Chinchón and more. Follow stats, rankings, and compare results with your friends.",
+  "onboardingCta": "Get started",
 };
 
 export default en;

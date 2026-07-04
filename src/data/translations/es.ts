@@ -295,6 +295,9 @@ const es = {
   "authDesc": "Iniciá sesión para sincronizar tus partidas en todos tus dispositivos.",
   "continueGoogle": "Continuar con Google",
   "useWithout": "Usar sin cuenta (solo local)",
+  "localAccountTitle": "¿Continuar sin cuenta?",
+  "localAccountMsg": "Sin cuenta, tus partidas solo se guardan en este dispositivo. Con Google o email podés sincronizar entre dispositivos, recuperar tus datos si cambiás de celular y compartir estadísticas con amigos.",
+  "localAccountConfirm": "Continuar igual",
   "continueEmail": "Continuar con email",
   "emailPlaceholder": "Correo electrónico",
   "passwordPlaceholder": "Contraseña",
@@ -1000,6 +1003,9 @@ const es = {
   "spotifyPosLeft": "Izquierda",
   "spotifyPosition": "Posición del reproductor",
   "spotifyPosRight": "Derecha",
+  "onboardingTitle": "Bienvenido a MPoints",
+  "onboardingMsg": "Registrá puntajes de partidas de UNO, Truco, Chinchón y más. Seguí estadísticas, rankings y compará resultados con tus amigos.",
+  "onboardingCta": "Empezar",
 };
 
 export default es;

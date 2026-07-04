@@ -639,7 +639,7 @@ body{margin:0;padding:0;background:var(--bg)}
 .pending-invite-label{font-size:.7rem;color:var(--tx3);letter-spacing:1px;text-transform:uppercase}
 .pending-invite-name{font-size:.82rem;color:var(--tx);font-weight:700;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pending-invite-dismiss{background:none;border:none;color:var(--tx3);cursor:pointer;font-size:1rem;padding:4px;line-height:1}
-.app-layout-auth-modal-shell{position:fixed;inset:0;z-index:800;background:var(--bg)}
+.app-layout-auth-modal-shell{position:fixed;inset:0;z-index:800;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
 .nav-leave-overlay{
   position:fixed;
   inset:0;
@@ -1282,7 +1282,7 @@ html:not(.dark) .btnsec.nav-leave-discard:hover{color:#5A1E35;border-color:rgba(
 
 
 /* ── AUTH ── */
-.auth-screen{flex:1;width:100%;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;gap:20px;text-align:center}
+.auth-screen{flex:1;width:100%;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;gap:20px;text-align:center;max-width:320px;margin:0 auto}
 .boot-shell{position:relative;isolation:isolate;flex:1;width:100%;min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:32px 20px;overflow:hidden}
 .boot-shell--loading{min-height:max(100dvh,680px)}
 .boot-shell-bg{position:absolute;inset:0;pointer-events:none;overflow:hidden}
@@ -1481,6 +1481,7 @@ html:not(.dark) .btnsec.nav-leave-discard:hover{color:#5A1E35;border-color:rgba(
 
   /* Content area: offset by collapsed sidebar width */
   .app-content{margin-left:60px;flex:1;display:flex;flex-direction:column}
+  .app-content:has(.auth-screen){margin-left:0}
   .app-content-inner{max-width:none;width:100%;margin:0}
   .app-content-inner:has(.auth-screen),.app-content-inner:has(.boot-shell){max-width:none;width:100%;margin:0}
   .home-shell {
@@ -1602,6 +1603,7 @@ html:not(.dark) .btnsec.nav-leave-discard:hover{color:#5A1E35;border-color:rgba(
   .navbtn.active span:last-child{display:inline-block !important}
   .nav-hamburger{display:none}
   .app-content{margin-left:220px}
+  .app-content:has(.auth-screen){margin-left:0}
   .app-content-inner{max-width:none;width:100%}
   .home-shell {
     max-width:1080px;
@@ -1726,11 +1728,13 @@ html:not(.dark) .btnsec.nav-leave-discard:hover{color:#5A1E35;border-color:rgba(
 
 @media (min-width: 900px){
   .spotify-mini-player{left:calc(60px + (100vw - 60px) / 2);bottom:24px;bottom:calc(24px + env(safe-area-inset-bottom));width:min(1080px,calc(100vw - 140px))}
+  .spotify-mini-player--prompt{width:fit-content;grid-template-columns:auto auto auto}
   body:has(.install-banner) .spotify-mini-player{bottom:80px;bottom:calc(80px + env(safe-area-inset-bottom))}
 }
 
 @media (min-width: 1200px){
   .spotify-mini-player{left:calc(220px + (100vw - 220px) / 2);width:min(1080px,calc(100vw - 300px))}
+  .spotify-mini-player--prompt{width:fit-content;grid-template-columns:auto auto auto}
 }
 
 @media (max-width: 700px), (max-height: 500px){

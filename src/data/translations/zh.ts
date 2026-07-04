@@ -300,6 +300,9 @@ const zh = {
   "authDesc": "登录以在所有设备上同步您的比赛。",
   "continueGoogle": "使用Google继续",
   "useWithout": "不使用账户（仅本地）",
+  "localAccountTitle": "不使用账户继续？",
+  "localAccountMsg": "没有账户，比赛记录仅保存在此设备上。使用Google或邮箱可以跨设备同步、换手机时恢复数据，并与朋友分享统计信息。",
+  "localAccountConfirm": "仍然继续",
   "continueEmail": "使用邮箱继续",
   "emailPlaceholder": "电子邮件",
   "passwordPlaceholder": "密码",
@@ -1002,6 +1005,9 @@ const zh = {
   "spotifyPosLeft": "左",
   "spotifyPosition": "播放器位置",
   "spotifyPosRight": "右",
+  "onboardingTitle": "欢迎使用 MPoints",
+  "onboardingMsg": "记录 UNO、Truco、Chinchón 等游戏的得分。跟踪统计、排名，并与朋友比较成绩。",
+  "onboardingCta": "开始使用",
 };
 
 export default zh;

@@ -297,6 +297,9 @@ const ja = {
   "authDesc": "ログインしてすべてのデバイスで試合を同期しましょう。",
   "continueGoogle": "Googleで続ける",
   "useWithout": "アカウントなしで使用（ローカルのみ）",
+  "localAccountTitle": "アカウントなしで続行？",
+  "localAccountMsg": "アカウントなしでは、試合はこのデバイスにのみ保存されます。Googleまたはメール则可以跨设备同步、更换手机时恢复数据，并与朋友分享统计信息。",
+  "localAccountConfirm": "それでも続ける",
   "continueEmail": "メールで続ける",
   "emailPlaceholder": "メールアドレス",
   "passwordPlaceholder": "パスワード",
@@ -1002,6 +1005,9 @@ const ja = {
   "spotifyPosLeft": "左",
   "spotifyPosition": "プレイヤーの位置",
   "spotifyPosRight": "右",
+  "onboardingTitle": "MPointsへようこそ",
+  "onboardingMsg": "UNO、Truco、Chinchónなどのスコアを記録。統計やランキングを跟踪し、友達と結果を比較しましょう。",
+  "onboardingCta": "はじめる",
 };
 
 export default ja;

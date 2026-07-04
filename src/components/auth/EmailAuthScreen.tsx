@@ -1,5 +1,6 @@
 import { useState, type CSSProperties, type ChangeEvent } from "react";
 
+import ConfirmModal from "../ui/ConfirmModal";
 import LoginForm from "./LoginForm";
 import type { TranslationFn } from "../../types";
 
@@ -17,7 +18,7 @@ interface EmailAuthScreenProps {
   onSignIn: (email: string, password: string) => Promise<unknown> | unknown;
   onSignUp: (email: string, password: string, name?: string) => Promise<unknown> | unknown;
   onReset: (email: string) => Promise<unknown> | unknown;
-  onGuest: () => void;
+  onGuest?: () => void;
   onLogoTap: () => void;
   initialMode?: AuthMode | string;
   lang?: string;
@@ -106,6 +107,39 @@ const offlineCopyStyle: CSSProperties = {
   textAlign: "center",
 };
 
+const closeBtnStyle: CSSProperties = {
+  background: "var(--glass)",
+  border: "1px solid var(--glass-border)",
+  color: "var(--tx2)",
+  borderRadius: "var(--r)",
+  padding: "10px 24px",
+  fontFamily: "'Google Sans', sans-serif",
+  fontSize: ".85rem",
+  fontWeight: 600,
+  cursor: "pointer",
+  width: "100%",
+  maxWidth: 280,
+  textAlign: "center",
+  marginTop: 4,
+};
+
+const guestButtonStyle: CSSProperties = {
+  background: "color-mix(in srgb, var(--glass) 88%, transparent)",
+  border: "1.5px solid var(--glass-border)",
+  color: "var(--tx)",
+  borderRadius: "var(--r)",
+  padding: "12px 24px",
+  fontFamily: "'Google Sans', sans-serif",
+  fontSize: ".88rem",
+  fontWeight: 700,
+  cursor: "pointer",
+  width: "100%",
+  maxWidth: 280,
+  textAlign: "center",
+  boxShadow: "var(--glass-shadow)",
+  transition: "box-shadow .18s, transform .18s",
+};
+
 function normalizeMode(mode?: AuthMode | string): AuthMode {
   return mode === "signin" || mode === "signup" || mode === "reset" ? mode : "main";
 }
@@ -135,6 +169,7 @@ function EmailAuthScreen({
   const [loading, setLoading] = useState(false);
   const [resetDone, setResetDone] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
+  const [showGuestConfirm, setShowGuestConfirm] = useState(false);
 
   const currentLang = LANGS.find((entry) => entry.code === lang) || LANGS[0];
 
@@ -167,9 +202,50 @@ function EmailAuthScreen({
   const handleEmailChange = (event: ChangeEvent<HTMLInputElement>) => setEmail(event.target.value);
   const handlePasswordChange = (event: ChangeEvent<HTMLInputElement>) => setPassword(event.target.value);
 
+  const langRow = (
+    <div style={langRowStyle}>
+      {onLangChange && (
+        <div style={{ position: "relative" }}>
+          <button onClick={() => setLangOpen((open) => !open)} className="lang-trigger">
+            {currentLang.flag} {currentLang.label}
+            <span style={{ fontSize: ".55rem", opacity: 0.6, marginLeft: 2 }}>▼</span>
+          </button>
+          {langOpen && (
+            <div className="lang-menu">
+              {LANGS.map((entry) => (
+                <button
+                  key={entry.code}
+                  onClick={() => {
+                    onLangChange(entry.code);
+                    setLangOpen(false);
+                  }}
+                  className={`lang-option${lang === entry.code ? " active" : ""}`}
+                >
+                  {entry.flag} {entry.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+      {onDarkChange && (
+        <button onClick={onDarkChange} style={{ ...iconButtonStyle, fontSize: "1rem" }} aria-label={dark ? t("themeToggleLight") : t("themeToggleDark")}>
+          {dark ? "🌙" : "☀️"}
+        </button>
+      )}
+    </div>
+  );
+
+  const closeBtn = onClose ? (
+    <button style={closeBtnStyle} onClick={onClose}>
+      {t("cancel")}
+    </button>
+  ) : null;
+
   if (mode === "signin") {
     return (
       <div className="auth-screen">
+        {langRow}
         <button type="button" className="auth-logo" onClick={onLogoTap} style={authLogoStyle}>
           MPOINTS
           <br />
@@ -188,6 +264,7 @@ function EmailAuthScreen({
           }}
           onBack={back}
         />
+        {closeBtn}
       </div>
     );
   }
@@ -195,6 +272,7 @@ function EmailAuthScreen({
   if (mode === "signup") {
     return (
       <div className="auth-screen">
+        {langRow}
         <button type="button" className="auth-logo" onClick={onLogoTap} style={authLogoStyle}>
           MPOINTS
           <br />
@@ -232,6 +310,7 @@ function EmailAuthScreen({
             {t("backToLogin")}
           </button>
         </div>
+        {closeBtn}
       </div>
     );
   }
@@ -239,6 +318,7 @@ function EmailAuthScreen({
   if (mode === "reset") {
     return (
       <div className="auth-screen">
+        {langRow}
         <button type="button" className="auth-logo" onClick={onLogoTap} style={authLogoStyle}>
           MPOINTS
           <br />
@@ -263,48 +343,14 @@ function EmailAuthScreen({
             {t("backToLogin")}
           </button>
         </div>
+        {closeBtn}
       </div>
     );
   }
 
   return (
     <div className="auth-screen">
-      <div style={langRowStyle}>
-        {onLangChange && (
-          <div style={{ position: "relative" }}>
-            <button onClick={() => setLangOpen((open) => !open)} className="lang-trigger">
-              {currentLang.flag} {currentLang.label}
-              <span style={{ fontSize: ".55rem", opacity: 0.6, marginLeft: 2 }}>▼</span>
-            </button>
-            {langOpen && (
-              <div className="lang-menu">
-                {LANGS.map((entry) => (
-                  <button
-                    key={entry.code}
-                    onClick={() => {
-                      onLangChange(entry.code);
-                      setLangOpen(false);
-                    }}
-                    className={`lang-option${lang === entry.code ? " active" : ""}`}
-                  >
-                    {entry.flag} {entry.label}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-        {onDarkChange && (
-          <button onClick={onDarkChange} style={{ ...iconButtonStyle, fontSize: "1rem" }} aria-label={dark ? t("themeToggleLight") : t("themeToggleDark")}>
-            {dark ? "🌙" : "☀️"}
-          </button>
-        )}
-        {onClose && (
-          <button onClick={onClose} style={{ ...iconButtonStyle, color: "var(--tx2)", fontSize: "1.1rem" }} aria-label={t("cancel")}>
-            ✕
-          </button>
-        )}
-      </div>
+      {langRow}
       <button type="button" className="auth-logo" onClick={onLogoTap} style={authLogoStyle}>
         MPOINTS
         <br />
@@ -332,9 +378,31 @@ function EmailAuthScreen({
       >
         ✉️ {t("continueEmail")}
       </button>
-      <button className="auth-skip" onClick={onGuest} data-testid="guest-btn">
-        {t("useWithout")}
-      </button>
+      {onGuest && (
+        <>
+          <button
+            style={guestButtonStyle}
+            onClick={() => setShowGuestConfirm(true)}
+            data-testid="guest-btn"
+          >
+            📱 {t("useWithout")}
+          </button>
+          {showGuestConfirm && (
+            <ConfirmModal
+              title={t("localAccountTitle")}
+              msg={t("localAccountMsg")}
+              confirmLabel={t("localAccountConfirm")}
+              cancelLabel={t("cancel")}
+              onConfirm={() => {
+                setShowGuestConfirm(false);
+                onGuest();
+              }}
+              onCancel={() => setShowGuestConfirm(false)}
+            />
+          )}
+        </>
+      )}
+      {closeBtn}
     </div>
   );
 }

@@ -295,6 +295,9 @@ const fr = {
   "authDesc": "Connectez-vous pour synchroniser vos parties sur tous vos appareils.",
   "continueGoogle": "Continuer avec Google",
   "useWithout": "Utiliser sans compte (local uniquement)",
+  "localAccountTitle": "Continuer sans compte ?",
+  "localAccountMsg": "Sans compte, vos parties ne sont sauvegardées que sur cet appareil. Avec Google ou email vous pouvez synchroniser entre les appareils, récupérer vos données si vous changez de téléphone et partager les stats avec vos amis.",
+  "localAccountConfirm": "Continuer quand même",
   "continueEmail": "Continuer avec email",
   "emailPlaceholder": "Adresse e-mail",
   "passwordPlaceholder": "Mot de passe",
@@ -1002,6 +1005,9 @@ const fr = {
   "spotifyPosLeft": "Gauche",
   "spotifyPosition": "Position du lecteur",
   "spotifyPosRight": "Droite",
+  "onboardingTitle": "Bienvenue sur MPoints",
+  "onboardingMsg": "Enregistrez les scores d'UNO, Truco, Chinchón et plus. Suivez les statistiques, classements et comparez les résultats avec vos amis.",
+  "onboardingCta": "Commencer",
 };
 
 export default fr;

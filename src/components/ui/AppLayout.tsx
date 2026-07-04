@@ -21,6 +21,7 @@ import ThemeToggle from "./ThemeToggle";
 import ReloadButton from "./ReloadButton";
 import UserAvatar from "./UserAvatar";
 import SplashScreen from "./SplashScreen";
+import OnboardingModal from "./OnboardingModal";
 import BootShell from "./BootShell";
 import InstallBanner from "./InstallBanner";
 import OfflineBanner from "./OfflineBanner";
@@ -346,6 +347,7 @@ export default function AppLayout({
   const accentGameId = selectedGame?.id || "default";
   const sectionHeaderHiddenByScroll = navHiddenByScroll || chromeHiddenByScroll;
   const [rulesSearch, setRulesSearch] = useState("");
+  const [showOnboarding, setShowOnboarding] = useState(() => !localStorage.getItem("bgt_onboarding_seen"));
   const standardHeaderActions = (showTheme = true) => (
     <>
       {showTheme && (
@@ -800,7 +802,6 @@ export default function AppLayout({
               return error;
             }}
             onReset={sendPasswordReset}
-            onGuest={() => { enterGuestMode(); setShowAuthModal(false); }}
             onLogoTap={handleLogoTap}
             onClose={() => setShowAuthModal(false)}
             showDebug={false}
@@ -820,6 +821,15 @@ export default function AppLayout({
             </div>
           </div>
         </div>
+      )}
+      {showOnboarding && (
+        <OnboardingModal
+          t={t}
+          onDone={() => {
+            localStorage.setItem("bgt_onboarding_seen", "1");
+            setShowOnboarding(false);
+          }}
+        />
       )}
       <Suspense fallback={null}><SpotifyMiniPlayer /></Suspense>
       <ScrollToTop />

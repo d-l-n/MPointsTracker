@@ -295,6 +295,9 @@ const de = {
   "authDesc": "Melde dich an, um deine Spiele auf allen Geräten zu synchronisieren.",
   "continueGoogle": "Mit Google fortfahren",
   "useWithout": "Ohne Konto verwenden (nur lokal)",
+  "localAccountTitle": "Ohne Konto fortfahren?",
+  "localAccountMsg": "Ohne Konto werden deine Spiele nur auf diesem Gerät gespeichert. Mit Google oder E-Mail kannst du zwischen Geräten synchronisieren, deine Daten wiederherstellen wenn du das Telefon wechselst und Statistiken mit Freunden teilen.",
+  "localAccountConfirm": "Trotzdem fortfahren",
   "continueEmail": "Mit E-Mail fortfahren",
   "emailPlaceholder": "E-Mail-Adresse",
   "passwordPlaceholder": "Passwort",
@@ -1002,6 +1005,9 @@ const de = {
   "spotifyPosLeft": "Links",
   "spotifyPosition": "Player-Position",
   "spotifyPosRight": "Rechts",
+  "onboardingTitle": "Willkommen bei MPoints",
+  "onboardingMsg": "Erfasse Ergebnisse von UNO, Truco, Chinchón und mehr. Verfolge Statistiken, Ranglisten und vergleiche Ergebnisse mit Freunden.",
+  "onboardingCta": "Los geht's",
 };
 
 export default de;
