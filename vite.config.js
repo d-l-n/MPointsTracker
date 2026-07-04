@@ -17,9 +17,20 @@ function validateEnvPlugin() {
   };
 }
 
+function stripCrossOrigin() {
+  return {
+    name: "strip-crossorigin",
+    enforce: "post",
+    transformIndexHtml(html) {
+      return html.replace(/ crossorigin(?:=["'][^"']*["'])?/g, "");
+    },
+  };
+}
+
 export default defineConfig({
-  plugins: [validateEnvPlugin(), react()],
+  plugins: [validateEnvPlugin(), react(), stripCrossOrigin()],
   build: {
+    crossOriginLoading: false,
     rolldownOptions: {
       output: {
         codeSplitting: true,
