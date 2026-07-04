@@ -78,8 +78,8 @@ export function useMatches({ userRef, dark, showToast, t }: UseMatchesOptions) {
         if (stats) {
           try {
             await savePublicStats(user.uid, stats);
-          } catch (error) {
-            console.warn("[useMatches] public stats sync failed:", error);
+          } catch {
+            // public stats are non-critical; permission errors are expected for expired/guest sessions
           }
         }
       } catch {
