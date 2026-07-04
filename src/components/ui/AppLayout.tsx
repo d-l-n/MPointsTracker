@@ -618,6 +618,8 @@ export default function AppLayout({
                 <div className="home-search">
                   <input
                     className="search-inp"
+                    id="rules-search"
+                    name="rules-search"
                     value={rulesSearch}
                     onChange={(event) => setRulesSearch(event.target.value)}
                     placeholder={t("rulesSearchPlaceholder")}

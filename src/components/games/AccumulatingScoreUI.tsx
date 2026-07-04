@@ -135,6 +135,7 @@ export default function AccumulatingScoreUI({
                 <input
                   key={`team-${index}`}
                   id={`${gameId}-team-name-${index}`}
+                  name={`${gameId}-team-name-${index}`}
                   className="inp"
                   placeholder={`${t("team")} ${index + 1}`}
                   value={name}

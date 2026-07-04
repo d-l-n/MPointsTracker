@@ -142,6 +142,8 @@ function UserSearchModal({ onLink, onClose, t, knownNames = [] }: UserSearchModa
             <div className="usearch-inp-row">
               <input
                 className="usearch-inp"
+                id="user-search"
+                name="user-search"
                 placeholder={method === "email" ? t("emailPlaceholderSearch") : t("playerN")}
                 value={query}
                 onChange={(event) => {

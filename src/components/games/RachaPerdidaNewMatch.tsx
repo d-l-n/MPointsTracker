@@ -137,6 +137,8 @@ function RachaPerdidaNewMatch({
         <div className="autocomplete">
           <textarea
             className="fb-textarea"
+            id="streak-penalty"
+            name="streak-penalty"
             placeholder={t("streakPenaltyPlaceholder")}
             value={penalty}
             onChange={(event) => setPenalty(event.target.value.slice(0, 300))}

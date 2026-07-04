@@ -153,6 +153,8 @@ export default function AccountSection({
             <div style={{ display: "flex", gap: 8, flex: 1, justifyContent: "flex-end" }}>
               <input
                 className="inp"
+                id="edit-name"
+                name="edit-name"
                 ref={nameInputRef}
                 aria-label={t("namePlaceholder")}
                 value={nameVal}

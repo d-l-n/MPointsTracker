@@ -41,6 +41,7 @@ export default function ScoreInputText({
               <div className="rdfrow">
                 <input
                   id={`${idPrefix}-round-score-${index}`}
+                  name={`${idPrefix}-round-score-${index}`}
                   className="rdinp"
                   type="number"
                   placeholder="0"

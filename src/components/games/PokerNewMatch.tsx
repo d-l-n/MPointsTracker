@@ -352,6 +352,7 @@ function PokerNewMatch({
                       <span style={{ fontSize: ".8rem", color: "var(--tx3)" }}>{t("currency")}</span>
                       <input
                         className="rdinp"
+                        name="poker-blind"
                         type="number"
                         min="1"
                         step="1"
@@ -587,6 +588,7 @@ function PokerNewMatch({
                   <span style={{ fontSize: ".78rem", color: "var(--tx3)" }}>{t("currency")}</span>
                   <input
                     className="rdinp"
+                    name="poker-pot-contribution"
                     type="number"
                     min="0"
                     step="0.5"

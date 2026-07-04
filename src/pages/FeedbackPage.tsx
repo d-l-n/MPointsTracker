@@ -134,6 +134,8 @@ function FeedbackPage({ user, showToast, t = ((key: string) => key) as Translati
             <span className="flbl">{t("messageLabel")}</span>
             <textarea
               className="fb-textarea"
+              id="feedback-message"
+              name="feedback-message"
               placeholder={
                 selected === "bug"
                   ? t("feedbackPlaceholder_bug")

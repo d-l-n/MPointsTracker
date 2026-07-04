@@ -76,6 +76,8 @@ function PlayerSelect({ value, onChange, names, exclude, placeholder, label, tes
       <div className="h2h-select-label">{label}</div>
       <input
         className="inp h2h-input"
+        id="h2h-search"
+        name="h2h-search"
         value={query}
         placeholder={placeholder}
         aria-label={label}

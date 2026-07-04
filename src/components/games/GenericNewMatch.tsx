@@ -652,6 +652,7 @@ function GenericNewMatch({
                     <div className="rdfrow">
                       <input
                         className="rdinp"
+                        name="generic-round-score"
                         type="number"
                         placeholder="0"
                         value={roundScores[player.id] || ""}
@@ -680,6 +681,7 @@ function GenericNewMatch({
                         <span style={{ fontSize: ".85rem", color: "var(--tx3)", paddingTop: 8 }}>{t("currency")}</span>
                         <input
                           className="rdinp"
+                          name="generic-bet"
                           type="number"
                           min="0"
                           step="0.5"

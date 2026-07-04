@@ -327,10 +327,8 @@ function UnoNewMatch({
             <div className="rdfrow" key={row.key} style={{ marginBottom: "4px" }}>
               <input
                 className="rdinp"
+                name="uno-round-score"
                 type="number"
-                min="0"
-                placeholder="0"
-                aria-label={row.label}
                 value={(roundInput[row.key] as string) || ""}
                 onChange={(event) => setRoundField(row.key, event.target.value)}
               />
@@ -345,6 +343,7 @@ function UnoNewMatch({
       <div className="rdfrow" key={row.key}>
         <input
           className="rdinp"
+          name="uno-round-score"
           type="number"
           min="0"
           placeholder="0"

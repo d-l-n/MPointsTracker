@@ -228,6 +228,8 @@ function GlobalHistoryPage({
       <div className="search-bar">
         <input
           className="search-inp"
+          id="history-search"
+          name="history-search"
           data-testid="search-player"
           placeholder={t("searchPlayer")}
           value={search}

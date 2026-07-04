@@ -798,6 +798,8 @@ export default function SpotifyMiniPlayer() {
               <span>{t("spotifyVolume")}</span>
               <input
                 type="range"
+                id="spotify-volume"
+                name="spotify-volume"
                 min="0"
                 max="100"
                 value={volume ?? localVolume}
@@ -810,6 +812,8 @@ export default function SpotifyMiniPlayer() {
             <div className="spotify-mini-search">
               <input
                 type="search"
+                id="spotify-search"
+                name="spotify-search"
                 value={searchQuery}
                 placeholder={t("spotifySearchPlaceholder")}
                 onChange={(event) => setSearchQuery(event.target.value)}

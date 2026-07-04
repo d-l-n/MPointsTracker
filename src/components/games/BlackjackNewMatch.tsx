@@ -436,6 +436,7 @@ function BlackjackNewMatch({
                       <span style={{ fontSize: ".8rem", color: "var(--tx3)" }}>{t("currency")}</span>
                       <input
                         className="rdinp"
+                        name="blackjack-bet"
                         type="number"
                         min="0"
                         step="0.5"

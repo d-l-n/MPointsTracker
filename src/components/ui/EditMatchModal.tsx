@@ -133,7 +133,7 @@ export default function EditMatchModal({
           <span className="flbl" style={{ color: "var(--tx)", opacity: 0.7 }}>
             {t("dateTime")}
           </span>
-          <input className="inp" type="datetime-local" value={date} onChange={(event) => setDate(event.target.value)} aria-label={t("dateTime")} />
+          <input className="inp" id="edit-date" name="edit-date" type="datetime-local" value={date} onChange={(event) => setDate(event.target.value)} aria-label={t("dateTime")} />
         </div>
 
         {!isRacha && (
@@ -146,6 +146,7 @@ export default function EditMatchModal({
                 <div key={player.id || `player-${index}`} style={{ display: "flex", gap: 8, alignItems: "center" }}>
                   <input
                     className="inp"
+                    name={`player-name-${index}`}
                     style={{ flex: 2 }}
                     placeholder={t("namePlaceholder")}
                     value={player.name}
@@ -155,6 +156,7 @@ export default function EditMatchModal({
                   {player.score !== undefined && (
                     <input
                       className="inp"
+                      name={`player-score-${index}`}
                       style={{ flex: 1, textAlign: "center" }}
                       type="number"
                       placeholder="Pts"

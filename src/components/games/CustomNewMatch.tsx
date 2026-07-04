@@ -316,6 +316,7 @@ function CustomNewMatch({
                   <div className="rdfrow">
                     <input
                       className="rdinp"
+                      name="custom-round-score"
                       type="number"
                       placeholder="0"
                       value={roundScores[player.id] || ""}

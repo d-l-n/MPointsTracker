@@ -1392,7 +1392,6 @@ html:not(.dark) .btnsec.nav-leave-discard:hover{color:#5A1E35;border-color:rgba(
     min-width:unset !important;
     bottom:0 !important;
     align-items:stretch !important;
-    backdrop-filter:var(--blur);
     backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
   }
   .nav.nav--hidden{transform:translateX(calc(-100% - 12px)) !important}

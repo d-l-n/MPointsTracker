@@ -145,6 +145,7 @@ function CellInput({ row, value, onChange, color, "data-testid": dataTestId }: C
       <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
         <input
           type="number"
+          name="generala-score"
           min="0"
           max={row.max}
           placeholder="0"

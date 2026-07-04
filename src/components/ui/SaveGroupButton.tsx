@@ -139,6 +139,8 @@ export default function SaveGroupButton({
       <div style={{ display: "flex", gap: 8 }}>
         <input
           className="inp"
+          id="group-name"
+          name="group-name"
           style={{ flex: 1 }}
           placeholder={t("saveGroupNamePlaceholder")}
           aria-label={t("saveGroupNamePlaceholder")}
