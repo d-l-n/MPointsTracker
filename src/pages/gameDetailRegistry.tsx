@@ -2,7 +2,8 @@ import { lazy } from "react";
 import type { ComponentType, LazyExoticComponent } from "react";
 
 import { GAMES } from "../data/games";
-import type { GameId, GameType } from "../types";
+import type { GameType } from "../data/games";
+import type { GameId } from "../types";
 
 type GameComponent = LazyExoticComponent<ComponentType<Record<string, unknown>>>;
 type GameLoaderKey =
@@ -42,49 +43,18 @@ const GAME_COMPONENTS: Record<GameLoaderKey, GameComponent> = {
   canasta: lazy(() => import("../components/games/CanastaNewMatch")),
 };
 
+const LOADER_KEY_MAP: Partial<Record<GameType, GameLoaderKey>> = {
+  truco: "truco", chin: "chin", esquinados: "esquinados",
+  ajedrez: "ajedrez", chancho: "chancho", burako: "burako",
+  racha_perdida: "racha_perdida", poker: "poker", blackjack: "blackjack",
+  generala: "generala", sushi_do: "sushi_do", porcion: "porcion",
+  custom: "custom", canasta: "canasta",
+  chinchon: "generic", rummy: "generic", monopoly: "generic",
+  life: "generic", basta_dym: "generic",
+};
+
 function resolveLoaderKey(gameType: GameType): GameLoaderKey {
-  switch (gameType) {
-    case "truco":
-      return "truco";
-    case "chin":
-      return "chin";
-    case "esquinados":
-      return "esquinados";
-    case "ajedrez":
-      return "ajedrez";
-    case "chancho":
-      return "chancho";
-    case "burako":
-      return "burako";
-    case "racha_perdida":
-      return "racha_perdida";
-    case "poker":
-      return "poker";
-    case "blackjack":
-      return "blackjack";
-    case "generala":
-      return "generala";
-    case "sushi_do":
-      return "sushi_do";
-    case "porcion":
-      return "porcion";
-    case "custom":
-      return "custom";
-    case "canasta":
-      return "canasta";
-    case "chinchon":
-    case "rummy":
-    case "monopoly":
-    case "life":
-    case "basta_dym":
-      return "generic";
-    case "uno_classic":
-    case "uno_nomercy":
-    case "uno_flip":
-    case "uno_dos":
-    default:
-      return "uno";
-  }
+  return LOADER_KEY_MAP[gameType] ?? "uno";
 }
 
 export function getGameComponent(gameType: GameType) {

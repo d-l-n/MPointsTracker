@@ -1,7 +1,22 @@
 import { buildStats } from "../lib/stats";
 import { buildInsights } from "../lib/insights";
-import { formatUnoRosterSummary } from "../lib/unoRosterSummary";
-import type { Match, TranslationFn } from "../types";
+import type { Match, TranslationFn, UnoRosterEvent } from "../types";
+
+function formatUnoRosterSummary(match: Match | null | undefined): string | null {
+  if (!match?.rosterEvents?.length) return null;
+  const getPortableRound = (event: UnoRosterEvent) =>
+    Number.isFinite(event.effectiveRound) && event.effectiveRound > 0 ? Math.trunc(event.effectiveRound) : 1;
+  const formatEvent = (event: UnoRosterEvent) => {
+    const name = event.playerName?.trim();
+    return name ? `${event.type === "join" ? "+" : "-"}${name} R${getPortableRound(event)}` : null;
+  };
+  return match.rosterEvents
+    .map((event, index) => ({ event, index }))
+    .sort((a, b) => getPortableRound(a.event) - getPortableRound(b.event) || a.index - b.index)
+    .map(({ event }) => formatEvent(event))
+    .filter(Boolean)
+    .join(" · ") || null;
+}
 
 type StatsMatchPlayer = string | { name?: string | null };
 

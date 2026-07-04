@@ -393,6 +393,7 @@ const en = {
   "installTitle": "Install MPoints Tracker",
   "installDesc": "Quick access from your home screen, without a browser.",
   "installBtn": "Install",
+  "installLater": "Remind me later",
   "uniquePlayers": "Unique players",
   "appInfoDesc": "Description, language and reports",
   "mercyCaused": "Who caused the elimination? (+250 pts):",

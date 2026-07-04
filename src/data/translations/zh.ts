@@ -399,6 +399,7 @@ const zh = {
   "installTitle": "安装 MPoints Tracker",
   "installDesc": "从主屏幕快速访问，无需浏览器。",
   "installBtn": "安装",
+  "installLater": "稍后提醒",
   "uniquePlayers": "独特玩家",
   "appInfoDesc": "描述、语言和报告",
   "mercyCaused": "谁造成了淘汰？（+250分）：",

@@ -12,14 +12,14 @@ describe("ConfirmModal", () => {
   test("calls onCancel when cancel button clicked", () => {
     const onCancel = vi.fn();
     render(<ConfirmModal title="T" msg="M" onConfirm={() => {}} onCancel={onCancel} />);
-    fireEvent.click(screen.getByText("cancel"));
+    fireEvent.click(screen.getByText("Cancelar"));
     expect(onCancel).toHaveBeenCalled();
   });
 
   test("calls onConfirm when confirm button clicked", () => {
     const onConfirm = vi.fn();
     render(<ConfirmModal title="T" msg="M" onConfirm={onConfirm} onCancel={() => {}} />);
-    fireEvent.click(screen.getByText("delete"));
+    fireEvent.click(screen.getByText("Eliminar"));
     expect(onConfirm).toHaveBeenCalled();
   });
 
@@ -45,7 +45,7 @@ describe("ConfirmModal", () => {
         confirmTone="danger" secondaryLabel="S" onSecondaryAction={() => {}} secondaryTone="danger"
       />,
     );
-    expect(screen.getByText("delete")).toHaveClass("is-danger");
+    expect(screen.getByText("Eliminar")).toHaveClass("is-danger");
   });
 
   test("calls onOverlayClick when overlay is clicked", () => {

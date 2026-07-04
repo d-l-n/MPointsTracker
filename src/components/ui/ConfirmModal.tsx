@@ -1,7 +1,5 @@
 import React, { useEffect } from "react";
 
-import { getGlobalT } from "../../data/translations";
-
 interface ConfirmModalProps {
   title?: React.ReactNode;
   msg?: React.ReactNode;
@@ -35,8 +33,8 @@ function ConfirmModal({
   confirmTone,
   secondaryTone,
 }: ConfirmModalProps) {
-  const confirmText = confirmLabel ?? getGlobalT()("delete");
-  const cancelText = cancelLabel ?? getGlobalT()("cancel");
+  const confirmText = confirmLabel ?? "Eliminar";
+  const cancelText = cancelLabel ?? "Cancelar";
   const secondaryText = secondaryLabel ?? null;
 
   // Close on Escape

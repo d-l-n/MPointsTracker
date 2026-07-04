@@ -1,7 +1,31 @@
 import { useCallback, type ChangeEvent } from "react";
 import { type MatchStore, type TranslationFn } from "../../types";
-import { parseBackupJson } from "../../lib/backup";
 import { SectionLabel, SettingsToggleRow } from "./shared";
+
+type BackupResult =
+  | { ok: true; data: MatchStore; matchCount: number }
+  | { ok: false; error: "invalid-json" | "invalid-shape" | "empty" };
+
+function parseBackupJson(text: string): BackupResult {
+  let raw: unknown;
+  try {
+    raw = JSON.parse(text);
+  } catch {
+    return { ok: false, error: "invalid-json" };
+  }
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
+    return { ok: false, error: "invalid-shape" };
+  }
+  const data: MatchStore = {};
+  let matchCount = 0;
+  for (const key of Object.keys(raw as Record<string, unknown>)) {
+    const value = (raw as Record<string, unknown>)[key];
+    if (!Array.isArray(value)) continue;
+    data[key] = value;
+    matchCount += value.length;
+  }
+  return matchCount > 0 ? { ok: true, data, matchCount } : { ok: false, error: "empty" };
+}
 
 export interface AdvancedSectionProps {
   wakeLockEnabled: boolean;

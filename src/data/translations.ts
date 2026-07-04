@@ -73,17 +73,6 @@ function getTranslationParityReport(
   );
 }
 
-let _globalT = (key) => key;
-
-function setGlobalT(fn: (key: string) => string) {
-  _globalT = fn;
-}
-
-/** @returns {function(string): string} */
-function getGlobalT(): (key: string) => string {
-  return _globalT;
-}
-
 function detectLang() {
   const saved = (() => {
     try {
@@ -129,9 +118,7 @@ export {
   TRANSLATIONS,
   flattenTranslationKeys,
   getTranslationParityReport,
-  getGlobalT,
   detectLang,
   saveLang,
-  setGlobalT,
   useT,
 };

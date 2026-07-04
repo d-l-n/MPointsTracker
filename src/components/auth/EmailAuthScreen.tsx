@@ -53,7 +53,6 @@ const iconButtonStyle: CSSProperties = {
 const authLogoStyle: CSSProperties = {
   cursor: "pointer",
   userSelect: "none",
-  background: "none",
   border: "none",
   padding: 0,
   fontFamily: "inherit",

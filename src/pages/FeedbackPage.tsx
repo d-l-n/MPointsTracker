@@ -1,7 +1,7 @@
 import React, { useState, type CSSProperties } from "react";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 
-import { getGlobalT } from "../data/translations";
+
 import { fbDb } from "../lib/firebase";
 import type { TranslationFn } from "../types";
 
@@ -47,7 +47,7 @@ async function submitFeedback({ type, message, userName, userEmail }: FeedbackPa
   }
 }
 
-function FeedbackPage({ user, showToast, t = getGlobalT() as TranslationFn }: FeedbackPageProps) {
+function FeedbackPage({ user, showToast, t = ((key: string) => key) as TranslationFn }: FeedbackPageProps) {
   const [selected, setSelected] = useState<string | null>(null);
   const [message, setMessage] = useState("");
   const [sending, setSending] = useState(false);

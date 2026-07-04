@@ -11,7 +11,6 @@ import {
 import type { User } from "firebase/auth";
 
 import { fbDb, fbAuth } from "../lib/firebase";
-import { normalizePublicProfile } from "../lib/publicData";
 import type {
   AppStorageData,
   LegacyUserDoc,
@@ -28,6 +27,15 @@ const userdataRef = (uid: string) => doc(fbDb, "userdata", uid);
 
 type SharedMatchMap = Record<string, (Match & Record<string, unknown>)[]>;
 type MinimalProfileUser = Pick<User, "displayName" | "photoURL"> & Partial<Pick<User, "email">>;
+
+export function normalizePublicProfile(raw: LegacyUserDoc = {}): PublicProfile {
+  return {
+    displayName: raw.displayName ?? raw.profile?.displayName ?? null,
+    photoURL: raw.photoURL ?? raw.profile?.photoURL ?? null,
+    lastLogin: raw.lastLogin ?? raw.profile?.lastLogin ?? null,
+    email: raw.profile?.email ?? null,
+  };
+}
 
 export const saveUserProfile = async (uid: string, user: MinimalProfileUser) => {
   await setDoc(

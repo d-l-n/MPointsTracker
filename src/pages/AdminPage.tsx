@@ -4,7 +4,7 @@ import { fbDb } from "../lib/firebase";
 import { fmtDate } from "../lib/stats";
 import { GAMES, getGameName } from "../data/games";
 import ConfirmModal from "../components/ui/ConfirmModal";
-import { normalizePublicProfile } from "../lib/publicData";
+import { normalizePublicProfile } from "../services/userService";
 import type { GameDefinition, Match, PublicProfile, TranslationFn } from "../types";
 
 const identity = (key: string) => key;
@@ -598,7 +598,7 @@ function AdminPage({ showToast, t = identity }: AdminPageProps) {
 
   return (
     <div className="admin-page">
-      <div className="admin-tabs" role="tablist" aria-label="Admin tabs" onKeyDown={handleAdminTabKeyDown}>
+      <div className="admin-tabs" role="tablist" tabIndex={0} aria-label="Admin tabs" onKeyDown={handleAdminTabKeyDown}>
         {[
           ["reports", t("adminTabReports")],
           ["users", t("adminTabUsers")],

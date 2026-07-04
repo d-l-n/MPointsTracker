@@ -1,23 +1,8 @@
 import { describe, expect, test, vi, beforeEach, afterEach } from "vitest";
 import {
-  setGlobalT, getGlobalT, detectLang, saveLang,
+  detectLang, saveLang,
   flattenTranslationKeys, getTranslationParityReport, TRANSLATIONS,
 } from "./translations.ts";
-
-describe("setGlobalT / getGlobalT", () => {
-  afterEach(() => {
-    setGlobalT((key) => key);
-  });
-
-  test("default identity function", () => {
-    expect(getGlobalT()("hello")).toBe("hello");
-  });
-
-  test("setGlobalT replaces the global translator", () => {
-    setGlobalT((key) => `[${key}]`);
-    expect(getGlobalT()("test")).toBe("[test]");
-  });
-});
 
 describe("saveLang", () => {
   beforeEach(() => localStorage.removeItem("bgt_lang"));

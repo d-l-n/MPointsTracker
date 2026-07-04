@@ -1,6 +1,5 @@
 import { useMemo, useState, type CSSProperties } from "react";
 
-import { getLastGroup, saveLastGroup } from "../../lib/groupStorage";
 import { mkId } from "../../lib/storage";
 import type { PlayerGroup, PlayerGroupMember, TranslationFn } from "../../types";
 import ConfirmModal from "./ConfirmModal";
@@ -18,6 +17,25 @@ interface LinkedGroupPlayer {
 
 interface StoredGroup extends PlayerGroup {
   players: PlayerGroupMember[];
+}
+
+const GROUP_STORAGE_KEY = "bgt_last_group_v1";
+
+function getLastGroup(gameId: string): StoredGroup | null {
+  try {
+    const all = JSON.parse(localStorage.getItem(GROUP_STORAGE_KEY) || "{}") as Record<string, StoredGroup>;
+    return all[gameId] || null;
+  } catch {
+    return null;
+  }
+}
+
+function saveLastGroup(gameId: string, group: StoredGroup): void {
+  try {
+    const all = JSON.parse(localStorage.getItem(GROUP_STORAGE_KEY) || "{}") as Record<string, StoredGroup>;
+    all[gameId] = { name: group.name, players: group.players };
+    localStorage.setItem(GROUP_STORAGE_KEY, JSON.stringify(all));
+  } catch { /* storage unavailable */ }
 }
 
 interface GroupPickerProps {

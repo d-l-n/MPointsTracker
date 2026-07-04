@@ -1,5 +1,4 @@
 import { memo, useEffect, useMemo, useRef, useState } from "react";
-import { useDebounce } from "../../hooks/useDebounce";
 
 import { buildHomeViewModel } from "./homeModel";
 import HomeActionCard from "./HomeActionCard";
@@ -28,6 +27,12 @@ interface HomeTabProps {
   onOpenGame: (gameId: string) => void;
   onQuickAction: (gameId: string, actionKey: string) => void;
   sectionHeaderHiddenByScroll: boolean;
+}
+
+function useDebounce<T>(value: T, delay: number): T {
+  const [debounced, setDebounced] = useState(value);
+  useEffect(() => { const timer = setTimeout(() => setDebounced(value), delay); return () => clearTimeout(timer); }, [value, delay]);
+  return debounced;
 }
 
 const HomeTab = memo(function HomeTab({

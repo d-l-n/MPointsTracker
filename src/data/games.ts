@@ -1,23 +1,20 @@
 import { PORTION_FOODS, getPortionFoodByKey } from "./portionFoods";
 import type { GameDefinition, GameId } from "../types";
 
-const LEGACY_PORTION_GAMES = Object.fromEntries(
+const LEGACY_PORTION_GAMES: Record<string, GameDefinition> = Object.fromEntries(
   PORTION_FOODS.map((food) => [
-    food.key as GameId,
+    food.key,
     {
-      id: food.key as GameId,
+      id: food.key,
       name: food.name,
       emoji: food.emoji,
       color: food.color,
-      type: "porcion",
+      type: "porcion" as const,
       hiddenFromCatalog: true,
       tagline: "Conta tus porciones",
-    } satisfies GameDefinition,
+    },
   ]),
-) as Record<
-  Extract<GameId, "sushi" | "pizza" | "hamburguesa" | "pancho" | "empanadas" | "facturas" | "sanguchitos" | "cookies">,
-  GameDefinition
->;
+);
 
 const GAMES: Record<GameId, GameDefinition> = {
   uno: {
@@ -142,6 +139,8 @@ const GAMES: Record<GameId, GameDefinition> = {
     tagline: "5000 pts · Equipos o individual",
     coverImage: "/games/covers/canasta.webp"},
 };
+
+export type GameType = (typeof GAMES)[GameId]["type"];
 
 const TAGLINE_KEYS: Partial<Record<GameId, string>> = {
   uno: "taglineUno",

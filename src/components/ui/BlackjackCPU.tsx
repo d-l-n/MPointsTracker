@@ -450,7 +450,8 @@ function BlackjackCPU({onClose}) {
       backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",
       display:"flex",alignItems:"center",justifyContent:"center",padding:"12px",
     }}
-      onClick={e=>e.target===e.currentTarget&&onClose()}>
+      onClick={e=>e.target===e.currentTarget&&onClose()}
+      onKeyDown={e=>{if(e.key==="Escape")onClose();}}>
 
       {/* Modal */}
       <div style={{

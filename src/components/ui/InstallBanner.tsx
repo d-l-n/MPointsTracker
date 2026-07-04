@@ -24,16 +24,32 @@ function InstallBanner({ dark: _dark, t = ((key: string) => key) as TranslationF
   const showTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const DISMISSED_KEY = "bgt_install_dismissed";
-  /** Re-show the banner after 30 days so users who uninstall can be prompted again */
+  const DISMISS_LATER_KEY = "bgt_install_dismissed_later";
   const DISMISS_TTL_MS = 30 * 24 * 60 * 60 * 1000;
+  const DISMISS_LATER_TTL_MS = 1 * 24 * 60 * 60 * 1000;
+  const [isMobile, setIsMobile] = useState(
+    () => window.matchMedia("(max-width: 767px)").matches
+  );
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
 
   useEffect(() => {
     const raw = localStorage.getItem(DISMISSED_KEY);
     if (raw) {
       const ts = parseInt(raw, 10);
       if (!isNaN(ts) && Date.now() - ts < DISMISS_TTL_MS) return;
-      // TTL expired — remove stale flag so the banner can show again
       localStorage.removeItem(DISMISSED_KEY);
+    }
+    const later = localStorage.getItem(DISMISS_LATER_KEY);
+    if (later) {
+      const ts = parseInt(later, 10);
+      if (!isNaN(ts) && Date.now() - ts < DISMISS_LATER_TTL_MS) return;
+      localStorage.removeItem(DISMISS_LATER_KEY);
     }
     if (window.matchMedia("(display-mode: standalone)").matches) return;
 
@@ -65,7 +81,7 @@ function InstallBanner({ dark: _dark, t = ((key: string) => key) as TranslationF
     };
   }, []);
 
-  const dismiss = () => {
+  const close = (later = false) => {
     setHiding(true);
     if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
     hideTimerRef.current = setTimeout(() => {
@@ -73,7 +89,7 @@ function InstallBanner({ dark: _dark, t = ((key: string) => key) as TranslationF
       setHiding(false);
       hideTimerRef.current = null;
     }, 300);
-    localStorage.setItem(DISMISSED_KEY, String(Date.now()));
+    localStorage.setItem(later ? DISMISS_LATER_KEY : DISMISSED_KEY, String(Date.now()));
   };
 
   const handleInstall = async () => {
@@ -81,7 +97,7 @@ function InstallBanner({ dark: _dark, t = ((key: string) => key) as TranslationF
     await deferredPrompt.current.prompt();
     const { outcome } = await deferredPrompt.current.userChoice;
     if (outcome === "accepted") {
-      dismiss();
+      close();
     }
     deferredPrompt.current = null;
   };
@@ -91,11 +107,28 @@ function InstallBanner({ dark: _dark, t = ((key: string) => key) as TranslationF
   if (mode === "ios") {
     return (
       <div className={`ios-hint${hiding ? " hiding" : ""}`}>
-        <button className="ios-hint-close" onClick={dismiss} aria-label={t("cancel")}>
+        <button className="ios-hint-close" onClick={() => close()} aria-label={t("cancel")}>
           ✕
         </button>
         <div className="ios-hint-title">📲 {t("installTitle")}</div>
         <div className="ios-hint-desc">{t("installPrompt")}</div>
+      </div>
+    );
+  }
+
+  if (isMobile) {
+    return (
+      <div className={`install-popup-overlay${hiding ? " hiding" : ""}`} role="dialog" aria-modal="true" aria-label={t("installTitle")}>
+        <div className="install-popup">
+          <button className="install-popup-close" onClick={() => close()} aria-label={t("cancel")}>✕</button>
+          <div className="install-popup-icon">🃏</div>
+          <div className="install-popup-title">{t("installTitle")}</div>
+          <div className="install-popup-desc">{t("installDesc")}</div>
+          <div className="install-popup-actions">
+            <button className="install-popup-btn" onClick={handleInstall}>{t("installBtn")}</button>
+            <button className="install-popup-later" onClick={() => close(true)}>{t("installLater")}</button>
+          </div>
+        </div>
       </div>
     );
   }
@@ -110,7 +143,7 @@ function InstallBanner({ dark: _dark, t = ((key: string) => key) as TranslationF
       <button className="install-banner-btn" onClick={handleInstall}>
         {t("installBtn")}
       </button>
-      <button className="install-banner-close" onClick={dismiss} aria-label={t("cancel")}>
+      <button className="install-banner-close" onClick={() => close()} aria-label={t("cancel")}>
         ✕
       </button>
     </div>

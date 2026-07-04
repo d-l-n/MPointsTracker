@@ -3,32 +3,18 @@ import { Navigate, createBrowserRouter } from "react-router-dom";
 import App from "../App";
 import ProtectedRoute from "../components/auth/ProtectedRoute";
 import AppErrorBoundary from "./AppErrorBoundary";
-import {
-  appShellLoader,
-  gameRouteLoader,
-  historyRouteLoader,
-  settingsRouteLoader,
-} from "./routeLoaders";
+import { routeLoader } from "./routeLoaders";
 
 const appRouteError = <AppErrorBoundary />;
 
 export const router = createBrowserRouter([
-  { path: "/", element: <App />, loader: appShellLoader, errorElement: appRouteError },
-  { path: "/login", element: <App />, loader: appShellLoader, errorElement: appRouteError },
-  { path: "/rules", element: <App />, loader: appShellLoader, errorElement: appRouteError },
-  { path: "/champions", element: <App />, loader: appShellLoader, errorElement: appRouteError },
-  { path: "/settings", element: <App />, loader: settingsRouteLoader, errorElement: appRouteError },
-  {
-    path: "/admin",
-    loader: appShellLoader,
-    errorElement: appRouteError,
-    element: (
-      <ProtectedRoute>
-        <App />
-      </ProtectedRoute>
-    ),
-  },
-  { path: "/history", element: <App />, loader: historyRouteLoader, errorElement: appRouteError },
-  { path: "/game/:gameId", element: <App />, loader: gameRouteLoader, errorElement: appRouteError },
+  { path: "/", element: <App />, loader: routeLoader, errorElement: appRouteError },
+  { path: "/login", element: <App />, loader: routeLoader, errorElement: appRouteError },
+  { path: "/rules", element: <App />, loader: routeLoader, errorElement: appRouteError },
+  { path: "/champions", element: <App />, loader: routeLoader, errorElement: appRouteError },
+  { path: "/settings", element: <App />, loader: routeLoader, errorElement: appRouteError },
+  { path: "/admin", element: <ProtectedRoute><App /></ProtectedRoute>, loader: routeLoader, errorElement: appRouteError },
+  { path: "/history", element: <App />, loader: routeLoader, errorElement: appRouteError },
+  { path: "/game/:gameId", element: <App />, loader: routeLoader, errorElement: appRouteError },
   { path: "*", element: <Navigate to="/" replace /> },
 ]);

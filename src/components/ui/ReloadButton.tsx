@@ -1,6 +1,5 @@
 import { useEffect, useState, type CSSProperties, type MouseEvent } from "react";
 
-import { getGlobalT } from "../../data/translations";
 import type { TranslationFn } from "../../types";
 
 declare global {
@@ -25,7 +24,7 @@ const baseIconStyle: CSSProperties = {
   lineHeight: 1,
 };
 
-export default function ReloadButton({ t = getGlobalT() as TranslationFn }: ReloadButtonProps) {
+export default function ReloadButton({ t = ((key: string) => key) as TranslationFn }: ReloadButtonProps) {
   const [updateReady, setUpdateReady] = useState(false);
   const [isOffline, setIsOffline] = useState(typeof navigator !== "undefined" ? !navigator.onLine : false);
 

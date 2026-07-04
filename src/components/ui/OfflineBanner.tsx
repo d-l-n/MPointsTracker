@@ -1,11 +1,11 @@
-import { getGlobalT } from "../../data/translations";
+import type { TranslationFn } from "../../types";
 
 interface OfflineBannerProps {
   compact?: boolean;
+  t?: TranslationFn;
 }
 
-export default function OfflineBanner({ compact = false }: OfflineBannerProps) {
-  const t = getGlobalT();
+export default function OfflineBanner({ compact = false, t = ((key: string) => key) as TranslationFn }: OfflineBannerProps) {
   return (
     <div
       className="offline-banner glass"

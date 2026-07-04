@@ -395,6 +395,7 @@ const ja = {
   "installTitle": "MPoints Tracker をインストール",
   "installDesc": "ブラウザなしでホーム画面から素早くアクセス。",
   "installBtn": "インストール",
+  "installLater": "後で通知",
   "uniquePlayers": "ユニークプレイヤー",
   "appInfoDesc": "説明、言語、レポート",
   "mercyCaused": "誰が脱落させた？（+250pt）：",

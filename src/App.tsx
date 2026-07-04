@@ -4,7 +4,7 @@ import React, {
 import type { User } from "firebase/auth";
 import { useLoaderData, useLocation, useNavigate } from "react-router-dom";
 
-import { detectLang, saveLang, useT, setGlobalT } from "./data/translations";
+import { detectLang, saveLang, useT } from "./data/translations";
 import { GAMES } from "./data/games";
 import { setFmtDateLang } from "./lib/stats";
 import { shareMatchWithPlayers } from "./services/matchService";
@@ -12,7 +12,6 @@ import { triggerConfetti } from "./lib/confetti";
 
 // Hooks
 import { useToast } from "./hooks/useToast";
-import { useDebugLog } from "./hooks/useDebugLog";
 import { useOnlineStatus } from "./hooks/useOnlineStatus";
 import { useTheme } from "./hooks/useTheme";
 import { useAuth } from "./hooks/useAuth";
@@ -26,7 +25,7 @@ import { useWakeLock } from "./hooks/useWakeLock";
 // Context
 import { AppProvider } from "./context/AppContext";
 import AppLayout from "./components/ui/AppLayout";
-import type { AppContextValue, Match, PendingInvite } from "./types";
+import type { AppContextValue, DebugLogEntry, Match, PendingInvite } from "./types";
 
 type RematchPayload = {
   gameId?: string;
@@ -58,12 +57,16 @@ export default function App() {
   const [lang, setLang] = useState<string>(() => detectLang());
   const t = useT(lang);
   const changeLang = useCallback((l: string) => { setLang(l); saveLang(l); setFmtDateLang(l); }, []);
-  useEffect(() => { setFmtDateLang(lang); setGlobalT(t); }, [lang, t]);
+  useEffect(() => { setFmtDateLang(lang); }, [lang]);
   useEffect(() => { document.documentElement.lang = lang; }, [lang]);
 
   // ── Toast & debug ──────────────────────────────────────────────────────────
   const { toast, showToast } = useToast();
-  const { logs: debugLogs, addLog } = useDebugLog();
+  const [debugLogs, setDebugLogs] = useState<DebugLogEntry[]>([]);
+  const addLog = useCallback((msg: string, type = "ok") => {
+    setDebugLogs((prev) => [...prev.slice(-30), { msg: `[${new Date().toLocaleTimeString()}] ${msg}`, type, id: Date.now() + Math.random() }]);
+    if (import.meta.env.DEV) console.log(`[Debug] ${msg}`);
+  }, []);
   const [showDebug, setShowDebug] = useState(false);
   const tapCount = useRef(0);
   const tapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);

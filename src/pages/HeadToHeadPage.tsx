@@ -78,6 +78,7 @@ function PlayerSelect({ value, onChange, names, exclude, placeholder, label, tes
         className="inp h2h-input"
         value={query}
         placeholder={placeholder}
+        aria-label={label}
         onFocus={() => setOpen(true)}
         onBlur={handleBlur}
         onChange={e => { setQuery(e.target.value); onChange(""); setOpen(true); }}

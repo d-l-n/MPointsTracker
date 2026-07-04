@@ -27,9 +27,9 @@ export const PORTION_FOODS: PortionFood[] = [
   { key: "cookies", name: "Cookies", emoji: "🍪", color: "#C0651A", tKey: "foodCookies" },
 ];
 
-export const PORTION_FOODS_BY_KEY = Object.fromEntries(
+export const PORTION_FOODS_BY_KEY: Record<string, PortionFood> = Object.fromEntries(
   PORTION_FOODS.map((food) => [food.key, food]),
-) as Record<PortionFoodKey, PortionFood>;
+);
 
 export function getPortionFoodByKey(foodKey: string): PortionFood | null {
   return PORTION_FOODS_BY_KEY[foodKey as PortionFoodKey] || null;

@@ -3,8 +3,24 @@ import type { CSSProperties } from "react";
 import ConfirmModal from "../components/ui/ConfirmModal";
 import EditMatchModal from "../components/ui/EditMatchModal";
 import { fmtDate } from "../lib/stats";
-import { formatUnoRosterSummary } from "../lib/unoRosterSummary";
 import { GAMES, getGameName } from "../data/games";
+import type { UnoRosterEvent } from "../types";
+
+function formatUnoRosterSummary(match: Match | null | undefined): string | null {
+  if (!match?.rosterEvents?.length) return null;
+  const getPortableRound = (event: UnoRosterEvent) =>
+    Number.isFinite(event.effectiveRound) && event.effectiveRound > 0 ? Math.trunc(event.effectiveRound) : 1;
+  const formatEvent = (event: UnoRosterEvent) => {
+    const name = event.playerName?.trim();
+    return name ? `${event.type === "join" ? "+" : "-"}${name} R${getPortableRound(event)}` : null;
+  };
+  return match.rosterEvents
+    .map((event, index) => ({ event, index }))
+    .sort((a, b) => getPortableRound(a.event) - getPortableRound(b.event) || a.index - b.index)
+    .map(({ event }) => formatEvent(event))
+    .filter(Boolean)
+    .join(" · ") || null;
+}
 import { useAppContext } from "../context/AppContext";
 import type { AppContextValue, Match, TranslationFn } from "../types";
 

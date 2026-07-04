@@ -393,6 +393,7 @@ const de = {
   "installTitle": "MPoints Tracker installieren",
   "installDesc": "Schnellzugriff vom Startbildschirm, ohne Browser.",
   "installBtn": "Installieren",
+  "installLater": "Später erinnern",
   "uniquePlayers": "Eindeutige Spieler",
   "appInfoDesc": "Beschreibung, Sprache und Berichte",
   "mercyCaused": "Wer hat die Eliminierung verursacht? (+250 Pkt):",

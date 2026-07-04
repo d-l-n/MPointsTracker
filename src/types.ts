@@ -32,31 +32,6 @@ export type GameId =
   | "custom"
   | "canasta";
 
-export type GameType =
-  | "uno_classic"
-  | "uno_nomercy"
-  | "uno_flip"
-  | "uno_dos"
-  | "truco"
-  | "chancho"
-  | "esquinados"
-  | "chin"
-  | "chinchon"
-  | "rummy"
-  | "poker"
-  | "blackjack"
-  | "burako"
-  | "generala"
-  | "ajedrez"
-  | "racha_perdida"
-  | "sushi_do"
-  | "porcion"
-  | "basta_dym"
-  | "monopoly"
-  | "life"
-  | "custom"
-  | "canasta";
-
 export interface PlayerResult {
   name: string;
   score?: number;
@@ -82,7 +57,7 @@ export interface GameDefinition {
   name: string;
   emoji: string;
   color: string;
-  type: GameType;
+  type: string;
   winScore?: number;
   tagline?: string;
   coverImage?: string;

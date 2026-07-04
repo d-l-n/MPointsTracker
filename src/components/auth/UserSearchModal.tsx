@@ -2,7 +2,7 @@ import React, { useState, type KeyboardEvent } from "react";
 import { doc, getDoc, collection, getDocs } from "firebase/firestore";
 
 import { fbDb, fbAuth } from "../../lib/firebase";
-import { normalizePublicProfile } from "../../lib/publicData";
+import { normalizePublicProfile } from "../../services/userService";
 import QRScanner from "./QRScanner";
 import type { PublicProfile, TranslationFn } from "../../types";
 

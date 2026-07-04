@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import QRCode from "qrcode";
 
-import { getGlobalT } from "../../data/translations";
+
 import type { TranslationFn } from "../../types";
 
 interface UserQRCodeProps {
@@ -10,7 +10,7 @@ interface UserQRCodeProps {
   t?: TranslationFn;
 }
 
-function UserQRCode({ uid, displayName, t = getGlobalT() as TranslationFn }: UserQRCodeProps) {
+function UserQRCode({ uid, displayName, t = ((key: string) => key) as TranslationFn }: UserQRCodeProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [ready, setReady] = useState(false);
   const [error, setError] = useState(false);
@@ -58,7 +58,7 @@ function UserQRCode({ uid, displayName, t = getGlobalT() as TranslationFn }: Use
       >
         {!ready && !error ? <span style={{ fontSize: ".75rem", color: "#999" }}>{t("loading2")}</span> : null}
         {error ? <span style={{ fontSize: ".75rem", color: "#ff4444" }}>{t("qrError")}</span> : null}
-        <canvas ref={canvasRef} role="img" aria-label={t("qrCodeHint")} style={{ display: ready ? "block" : "none" }} />
+        <canvas ref={canvasRef} aria-label={t("qrCodeHint")} style={{ display: ready ? "block" : "none" }} />
       </div>
       <div style={{ fontSize: ".7rem", color: "var(--tx3)", textAlign: "center", maxWidth: 200 }}>{t("qrCodeHint")}</div>
     </div>

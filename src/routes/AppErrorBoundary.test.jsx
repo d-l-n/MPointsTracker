@@ -1,24 +1,11 @@
 import { render, screen } from "@testing-library/react";
 import { createMemoryRouter, RouterProvider } from "react-router-dom";
-import { afterEach, describe, expect, test } from "vitest";
+import { describe, expect, test } from "vitest";
 
-import { setGlobalT } from "../data/translations";
 import AppErrorBoundary from "./AppErrorBoundary";
 
 describe("AppErrorBoundary", () => {
-  afterEach(() => {
-    setGlobalT((key) => key);
-  });
-
   test("renders the custom route error screen", async () => {
-    const labels = {
-      errorTitle: "Algo salió mal",
-      errorDesc: "La app encontró un error inesperado. Podés volver al inicio o recargar la pantalla.",
-      errorBack: "Volver al inicio",
-      errorRetry: "Reintentar",
-      errorDetails: "Detalles",
-    };
-    setGlobalT((key) => labels[key] || key);
 
     const router = createMemoryRouter([
       {
