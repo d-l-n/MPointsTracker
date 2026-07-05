@@ -178,7 +178,7 @@ function GlobalHistoryPage({
         showToast(t("deleted"), 5000, {
           label: t("undo"),
           onAction: () => {
-            clearTimeout(pendingDelete?.timerId);
+            clearTimeout(timerId);
             setPendingDelete(null);
             showToast(t("deletedUndone"));
           },
@@ -508,7 +508,7 @@ function GlobalHistoryPage({
               showToast(t("deleted"), 5000, {
                 label: t("undo"),
                 onAction: () => {
-                  clearTimeout(pendingDelete?.timerId);
+                  clearTimeout(timerId);
                   setPendingDelete(null);
                   showToast(t("deletedUndone"));
                 },
