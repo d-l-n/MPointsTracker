@@ -734,6 +734,8 @@ const es = {
   "savedCloud": "✅ Guardado en la nube",
   "savedLocal": "✅ Partida guardada",
   "deleted": "🗑️ Partida eliminada",
+  "deletedUndone": "↩️ Partida restaurada",
+  "renamePlayer": "Renombrar jugador",
   "matchUpdated": "✅ Partida actualizada",
   "sessionClosed": "👋 Sesión cerrada",
   "loginError": "Error al iniciar sesión",
@@ -1003,9 +1005,16 @@ const es = {
   "spotifyPosLeft": "Izquierda",
   "spotifyPosition": "Posición del reproductor",
   "spotifyPosRight": "Derecha",
-  "onboardingTitle": "Bienvenido a MPoints",
-  "onboardingMsg": "Registrá puntajes de partidas de UNO, Truco, Chinchón y más. Seguí estadísticas, rankings y compará resultados con tus amigos.",
-  "onboardingCta": "Empezar",
+  "onboardingStep1Title": "¡Bienvenido a MPoints!",
+  "onboardingStep1Body": "Llevá el registro de los puntos de tus partidas de mesa, guardá cada juego y revisá el historial cuando quieras.",
+  "onboardingStep2Title": "Registrá y revisá tus partidas",
+  "onboardingStep2Body": "Elegí un juego, cargá los jugadores y el resultado. Las estadísticas y el historial se actualizan solos.",
+  "onboardingStep3Title": "Conectá con tus amigos",
+  "onboardingStep3Body": "Compartí tu QR o escaneá el de otro jugador para sincronizar partidas entre dispositivos.",
+  "onboardingNext": "Siguiente",
+  "onboardingBack": "Atrás",
+  "onboardingSkip": "Saltar",
+  "onboardingFinish": "Empezar",
 };
 
 export default es;

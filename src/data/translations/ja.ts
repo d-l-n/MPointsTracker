@@ -859,6 +859,8 @@ const ja = {
   "savedCloud": "✅ クラウドに保存",
   "savedLocal": "✅ 試合を保存しました",
   "deleted": "🗑️ 試合を削除しました",
+  "deletedUndone": "↩️ 試合を復元しました",
+  "renamePlayer": "プレイヤー名を変更",
   "matchUpdated": "✅ 試合を更新しました",
   "sessionClosed": "👋 ログアウトしました",
   "loginError": "ログインエラー",
@@ -1005,9 +1007,16 @@ const ja = {
   "spotifyPosLeft": "左",
   "spotifyPosition": "プレイヤーの位置",
   "spotifyPosRight": "右",
-  "onboardingTitle": "MPointsへようこそ",
-  "onboardingMsg": "UNO、Truco、Chinchónなどのスコアを記録。統計やランキングを跟踪し、友達と結果を比較しましょう。",
-  "onboardingCta": "はじめる",
+  "onboardingStep1Title": "MPointsへようこそ！",
+  "onboardingStep1Body": "ボードゲームの得点を記録し、毎回の対戦を保存して、いつでも履歴を見直せます。",
+  "onboardingStep2Title": "対戦を記録して確認",
+  "onboardingStep2Body": "ゲームを選び、プレイヤーと結果を入力するだけ。統計と履歴が自動で更新されます。",
+  "onboardingStep3Title": "友達とつながる",
+  "onboardingStep3Body": "QRを共有する、または他のプレイヤーのQRをスキャンして、デバイス間で対戦を同期しましょう。",
+  "onboardingNext": "次へ",
+  "onboardingBack": "戻る",
+  "onboardingSkip": "スキップ",
+  "onboardingFinish": "はじめる",
 };
 
 export default ja;

@@ -120,7 +120,7 @@ export default function AccumulatingScoreUI({
                 ["individual", `🧑 ${t("individual")}`],
               ] as [MatchMode, string][]
             ).map(([value, label]) => (
-              <button key={value} onClick={() => setMode(value)} style={pill(mode === value)}>
+              <button key={value} onClick={() => { haptic("light"); setMode(value); }} style={pill(mode === value)}>
                 {label}
               </button>
             ))}
@@ -229,9 +229,10 @@ export default function AccumulatingScoreUI({
             {players.length < maxPlayers && (
               <button
                 className="btndash"
-                onClick={() =>
-                  setPlayers((prev) => [...prev, { id: mkId(), name: "" }])
-                }
+                onClick={() => {
+                  haptic("light");
+                  setPlayers((prev) => [...prev, { id: mkId(), name: "" }]);
+                }}
               >
                 {t("addPlayer")}
               </button>
@@ -254,7 +255,7 @@ export default function AccumulatingScoreUI({
         <button
           className="btnpri"
           disabled={!canStart || hasDuplicates}
-          onClick={() => setStep("playing")}
+          onClick={() => { haptic("medium"); setStep("playing"); }}
         >
           {t("startMatch")}
         </button>

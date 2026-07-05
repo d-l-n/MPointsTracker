@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef } from "react";
+import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import type { CSSProperties } from "react";
 import ConfirmModal from "../components/ui/ConfirmModal";
 import EditMatchModal from "../components/ui/EditMatchModal";
@@ -47,6 +47,13 @@ interface ConfirmState {
   mid: string;
 }
 
+interface PendingDelete {
+  gid: string;
+  mid: string;
+  match: HistoryMatch;
+  timerId: ReturnType<typeof setTimeout>;
+}
+
 interface GlobalHistoryPageProps {
   initialGameFilter?: string;
   initialPlayerFilter?: string;
@@ -79,13 +86,31 @@ function GlobalHistoryPage({
   initialPlayerFilter = "",
   lockGameFilter = false,
 }: GlobalHistoryPageProps) {
-  const { data = {}, t = ((k: string) => k) as TranslationFn, delMatch, editMatch } = useAppContext() as AppContextValue;
+  const { data = {}, t = ((k: string) => k) as TranslationFn, delMatch, editMatch, showToast } = useAppContext() as AppContextValue;
 
   const [search, setSearch] = useState(initialPlayerFilter);
   const [dateFilter, setDateFilter] = useState("all");
   const [gameFilter, setGameFilter] = useState(initialGameFilter || "all");
   const [confirm, setConfirm] = useState<ConfirmState | null>(null); // { gid, mid }
   const [editing, setEditing] = useState<HistoryMatch | null>(null); // match being edited
+  const [pendingDelete, setPendingDelete] = useState<PendingDelete | null>(null);
+  const longPressRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleRenamePlayer = useCallback((gid: string, oldName: string) => {
+    const newName = window.prompt(t("renamePlayer"), oldName);
+    if (!newName || newName.trim() === oldName) return;
+    const trimmed = newName.trim();
+    const matches = (Array.isArray(data[gid]) ? data[gid] : []) as HistoryMatch[];
+    matches.forEach((match) => {
+      const updated = { ...match };
+      updated.players = match.players.map((p) =>
+        p.name === oldName ? { ...p, name: trimmed } : p,
+      );
+      if (updated.winner === oldName) updated.winner = trimmed;
+      editMatch?.(gid, updated);
+    });
+    showToast(t("matchUpdated"));
+  }, [data, editMatch, showToast, t]);
   const [scrollTop, setScrollTop] = useState(0);
   const [viewportHeight, setViewportHeight] = useState(0);
   const scrollContainerRef = useRef<HTMLElement | null>(null);
@@ -98,19 +123,72 @@ function GlobalHistoryPage({
 
   // All matches flattened, preserving game info
   const allMatches = useMemo(() => {
+    const pendingId = pendingDelete?.mid;
     return Object.entries(data)
       .filter(([k, value]) => !k.startsWith("__") && Array.isArray(value))
       .flatMap(([gid, matches]) =>
         (matches as HistoryMatch[]).map((m) => ({ ...m, game: m.game || gid, _gid: gid }))
       )
+      .filter((m) => m.id !== pendingId)
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-  }, [data]);
+  }, [data, pendingDelete]);
 
   // Games present in history (preserving GAMES order)
   const gamesInHistory = useMemo(() => {
     const ids = new Set(allMatches.map((m) => m._gid));
     return Object.values(GAMES).filter((g) => ids.has(g.id));
   }, [allMatches]);
+
+  const swipeState = useRef<{ el: HTMLElement | null; startX: number; startY: number; deltaX: number }>({ el: null, startX: 0, startY: 0, deltaX: 0 });
+  const SWIPE_THRESHOLD = 80;
+
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    const card = (e.target as HTMLElement).closest(".mcard") as HTMLElement | null;
+    if (!card || card.closest(".history-meta-actions")) return;
+    const touch = e.touches[0];
+    swipeState.current = { el: card, startX: touch.clientX, startY: touch.clientY, deltaX: 0 };
+  }, []);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    const s = swipeState.current;
+    if (!s.el) return;
+    const touch = e.touches[0];
+    const deltaX = touch.clientX - s.startX;
+    const deltaY = touch.clientY - s.startY;
+    if (deltaX > 0) return;
+    if (Math.abs(deltaX) < Math.abs(deltaY) * 1.5) return;
+    s.deltaX = deltaX;
+    s.el.style.transform = `translateX(${deltaX}px)`;
+    s.el.style.transition = "none";
+  }, []);
+
+  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+    const s = swipeState.current;
+    if (!s.el) return;
+    if (Math.abs(s.deltaX) >= SWIPE_THRESHOLD) {
+      const gid = s.el.getAttribute("data-gid") || "";
+      const mid = s.el.getAttribute("data-mid") || "";
+      const match = allMatches.find((m) => m.id === mid) as HistoryMatch | undefined;
+      if (match) {
+        const timerId = setTimeout(() => {
+          delMatch(gid, mid);
+          setPendingDelete(null);
+        }, 5000);
+        setPendingDelete({ gid, mid, match, timerId });
+        showToast(t("deleted"), 5000, {
+          label: t("undo"),
+          onAction: () => {
+            clearTimeout(pendingDelete?.timerId);
+            setPendingDelete(null);
+            showToast(t("deletedUndone"));
+          },
+        });
+      }
+    }
+    s.el.style.transition = "transform .3s var(--ease, ease)";
+    s.el.style.transform = "";
+    s.el = null;
+  }, [allMatches, delMatch, showToast, t]);
 
   useEffect(() => {
     setGameFilter(initialGameFilter || "all");
@@ -291,7 +369,12 @@ function GlobalHistoryPage({
           <div className="etxt">{noResultsMsg}</div>
         </div>
       ) : (
-        <div className={`hlist${virtualState.isVirtualized ? " hlist--virtualized" : ""}`}>
+        <div
+          className={`hlist${virtualState.isVirtualized ? " hlist--virtualized" : ""}`}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
           {virtualState.topSpacerHeight > 0 && (
             <div aria-hidden="true" style={{ height: virtualState.topSpacerHeight }} />
           )}
@@ -305,6 +388,8 @@ function GlobalHistoryPage({
                 className="mcard history-match-card"
                 key={m.id}
                 data-testid={`match-${m.id}`}
+                data-gid={m._gid}
+                data-mid={m.id}
                 style={{ "--history-card-accent": displayColor } as CSSProperties}
               >
                 <div className="mtop">
@@ -320,7 +405,22 @@ function GlobalHistoryPage({
                 <div className="mplayers">
                   {(m.players || []).map((p, i) => (
                     <div className="mprow" key={`${p.name}-${i}`}>
-                      <span className={`mpname${p.name === m.winner ? " w" : ""}`}>{p.name}</span>
+                      <span
+                        className={`mpname${p.name === m.winner ? " w" : ""}`}
+                        onPointerDown={() => {
+                          longPressRef.current = setTimeout(() => {
+                            longPressRef.current = null;
+                            handleRenamePlayer(m._gid, p.name);
+                          }, 500);
+                        }}
+                        onPointerUp={() => {
+                          if (longPressRef.current) { clearTimeout(longPressRef.current); longPressRef.current = null; }
+                        }}
+                        onPointerLeave={() => {
+                          if (longPressRef.current) { clearTimeout(longPressRef.current); longPressRef.current = null; }
+                        }}
+                        style={{ touchAction: "none" }}
+                      >{p.name}</span>
                       {p.score != null && !m.penalty && <span className="mpscore">{p.score} pts</span>}
                       {p.net != null && p.net !== 0 && (
                         <span className={`history-net-pill${p.net > 0 ? " is-positive" : " is-negative"}`}>
@@ -397,7 +497,27 @@ function GlobalHistoryPage({
         <ConfirmModal
           title={t("deleteMatch")}
           msg={t("deleteMatchMsg")}
-          onConfirm={() => { delMatch(confirm.gid, confirm.mid); setConfirm(null); }}
+          onConfirm={() => {
+            const match = allMatches.find((m) => m.id === confirm.mid) as HistoryMatch | undefined;
+            if (match) {
+              const timerId = setTimeout(() => {
+                delMatch(confirm.gid, confirm.mid);
+                setPendingDelete(null);
+              }, 5000);
+              setPendingDelete({ gid: confirm.gid, mid: confirm.mid, match, timerId });
+              showToast(t("deleted"), 5000, {
+                label: t("undo"),
+                onAction: () => {
+                  clearTimeout(pendingDelete?.timerId);
+                  setPendingDelete(null);
+                  showToast(t("deletedUndone"));
+                },
+              });
+            } else {
+              delMatch(confirm.gid, confirm.mid);
+            }
+            setConfirm(null);
+          }}
           onCancel={() => setConfirm(null)}
         />
       )}

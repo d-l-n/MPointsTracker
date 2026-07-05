@@ -859,6 +859,8 @@ const zh = {
   "savedCloud": "✅ 已保存到云端",
   "savedLocal": "✅ 比赛已保存",
   "deleted": "🗑️ 比赛已删除",
+  "deletedUndone": "↩️ 比赛已恢复",
+  "renamePlayer": "重命名玩家",
   "matchUpdated": "✅ 比赛已更新",
   "sessionClosed": "👋 已退出登录",
   "loginError": "登录错误",
@@ -1005,9 +1007,16 @@ const zh = {
   "spotifyPosLeft": "左",
   "spotifyPosition": "播放器位置",
   "spotifyPosRight": "右",
-  "onboardingTitle": "欢迎使用 MPoints",
-  "onboardingMsg": "记录 UNO、Truco、Chinchón 等游戏的得分。跟踪统计、排名，并与朋友比较成绩。",
-  "onboardingCta": "开始使用",
+  "onboardingStep1Title": "欢迎使用 MPoints！",
+  "onboardingStep1Body": "记录每场桌游的得分，保存每一局，随时回顾历史记录。",
+  "onboardingStep2Title": "记录并查看你的对局",
+  "onboardingStep2Body": "选择一个游戏，添加玩家和结果，统计与历史会自动更新。",
+  "onboardingStep3Title": "与朋友连接",
+  "onboardingStep3Body": "分享你的二维码或扫描其他玩家的二维码，跨设备同步对局。",
+  "onboardingNext": "下一步",
+  "onboardingBack": "上一步",
+  "onboardingSkip": "跳过",
+  "onboardingFinish": "开始使用",
 };
 
 export default zh;

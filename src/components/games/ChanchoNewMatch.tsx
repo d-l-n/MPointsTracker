@@ -121,6 +121,7 @@ function ChanchoNewMatch({
   };
 
   const handleSave = () => {
+    haptic("strong");
     const sorted = [...named].sort((left, right) => (letters[left.id] || 0) - (letters[right.id] || 0));
     onSave({
       id: mkId(),

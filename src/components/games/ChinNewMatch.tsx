@@ -93,6 +93,7 @@ function ChinNewMatch({
   };
 
   const handleSave = () => {
+    haptic("strong");
     const winner = wins[0] > wins[1] ? labels[0] : wins[1] > wins[0] ? labels[1] : null;
     onSave({
       id: mkId(),

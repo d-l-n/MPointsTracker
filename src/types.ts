@@ -123,6 +123,8 @@ export interface LinkedPlayer {
 export interface ToastState {
   msg: string;
   show: boolean;
+  actionLabel?: string;
+  onAction?: () => void;
 }
 
 export interface DraftRecord {
@@ -226,7 +228,7 @@ export interface AppContextValue {
   dark: boolean;
   lang: string;
   t: TranslationFn;
-  showToast: (msg: string, duration?: number) => void;
+  showToast: (msg: string, duration?: number, action?: { label: string; onAction: () => void }) => void;
   data: MatchStore;
   playerGroups: PlayerGroup[];
   savePlayerGroups: (groups: PlayerGroup[]) => Promise<void> | void;

@@ -1,5 +1,6 @@
 import { useState, type CSSProperties } from "react";
 
+import { haptic } from "../../lib/storage";
 import type { TranslationFn } from "../../types";
 
 interface ActivePlayer {
@@ -140,6 +141,7 @@ export default function MercyEliminator({
             style={{ "--gc": "#E63946", fontSize: ".9rem", padding: "10px" } as CSSProperties & Record<"--gc", string>}
             disabled={!canConfirm}
             onClick={() => {
+              haptic("strong");
               onEliminate(elimId, causerId);
               setElimId("");
               setCauserId("");

@@ -31,13 +31,13 @@ const SpotifyMiniPlayer = lazy(() => import("./SpotifyMiniPlayer"));
 import EmailAuthScreen from "../auth/EmailAuthScreen";
 import HomeTab from "../home/HomeTab";
 import { scrollCurrentSectionToTop } from "../../hooks/useNavigation";
-import RulesPage from "../../pages/RulesPage";
-import ChampsPage from "../../pages/ChampsPage";
-import SettingsPage from "../../pages/SettingsPage";
 import GameDetail from "../../pages/GameDetail";
-import AdminPage from "../../pages/AdminPage";
-import PublicProfilePage from "../../pages/PublicProfilePage";
-import GlobalHistoryPage from "../../pages/GlobalHistoryPage";
+const RulesPage = lazy(() => import("../../pages/RulesPage"));
+const ChampsPage = lazy(() => import("../../pages/ChampsPage"));
+const SettingsPage = lazy(() => import("../../pages/SettingsPage"));
+const AdminPage = lazy(() => import("../../pages/AdminPage"));
+const PublicProfilePage = lazy(() => import("../../pages/PublicProfilePage"));
+const GlobalHistoryPage = lazy(() => import("../../pages/GlobalHistoryPage"));
 import { SEO } from "../seo/SEO";
 
 interface AppUser {
@@ -576,11 +576,13 @@ export default function AppLayout({
               />
             )}
             <div key={historyView.key}>
-              <GlobalHistoryPage
-                initialGameFilter={historyView.gameId}
-                initialPlayerFilter={historyView.playerFilter || ""}
-                lockGameFilter={historyView.lockGameFilter}
-              />
+              <Suspense fallback={<div className="boot-loader" />}>
+                <GlobalHistoryPage
+                  initialGameFilter={historyView.gameId}
+                  initialPlayerFilter={historyView.playerFilter || ""}
+                  lockGameFilter={historyView.lockGameFilter}
+                />
+              </Suspense>
             </div>
           </div>
         ) : nav === "home" && !selected ? (
@@ -628,7 +630,7 @@ export default function AppLayout({
                 </div>
               </div>
             </div>
-            <div key="rules"><RulesPage t={t} search={rulesSearch} /></div>
+            <div key="rules"><Suspense fallback={<div className="boot-loader" />}><RulesPage t={t} search={rulesSearch} /></Suspense></div>
           </>
         ) : nav === "champs" ? (
           <>
@@ -649,11 +651,11 @@ export default function AppLayout({
               </div>
             </div>
             <div key="champs">
-              <ChampsPage onViewProfile={openProfile} />
+              <Suspense fallback={<div className="boot-loader" />}><ChampsPage onViewProfile={openProfile} /></Suspense>
             </div>
           </>
         ) : (nav === "admin" && isAdmin) ? (
-          <>{pageHeader(t("admin").toUpperCase())}<div key="admin"><AdminPage showToast={showToast} t={t} /></div></>
+          <>{pageHeader(t("admin").toUpperCase())}<div key="admin"><Suspense fallback={<div className="boot-loader" />}><AdminPage showToast={showToast} t={t} /></Suspense></div></>
         ) : nav === "about" ? (
           <>
             <div className={`home-header-surface settings-header-surface${sectionHeaderHiddenByScroll ? " chrome--hidden" : ""}`}>
@@ -689,19 +691,22 @@ export default function AppLayout({
             </div>
             <div key="settings" className="settings-page-shell">
               {profileUid ? (
-                <PublicProfilePage
-                  uid={profileUid}
-                  onBack={closeProfile}
-                  t={t}
-                  myData={data}
-                  myUser={user}
-                  onOpenHistoryForPlayer={openHistoryForPlayer}
-                  onSignOut={signOut}
-                  onSignIn={(mode) => setShowAuthModal(mode || "main")}
-                  showToast={showToast}
-                />
+                <Suspense fallback={<div className="boot-loader" />}>
+                  <PublicProfilePage
+                    uid={profileUid}
+                    onBack={closeProfile}
+                    t={t}
+                    myData={data}
+                    myUser={user}
+                    onOpenHistoryForPlayer={openHistoryForPlayer}
+                    onSignOut={signOut}
+                    onSignIn={(mode) => setShowAuthModal(mode || "main")}
+                    showToast={showToast}
+                  />
+                </Suspense>
               ) : (
-                <SettingsPage
+                <Suspense fallback={<div className="boot-loader" />}>
+                  <SettingsPage
                   data={data}
                   onImportData={importData}
                   onSignOut={signOut}
@@ -723,6 +728,7 @@ export default function AppLayout({
                   subPage={settingsSubPage}
                   onSubPage={openSettingsSubPage}
                 />
+                </Suspense>
               )}
             </div>
           </>

@@ -6,12 +6,12 @@ describe("Toast", () => {
   test("shows message when show is true", () => {
     render(<Toast msg="Hello" show={true} />);
     expect(screen.getByText("Hello")).toBeInTheDocument();
-    expect(screen.getByText("Hello")).toHaveClass("show");
+    expect(screen.getByTestId("toast-root")).toHaveClass("show");
   });
 
   test("hides message when show is false", () => {
     render(<Toast msg="Hello" show={false} />);
     expect(screen.getByText("Hello")).toBeInTheDocument();
-    expect(screen.getByText("Hello")).not.toHaveClass("show");
+    expect(screen.getByTestId("toast-root")).not.toHaveClass("show");
   });
 });

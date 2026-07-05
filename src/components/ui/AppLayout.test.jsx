@@ -348,13 +348,13 @@ describe("AppLayout", () => {
 
     expect(source).toContain('import HomeTab from "../home/HomeTab"');
     expect(source).toContain('import GameDetail from "../../pages/GameDetail"');
-    expect(source).toContain('import RulesPage from "../../pages/RulesPage"');
-    expect(source).toContain('import ChampsPage from "../../pages/ChampsPage"');
-    expect(source).toContain('import SettingsPage from "../../pages/SettingsPage"');
-    expect(source).toContain('import AdminPage from "../../pages/AdminPage"');
-    expect(source).toContain('import PublicProfilePage from "../../pages/PublicProfilePage"');
-    expect(source).toContain('import GlobalHistoryPage from "../../pages/GlobalHistoryPage"');
-    // ponytail: SpotifyMiniPlayer moved to lazy, page components stay eager
+    // ponytail: secondary pages lazy-loaded — SpotifyMiniPlayer was already lazy
+    expect(source).toContain("const RulesPage = lazy(()");
+    expect(source).toContain("const ChampsPage = lazy(()");
+    expect(source).toContain("const SettingsPage = lazy(()");
+    expect(source).toContain("const AdminPage = lazy(()");
+    expect(source).toContain("const PublicProfilePage = lazy(()");
+    expect(source).toContain("const GlobalHistoryPage = lazy(()");
     expect(source).toContain("const SpotifyMiniPlayer = lazy(()");
   });
 });

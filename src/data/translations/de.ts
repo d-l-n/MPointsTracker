@@ -859,6 +859,8 @@ const de = {
   "savedCloud": "✅ In der Cloud gespeichert",
   "savedLocal": "✅ Spiel gespeichert",
   "deleted": "🗑️ Spiel gelöscht",
+  "deletedUndone": "↩️ Spiel wiederhergestellt",
+  "renamePlayer": "Spieler umbenennen",
   "matchUpdated": "✅ Spiel aktualisiert",
   "sessionClosed": "👋 Abgemeldet",
   "loginError": "Anmeldefehler",
@@ -1005,9 +1007,16 @@ const de = {
   "spotifyPosLeft": "Links",
   "spotifyPosition": "Player-Position",
   "spotifyPosRight": "Rechts",
-  "onboardingTitle": "Willkommen bei MPoints",
-  "onboardingMsg": "Erfasse Ergebnisse von UNO, Truco, Chinchón und mehr. Verfolge Statistiken, Ranglisten und vergleiche Ergebnisse mit Freunden.",
-  "onboardingCta": "Los geht's",
+  "onboardingStep1Title": "Willkommen bei MPoints!",
+  "onboardingStep1Body": "Behalte die Punkte deiner Brettspiel-Partien im Blick, speichere jedes Spiel und schau jederzeit den Verlauf an.",
+  "onboardingStep2Title": "Partien erfassen und ansehen",
+  "onboardingStep2Body": "Wähle ein Spiel, trage die Spieler und das Ergebnis ein. Statistiken und Verlauf aktualisieren sich automatisch.",
+  "onboardingStep3Title": "Verbinde dich mit Freunden",
+  "onboardingStep3Body": "Teile deinen QR-Code oder scanne den eines anderen Spielers, um Partien zwischen Geräten zu synchronisieren.",
+  "onboardingNext": "Weiter",
+  "onboardingBack": "Zurück",
+  "onboardingSkip": "Überspringen",
+  "onboardingFinish": "Los geht's",
 };
 
 export default de;

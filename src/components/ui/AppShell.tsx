@@ -76,7 +76,7 @@ export default function AppShell({ dark, toast, children, t: _t = (key) => key }
             <span>DEV</span>
           </div>
         )}
-        <Toast msg={toast.msg} show={toast.show} />
+        <Toast msg={toast.msg} show={toast.show} actionLabel={toast.actionLabel} onAction={toast.onAction} />
       </div>
     </>
   );

@@ -859,6 +859,8 @@ const fr = {
   "savedCloud": "✅ Enregistré dans le cloud",
   "savedLocal": "✅ Partie enregistrée",
   "deleted": "🗑️ Partie supprimée",
+  "deletedUndone": "↩️ Partie restaurée",
+  "renamePlayer": "Renommer le joueur",
   "matchUpdated": "✅ Partie mise à jour",
   "sessionClosed": "👋 Déconnecté",
   "loginError": "Erreur de connexion",
@@ -1005,9 +1007,16 @@ const fr = {
   "spotifyPosLeft": "Gauche",
   "spotifyPosition": "Position du lecteur",
   "spotifyPosRight": "Droite",
-  "onboardingTitle": "Bienvenue sur MPoints",
-  "onboardingMsg": "Enregistrez les scores d'UNO, Truco, Chinchón et plus. Suivez les statistiques, classements et comparez les résultats avec vos amis.",
-  "onboardingCta": "Commencer",
+  "onboardingStep1Title": "Bienvenue sur MPoints !",
+  "onboardingStep1Body": "Gardez une trace des points de vos parties de jeux de société, enregistrez chaque partie et consultez l'historique quand vous voulez.",
+  "onboardingStep2Title": "Enregistrez et consultez vos parties",
+  "onboardingStep2Body": "Choisissez un jeu, ajoutez les joueurs et le résultat. Les statistiques et l'historique se mettent à jour automatiquement.",
+  "onboardingStep3Title": "Connectez-vous avec vos amis",
+  "onboardingStep3Body": "Partagez votre QR ou scannez celui d'un autre joueur pour synchroniser les parties entre appareils.",
+  "onboardingNext": "Suivant",
+  "onboardingBack": "Retour",
+  "onboardingSkip": "Passer",
+  "onboardingFinish": "Commencer",
 };
 
 export default fr;
