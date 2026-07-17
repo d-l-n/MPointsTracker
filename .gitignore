@@ -57,7 +57,7 @@ vite-dev.pid
 
 # AI agent configuration
 .agents/
-.opencode/
+.opencode/node_modules/
 opencode.json
 AGENTS.md
 skills/
@@ -67,3 +67,8 @@ docs/agents/
 docs/superpowers/
 graphify-out/cost.json
 graphify-out/cache/
+
+# Share opencode graphify config with the team
+!.opencode/opencode.json
+!.opencode/plugins/
+!.opencode/skills/
