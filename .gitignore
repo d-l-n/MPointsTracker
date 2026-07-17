@@ -65,3 +65,5 @@ hooks/
 ponytail-audit-plan.md
 docs/agents/
 docs/superpowers/
+graphify-out/cost.json
+graphify-out/cache/
