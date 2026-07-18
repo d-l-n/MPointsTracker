@@ -84,6 +84,8 @@ const ja = {
   "matchesSaved": "試合保存済み",
   "connect": "接続",
   "unoFamily": "UNOファミリー",
+  "unoFamilyTagline": "バリアントを選択",
+  "close": "閉じる",
   "cardsGroup": "カードゲーム",
   "tokensGroup": "ボードと卓上",
   "casinoGroup": "カジノとダイス",

@@ -84,6 +84,8 @@ const en = {
   "matchesSaved": "matches saved",
   "connect": "Connect",
   "unoFamily": "UNO Family",
+  "unoFamilyTagline": "Pick your variant",
+  "close": "Close",
   "cardsGroup": "Card Games",
   "tokensGroup": "Board & Tabletop",
   "casinoGroup": "Casino & Dice",

@@ -87,6 +87,8 @@ const zh = {
   "loadingGame": "正在加载游戏...",
   "ptsCanBeNegative": "分（可为负数）",
   "unoFamily": "UNO系列",
+  "unoFamilyTagline": "选择变体",
+  "close": "关闭",
   "cardsGroup": "纸牌游戏",
   "tokensGroup": "桌面与桌游",
   "casinoGroup": "赌场与骰子",

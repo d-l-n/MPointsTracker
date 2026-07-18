@@ -84,6 +84,8 @@ const de = {
   "matchesSaved": "Spiele gespeichert",
   "connect": "Verbinden",
   "unoFamily": "UNO-Familie",
+  "unoFamilyTagline": "Waehle deine Variante",
+  "close": "Schliessen",
   "cardsGroup": "Kartenspiele",
   "tokensGroup": "Brett & Tisch",
   "casinoGroup": "Casino & Würfel",

@@ -84,6 +84,8 @@ const es = {
   "matchesSaved": "partidas guardadas",
   "connect": "Conectar",
   "unoFamily": "Familia UNO",
+  "unoFamilyTagline": "Elige tu variante",
+  "close": "Cerrar",
   "cardsGroup": "Juegos de Cartas",
   "tokensGroup": "Mesa y tablero",
   "casinoGroup": "Casino y dados",

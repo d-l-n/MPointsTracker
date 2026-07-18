@@ -1,5 +1,4 @@
 import HomeGameHero from "./HomeGameHero";
-import { getGameName } from "../../data/games";
 import type { HomeCardModel } from "./homeModel";
 import type { TranslationFn } from "../../types";
 
@@ -21,6 +20,7 @@ interface HomeActionCardProps {
   testIdBase?: string;
   onOpenGame: (gameId: string) => void;
   onQuickAction: (gameId: string, actionKey: string) => void;
+  onPickFamily: (card: HomeCardModel) => void;
 }
 
 export default function HomeActionCard({
@@ -31,10 +31,19 @@ export default function HomeActionCard({
   testIdBase = `game-${card.id}`,
   onOpenGame,
   onQuickAction,
+  onPickFamily,
 }: HomeActionCardProps) {
   const badgeText = getBadgeText(card, t);
   const statusLabel = getStatusLabel(card, t);
   const heroState = card.hasDraft ? "active" : card.isRecent ? "recent" : "idle";
+
+  const handleSurface = () => {
+    if (card.isFamily && card.variants?.length) {
+      onPickFamily(card);
+      return;
+    }
+    onOpenGame(card.id);
+  };
 
   return (
     <article
@@ -46,14 +55,14 @@ export default function HomeActionCard({
       <button
         type="button"
         className="home-card-surface"
-        onClick={() => onOpenGame(card.id)}
+        onClick={handleSurface}
         data-testid={testIdBase}
       >
         <HomeGameHero
           family={card.heroFamily}
           gameId={card.id}
           state={heroState}
-          title={getGameName(card.game.id, t)}
+          title={card.game.name}
           tone={card.identity?.tone}
           coverImage={card.coverImage}
         />
@@ -64,7 +73,7 @@ export default function HomeActionCard({
           </div>
           <div className="home-card-title-row">
             <div>
-              <h3 className="home-card-title">{getGameName(card.game.id, t)}</h3>
+              <h3 className="home-card-title">{card.game.name}</h3>
               <div className="home-card-meta">{card.metadata}</div>
             </div>
             {statusLabel ? (
@@ -84,6 +93,10 @@ export default function HomeActionCard({
             data-testid={`${testIdBase}-action-${action.key}`}
             onClick={(event) => {
               event.stopPropagation();
+              if (card.isFamily && card.variants?.length) {
+                onPickFamily(card);
+                return;
+              }
               onQuickAction(card.id, action.key);
             }}
           >
