@@ -43,7 +43,7 @@ function TrucoNewMatch(props: TrucoNewMatchProps) {
     gameId: "truco",
     confirmMsgKey: "trucoBandoned",
     i18nPrefix: "hand",
-  } as const;
+  };
 
   const state = useAccumulatingScoreMatch(config, props);
 

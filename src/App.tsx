@@ -5,7 +5,8 @@ import type { User } from "firebase/auth";
 import { useLoaderData, useLocation, useNavigate } from "react-router-dom";
 
 import { detectLang, saveLang, useT } from "./data/translations";
-import { GAMES } from "./data/games";
+import { GAMES, getGame } from "./data/games";
+import type { LinkedPlayer } from "./types";
 import { setFmtDateLang } from "./lib/stats";
 import { shareMatchWithPlayers } from "./services/matchService";
 import { triggerConfetti } from "./lib/confetti";
@@ -26,13 +27,7 @@ import { useWakeLock } from "./hooks/useWakeLock";
 import { AppProvider } from "./context/AppContext";
 import AppLayout from "./components/ui/AppLayout";
 import type { AppContextValue, DebugLogEntry, Match, PendingInvite } from "./types";
-
-type RematchPayload = {
-  gameId?: string;
-  playerNames?: string[];
-  lastSavedMatch?: Match & Record<string, unknown>;
-  linkedPlayers?: Array<Record<string, unknown> & { name: string; playerId?: string; uid?: string | null }>;
-};
+import type { RematchState } from "./pages/GameDetail";
 
 // ── App ────────────────────────────────────────────────────────────────────────
 export default function App() {
@@ -215,20 +210,20 @@ export default function App() {
     }
   }, [isLoginRoute, navigate, user]);
 
-  const handleRematchRequest = useCallback((payload: RematchPayload = {}) => {
+  const handleRematchRequest = useCallback((payload: RematchState = {}) => {
     handleRematchRequestBase({
       ...payload,
       closeHistoryView,
     });
   }, [closeHistoryView, handleRematchRequestBase]);
 
-  const handleGameAddMatch = useCallback(async (match: Match & Record<string, unknown>) => {
+  const handleGameAddMatch = useCallback(async (match: Match) => {
     if (!selected) return;
 
     const keepPortionDraft = selected === "portion_counter";
-    addMatch(selected, match);
-    triggerConfetti(GAMES[selected]?.color);
-    await shareMatchWithPlayers(selected, match, linkedPlayers[selected] || [], user);
+    addMatch(selected, match as Match & Record<string, unknown>);
+    triggerConfetti(getGame(selected)?.color);
+    await shareMatchWithPlayers(selected, match as Match & Record<string, unknown>, linkedPlayers[selected] || [], user);
 
     if (keepPortionDraft) {
       setActiveGame(null);
@@ -240,7 +235,7 @@ export default function App() {
     }
 
     clearDraft(selected);
-    setLinkedPlayers((current: Record<string, Array<Record<string, unknown>>>) => ({ ...current, [selected]: [] }));
+    setLinkedPlayers((current: Record<string, LinkedPlayer[]>) => ({ ...current, [selected]: [] }));
     setGameMatchKey((currentKey: number) => currentKey + 1);
     setGameTab("stats");
     setActiveGame(selected);
@@ -310,7 +305,7 @@ export default function App() {
         handleGameAddMatch={handleGameAddMatch}
         openHistoryView={openHistoryView}
         handleRematchRequest={handleRematchRequest}
-        postSaveRematch={postSaveRematch as RematchPayload | null}
+        postSaveRematch={postSaveRematch}
         setPostSaveRematch={setPostSaveRematch}
         getDraft={getDraft}
         saveDraft={saveDraft}

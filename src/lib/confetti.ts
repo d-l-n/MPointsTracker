@@ -46,7 +46,7 @@ export function triggerConfetti(gameColor = "#006D77"): void {
       ctx.restore();
     }
     if (alive) { activeRaf = requestAnimationFrame(tick); return; }
-    cancelAnimationFrame(activeRaf);
+    if (activeRaf !== null) cancelAnimationFrame(activeRaf);
     activeRaf = null;
     canvas.remove();
   };

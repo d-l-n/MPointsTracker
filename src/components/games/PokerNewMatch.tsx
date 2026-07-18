@@ -326,7 +326,7 @@ function PokerNewMatch({
                   ["BB", bigBlind, setBigBlind],
                 ].map(([label, value, setter]) => (
                   <div
-                    key={label}
+                    key={String(label)}
                     style={{
                       flex: 1,
                       background: "var(--content-surface-strong)",
@@ -356,7 +356,7 @@ function PokerNewMatch({
                         type="number"
                         min="1"
                         step="1"
-                        value={value}
+                        value={value as number}
                         onChange={(event) => (setter as (value: number) => void)(parseFloat(event.target.value) || 1)}
                         style={{ width: "100%" }}
                         aria-label={label === "SB" ? t("blindSmall") : t("blindBig")}

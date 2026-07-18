@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import ConfirmModal from "../components/ui/ConfirmModal";
-import { GAMES, getGameName } from "../data/games";
+import { GAMES, getGame, getGameName } from "../data/games";
 import { fbDb } from "../lib/firebase";
 import { normalizePublicProfile } from "../services/userService";
 import { buildStats } from "../lib/stats";
@@ -21,17 +21,13 @@ const PROFILE_VERSUS_ACCENT = "#38bdf8";
 
 type CSSVars = CSSProperties & Record<`--${string}`, string | number>;
 
-interface AppUser {
-  uid: string;
-  displayName?: string | null;
-  email?: string | null;
-}
+import type { AppUser } from "../components/settings/shared";
 
 interface MatchPlayer extends PlayerResult {
   name: string;
 }
 
-interface StoredMatch extends Match {
+interface StoredMatch extends Omit<Match, "players"> {
   players?: Array<MatchPlayer | string>;
   winner?: string | null;
 }
@@ -137,7 +133,7 @@ function buildFullStatsFromData(data: MatchStore | Record<string, unknown> | nul
 
   Object.entries(data || {}).forEach(([gid, matches]) => {
     if (gid.startsWith("__") || !Array.isArray(matches)) return;
-    (matches as StoredMatch[]).forEach((match) => allMatches.push({ ...match, _gameId: gid }));
+    (matches as StoredMatch[]).forEach((match) => allMatches.push({ ...match, _gameId: gid } as Match));
   });
 
   return buildStats(allMatches);
@@ -202,7 +198,7 @@ function VersusBar({ labelA, labelB, winsA, winsB, colorA, colorB }: VersusBarPr
 }
 
 function GameStatRow({ gid, stats, t }: GameStatRowProps) {
-  const game = GAMES[gid];
+  const game = getGame(gid);
 
   return (
     <div
@@ -237,7 +233,7 @@ function GameStatRow({ gid, stats, t }: GameStatRowProps) {
 }
 
 function VersusGameRow({ gid, shared, myW, theirW, myName, theirName, t }: VersusGameRowProps) {
-  const game = GAMES[gid];
+  const game = getGame(gid);
 
   return (
     <div className="public-profile-versus-row">

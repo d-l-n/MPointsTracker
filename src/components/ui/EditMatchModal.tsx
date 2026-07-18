@@ -3,12 +3,12 @@ import React, { useEffect, useState, type ChangeEvent, type CSSProperties } from
 import type { Match, PlayerResult, TranslationFn } from "../../types";
 import ConfirmModal from "./ConfirmModal";
 
-interface EditablePlayer extends PlayerResult {
+interface EditablePlayer extends Omit<PlayerResult, "score"> {
   id?: string;
   score?: number | string;
 }
 
-interface EditableMatch extends Match {
+interface EditableMatch extends Omit<Match, "players"> {
   players: EditablePlayer[];
   penalty?: string;
   streakType?: string;

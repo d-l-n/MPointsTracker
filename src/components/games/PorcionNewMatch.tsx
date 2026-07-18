@@ -116,7 +116,7 @@ function PorcionNewMatch({
     return acc;
   }, [named]);
   const hasDuplicates = useMemo(() => Object.values(nameCount).some((value) => value > 1), [nameCount]);
-  const selectedFood = useMemo(() => getPortionFoodByKey(selectedFoodKey) as PortionFood | null, [selectedFoodKey]);
+  const selectedFood = useMemo(() => getPortionFoodByKey(selectedFoodKey ?? "") as PortionFood | null, [selectedFoodKey]);
 
   useEffect(() => {
     if (phase !== "setup" || players.some(p => p.name.trim())) {

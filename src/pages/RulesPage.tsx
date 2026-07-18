@@ -1,6 +1,6 @@
 import { useMemo, useState, type CSSProperties } from "react";
 import { getRulesData } from "../data/rules";
-import { GAMES, getTagline, getGameName } from "../data/games";
+import { GAMES, getTagline, getGame, getGameName } from "../data/games";
 import type { TranslationFn } from "../types";
 
 type CSSVars = CSSProperties & Record<"--gc", string>;
@@ -97,7 +97,7 @@ function RulesPage({
                     <span className="rule-game-name" style={{ color: game.id === "uno_no_mercy" ? "var(--tx)" : game.color }}>
                       {getGameName(game.id, t)}
                     </span>
-                    <span className="rule-game-tag">{getTagline(game.id, t) || GAMES[game.id]?.tagline}</span>
+                    <span className="rule-game-tag">{getTagline(game.id, t) || getGame(game.id)?.tagline}</span>
                   </div>
                   <span className="home-card-action is-quiet rule-game-action">
                     <span>{expanded ? t("detailViewLess") : t("rulesViewAction")}</span>

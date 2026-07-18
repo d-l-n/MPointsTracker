@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { GAMES } from "../data/games";
-import type { GameId, TranslationFn } from "../types";
+import type { GameId, NavItem, TranslationFn } from "../types";
 
 type NavId = "home" | "champs" | "rules" | "about" | "admin";
 
@@ -264,7 +264,7 @@ export function useNavigation({
       navOrder
         ? navOrder
             .map((id) => navBase.find((item) => item.id === id))
-            .filter(Boolean)
+            .filter((item): item is NavItem => Boolean(item))
             .concat(navBase.filter((item) => !navOrder.includes(item.id)))
         : navBase,
     [navBase, navOrder],

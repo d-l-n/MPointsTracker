@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { buildH2H, fmtDate, getAllPastPlayerNames } from "../lib/stats";
 import { GAMES, getGameName } from "../data/games";
-import type { Match, TranslationFn } from "../types";
+import type { GameId, Match, TranslationFn } from "../types";
 
 interface PlayerSelectProps {
   value: string;
@@ -185,8 +185,9 @@ function HeadToHeadPage({ data, t = (k) => k, embedded = false }: HeadToHeadPage
         </div>
       )}
 
-      {ready && h2h?.shared?.length > 0 && (() => {
-        const { winsA, winsB, draws, byGame, currentStreakHolder, currentStreakCount, shared } = h2h;
+      {ready && h2h && h2h.shared.length > 0 && (() => {
+        const h = h2h;
+        const { winsA, winsB, draws, byGame, currentStreakHolder, currentStreakCount, shared } = h;
         const leaderName = winsA > winsB ? nameA : winsA < winsB ? nameB : null;
         const leaderColor = winsA > winsB ? COLOR_A : COLOR_B;
 
@@ -229,7 +230,7 @@ function HeadToHeadPage({ data, t = (k) => k, embedded = false }: HeadToHeadPage
             </div>
 
             {/* ── Racha actual */}
-            {currentStreakHolder && currentStreakCount >= 2 && (
+            {currentStreakHolder && (currentStreakCount ?? 0) >= 2 && (
               <div className="champ-section">
                 <div className="champ-sec-title">{t("h2hCurrentStreak")}</div>
                 <div className="h2h-streak-card" style={{
@@ -258,7 +259,7 @@ function HeadToHeadPage({ data, t = (k) => k, embedded = false }: HeadToHeadPage
                   {Object.entries(byGame)
                     .sort((a, b) => b[1].played - a[1].played)
                     .map(([gid, gs]) => {
-                      const game = GAMES[gid];
+                      const game = GAMES[gid as GameId];
                       const gc = game?.color || "#888";
                       return (
                         <div key={gid} className="h2h-game-card" style={{
@@ -288,7 +289,7 @@ function HeadToHeadPage({ data, t = (k) => k, embedded = false }: HeadToHeadPage
               <div className="champ-sec-title">{t("h2hRecent")}</div>
               <div className="h2h-recent-list">
                 {[...shared].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 5).map((m) => {
-                  const game = GAMES[m._gameId];
+                  const game = GAMES[m._gameId as GameId];
                   const gc = game?.color || "#888";
                   const winColor = m.winner === nameA ? COLOR_A : m.winner === nameB ? COLOR_B : "var(--tx3)";
                   return (

@@ -1,13 +1,15 @@
 import { lazy, memo, Suspense, useState, useMemo } from "react";
 
-import { GAMES } from "../../data/games";
+import { GAMES, getGame } from "../../data/games";
 import { APP_VERSION } from "../../lib/storage";
 import type {
   DebugLogEntry,
   DraftRecord,
   GameDefinition,
+  LinkedPlayer,
   Match,
   MatchStore,
+  NavItem,
   PlayerGroup,
   ThemeAccentMode,
   ThemeMode,
@@ -28,8 +30,12 @@ import OfflineBanner from "./OfflineBanner";
 import ScrollToTop from "./ScrollToTop";
 import { ShareResultButton } from "./ShareResultCard";
 const SpotifyMiniPlayer = lazy(() => import("./SpotifyMiniPlayer"));
+import { type User } from "firebase/auth";
 import EmailAuthScreen from "../auth/EmailAuthScreen";
 import HomeTab from "../home/HomeTab";
+import type { AppUser } from "../settings/shared";
+import type { GameDetailMatch, GameDetailDraft, RematchState } from "../../pages/GameDetail";
+import type { SettingsSubPage } from "../../components/settings/shared";
 import { scrollCurrentSectionToTop } from "../../hooks/useNavigation";
 import GameDetail from "../../pages/GameDetail";
 const RulesPage = lazy(() => import("../../pages/RulesPage"));
@@ -40,31 +46,12 @@ const PublicProfilePage = lazy(() => import("../../pages/PublicProfilePage"));
 const GlobalHistoryPage = lazy(() => import("../../pages/GlobalHistoryPage"));
 import { SEO } from "../seo/SEO";
 
-interface AppUser {
-  uid?: string;
-  [key: string]: unknown;
-}
-
 interface HistoryViewState {
   source: string;
   gameId: string;
   lockGameFilter: boolean;
   playerFilter?: string;
   key: string;
-}
-
-interface NavItem {
-  id: string;
-  label: string;
-  icon: string;
-}
-
-interface RematchState {
-  gameId?: string;
-  playerNames?: string[];
-  lastSavedMatch?: Match & Record<string, unknown>;
-  linkedPlayers?: LinkedPlayer[];
-  [key: string]: unknown;
 }
 
 interface AppLayoutProps {
@@ -76,7 +63,7 @@ interface AppLayoutProps {
   setShowSplash: (value: boolean) => void;
   authChecked: boolean;
   hadPreviousSession: boolean;
-  user: AppUser | undefined | null;
+  user: (AppUser | User) | undefined | null;
   guestMode: boolean;
   isLoginRoute: boolean;
   showDebug: boolean;
@@ -100,24 +87,24 @@ interface AppLayoutProps {
   dismissPendingInvite: () => void;
   historyView: HistoryViewState | null;
   activeGame: string | null;
-  gameTab: string;
-  setGameTab: (tab: string) => void;
+  gameTab: "stats" | "new";
+  setGameTab: (tab: "stats" | "new") => void;
   gameMatchKey: number;
   getMatches: (gameId: string) => Match[];
   importData: (data: MatchStore) => void;
   clearDraft: (gameId: string) => void;
-  handleGameAddMatch: (match: Match & Record<string, unknown>) => Promise<void> | void;
+  handleGameAddMatch: (match: Match) => Promise<void> | void;
   openHistoryView: (options: { source: string; gameId?: string; lockGameFilter?: boolean; playerFilter?: string }) => void;
   handleRematchRequest: (payload?: RematchState) => void;
   postSaveRematch: RematchState | null;
   setPostSaveRematch: (value: RematchState | null) => void;
-  getDraft: (gameId: string) => DraftRecord | undefined;
+  getDraft: (gameId: string) => GameDetailDraft | null;
   saveDraft: (gameId: string, draft: DraftRecord) => void;
   linkedPlayers: Record<string, LinkedPlayer[]>;
   setLinkedPlayers: (
     value: Record<string, LinkedPlayer[]> | ((current: Record<string, LinkedPlayer[]>) => Record<string, LinkedPlayer[]>),
   ) => void;
-  openGame: (gameId: string, options?: { tab?: string; resetDraft?: boolean }) => void;
+  openGame: (gameId: string, options?: { tab?: "stats" | "new"; resetDraft?: boolean }) => void;
   data: Record<string, unknown>;
   total: number;
   handleHomeQuickAction: (gameId: string, action: string) => void;
@@ -301,10 +288,11 @@ export default function AppLayout({
   setNavLeaveTarget,
   resetGameSession,
 }: AppLayoutProps) {
+  const isIOS = typeof navigator !== "undefined" && /iP(ad|hone|od)/.test(navigator.userAgent);
   const seoTitle = useMemo(() => {
     if (isLoginRoute) return t("login");
     if (historyView) return t("globalHistory");
-    if (selected && GAMES[selected]) return GAMES[selected].name;
+    if (selected && getGame(selected)) return getGame(selected)!.name;
     if (nav === "home") return null;
     if (nav === "rules") return t("rules");
     if (nav === "champs") return t("champions");
@@ -314,8 +302,8 @@ export default function AppLayout({
   }, [nav, selected, historyView, isLoginRoute, t]);
 
   const seoDescription = useMemo(() => {
-    if (selected && GAMES[selected]) {
-      const g = GAMES[selected];
+    if (selected && getGame(selected)) {
+      const g = getGame(selected)!;
       return `Registrá partidas de ${g.name}, seguí estadísticas y rankings. ${g.tagline || ""}`.trim();
     }
     if (nav === "rules") return "Reglas y puntuaciones de todos los juegos disponibles en MPoints Tracker: UNO, Truco, Chinchón, Rummy y más.";
@@ -325,8 +313,8 @@ export default function AppLayout({
     return undefined;
   }, [nav, selected, historyView]);
 
-  const seoImage = selected && GAMES[selected]?.coverImage
-    ? `https://mpoints-tracker.pages.dev${GAMES[selected].coverImage!}`
+  const seoImage = selected && getGame(selected)?.coverImage
+    ? `https://mpoints-tracker.pages.dev${getGame(selected)!.coverImage!}`
     : undefined;
 
   function hasDraftPlayer(): boolean {
@@ -343,7 +331,7 @@ export default function AppLayout({
     return false;
   }
 
-  const selectedGame = selected ? GAMES[selected] : null;
+  const selectedGame = selected ? getGame(selected) ?? null : null;
   const accentGameId = selectedGame?.id || "default";
   const sectionHeaderHiddenByScroll = navHiddenByScroll || chromeHiddenByScroll;
   const [rulesSearch, setRulesSearch] = useState("");
@@ -518,7 +506,7 @@ export default function AppLayout({
       >
         {selected && (
           <GameDetail
-            game={selectedGame}
+            game={selectedGame!}
             onBack={() => {
               if (hasDraftPlayer()) {
                 setNavLeaveTarget("home");
@@ -537,7 +525,7 @@ export default function AppLayout({
             onRematchStateChange={setPostSaveRematch}
             matchKey={gameMatchKey}
             draft={getDraft(selected)}
-            onDraftChange={(draft) => saveDraft(selected, draft)}
+            onDraftChange={(draft) => draft && saveDraft(selected, draft)}
             linkedPlayers={linkedPlayers[selected] || []}
             onLinkedPlayersChange={(nextLinkedPlayers) =>
               setLinkedPlayers((current) => ({ ...current, [selected]: nextLinkedPlayers }))
@@ -557,7 +545,7 @@ export default function AppLayout({
         {historyView ? (
           <div
             data-game-accent={historyView.gameId}
-            style={GAMES[historyView.gameId] ? { "--gc": GAMES[historyView.gameId].color } as Record<string, string> : undefined}
+            style={getGame(historyView.gameId) ? { "--gc": getGame(historyView.gameId)!.color } as Record<string, string> : undefined}
           >
             <AppHeader
               testId="history-subpage-header"
@@ -568,7 +556,7 @@ export default function AppLayout({
             />
             {historyView.source === "game" && postSaveRematch?.gameId === historyView.gameId && (
               <PostSaveRematchBanner
-                game={GAMES[historyView.gameId]}
+                game={getGame(historyView.gameId) ?? null}
                 rematchState={postSaveRematch}
                 t={t}
                 onRematch={() => handleRematchRequest(postSaveRematch)}
@@ -697,7 +685,7 @@ export default function AppLayout({
                     onBack={closeProfile}
                     t={t}
                     myData={data}
-                    myUser={user}
+                    myUser={user as AppUser | null}
                     onOpenHistoryForPlayer={openHistoryForPlayer}
                     onSignOut={signOut}
                     onSignIn={(mode) => setShowAuthModal(mode || "main")}
@@ -725,7 +713,7 @@ export default function AppLayout({
                   onThemeAccentMode={handleThemeAccentMode}
                   reduceEffects={reduceEffectsEnabled}
                   onToggleReduceEffects={handleToggleReduceEffects}
-                  subPage={settingsSubPage}
+                  subPage={settingsSubPage as SettingsSubPage | null}
                   onSubPage={openSettingsSubPage}
                 />
                 </Suspense>

@@ -1,6 +1,7 @@
-import { useState, useEffect, useMemo, useCallback, type KeyboardEvent } from "react";
+import { useState, useEffect, useMemo, useCallback, type CSSProperties, type KeyboardEvent } from "react";
 import { buildStats } from "../lib/stats";
-import { GAMES, getGameName } from "../data/games";
+import { GAMES, getGame, getGameName } from "../data/games";
+import type { GameDefinition } from "../types";
 import { fbDb } from "../lib/firebase";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import HeadToHeadPage from "./HeadToHeadPage";
@@ -135,9 +136,12 @@ function ChampsPage({ onViewProfile }: ChampsPageProps) {
 
   const gamesWithMatches = useMemo(() =>
     ["uno","uno_no_mercy","uno_flip","uno_dos","truco","chinchon","chancho","chin","esquinados","rummy","burako","poker","blackjack","generala","ajedrez","racha_perdida","basta_dym","monopoly","life"]
-      .map(id => GAMES[id])
-      .filter(Boolean)
-      .filter(game => (Array.isArray(data[game.id]) ? data[game.id].length : 0) > 0)
+      .map(id => getGame(id))
+      .filter((g): g is GameDefinition => Boolean(g))
+      .filter(game => {
+        const matches = data[game.id];
+        return Array.isArray(matches) ? matches.length > 0 : false;
+      })
   , [data]);
 
   // Enrich with Firestore lookups for names not in playerGroups
@@ -151,7 +155,7 @@ function ChampsPage({ onViewProfile }: ChampsPageProps) {
   }, [allPlayerNames, localMap, onViewProfile]);
 
   // Stable handler to avoid prop recreation in PlayerChip
-  const handleViewProfile = useCallback((uid) => onViewProfile?.(uid), [onViewProfile]);
+  const handleViewProfile = useCallback((uid: string) => onViewProfile?.(uid), [onViewProfile]);
 
   return (
     <div className="page">
@@ -199,10 +203,10 @@ function ChampsPage({ onViewProfile }: ChampsPageProps) {
           ? <div className="no-champs">{t("noMatchesYet")}</div>
           : <div className="champ-by-game">
               {gamesWithMatches.map(game => {
-                const ms    = Array.isArray(data[game.id]) ? data[game.id] : [];
+                const ms    = Array.isArray(data[game.id]) ? (data[game.id] as Match[]) : [];
                 const stats = statsByGame[game.id] || [];
                 return (
-                  <div key={game.id} className="cbg-card" data-testid={`champ-game-${game.id}`} style={{ "--gc": game.color }}>
+                  <div key={game.id} className="cbg-card" data-testid={`champ-game-${game.id}`} style={{ "--gc": game.color } as CSSProperties}>
                   <div className="cbg-hdr">
                     <span className="cbg-name" style={{ color: game.color }}>{getGameName(game.id, t)}</span>
                     <span style={{ fontSize: ".68rem", color: "var(--tx3)", marginLeft: "auto" }}>{ms.length} {t("matchesPlayed")}</span>

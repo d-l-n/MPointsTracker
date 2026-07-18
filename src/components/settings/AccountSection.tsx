@@ -69,7 +69,11 @@ export default function AccountSection({
     try {
       await updateProfile(currentUser, { displayName: nameVal.trim() });
       await currentUser.reload();
-      await saveUserProfile(user.uid, { ...user, displayName: nameVal.trim() });
+      await saveUserProfile(user.uid, {
+        displayName: nameVal.trim(),
+        photoURL: user.photoURL ?? null,
+        email: user.email ?? null,
+      });
       showToast?.(t("nameSaved"));
       setEditingName(false);
     } catch {

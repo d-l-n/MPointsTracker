@@ -42,7 +42,7 @@ interface ShareMatchPlayer extends PlayerResult {
   net?: number;
 }
 
-interface ShareMatch extends Match {
+interface ShareMatch extends Omit<Match, "players"> {
   players?: ShareMatchPlayer[];
   gameName?: string;
   gameEmoji?: string;
@@ -53,13 +53,6 @@ interface ShareResultButtonProps {
   match: ShareMatch;
   game?: GameDefinition | null;
   t?: TranslationFn;
-}
-
-declare global {
-  interface Navigator {
-    canShare?: (data?: ShareData) => boolean;
-    share?: (data?: ShareData) => Promise<void>;
-  }
 }
 
 function drawRoundedRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
@@ -143,7 +136,7 @@ export function resolveShareTheme(themeMode = "dark", gameColor = "#006D77"): Sh
 export function buildShareResultText(match: ShareMatch): string {
   const parts = [
     match.winner ? `🏆 ${match.winner}` : "",
-    formatUnoRosterSummary(match) || "",
+    formatUnoRosterSummary(match as Match) || "",
   ].filter(Boolean);
   return parts.join("\n");
 }
@@ -268,11 +261,12 @@ export async function generateResultImage(
       ctx.fillText(`${player.score} pts`, 70, y + cardH / 2 + 10);
     }
 
-    if ((player.net ?? null) != null && player.net !== 0) {
-      const netStr = `${player.net > 0 ? "+" : ""}$${Math.abs(player.net).toFixed(2)}`;
+    const net = player.net;
+    if (net != null && net !== 0) {
+      const netStr = `${net > 0 ? "+" : ""}$${Math.abs(net).toFixed(2)}`;
       ctx.font = "bold 13px 'Google Sans', Arial, sans-serif";
       ctx.textAlign = "right";
-      ctx.fillStyle = player.net > 0 ? palette.positive : palette.negative;
+      ctx.fillStyle = net > 0 ? palette.positive : palette.negative;
       ctx.fillText(netStr, W - 30, y + cardH / 2);
     } else if ((player.score ?? null) != null) {
       ctx.font = isWin ? "bold 22px 'Google Sans', Arial, sans-serif" : "18px 'Google Sans', Arial, sans-serif";

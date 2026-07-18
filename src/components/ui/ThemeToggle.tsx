@@ -2,7 +2,7 @@ import { useRef } from "react";
 
 interface ThemeToggleProps {
   dark: boolean;
-  onChange: () => void;
+  onChange?: () => void;
   onLongPress?: () => void;
   t?: (key: string) => string;
 }
@@ -28,7 +28,7 @@ export default function ThemeToggle({ dark, onChange, onLongPress, t = (key) => 
   };
 
   const handleClick = () => {
-    if (!firedRef.current) onChange();
+    if (!firedRef.current) onChange?.();
   };
 
   return (

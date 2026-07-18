@@ -1,4 +1,5 @@
 import { useCallback } from "react";
+import type { TranslationFn } from "../types";
 import { RULES_DATA } from "./rules";
 import de from "./translations/de";
 import en from "./translations/en";
@@ -42,7 +43,7 @@ const DEFAULT_LANG = "es";
 const FALLBACK_LANG = "en";
 
 function flattenTranslationKeys(obj: TranslationMessages, prefix = ""): string[] {
-  const keys = [];
+  const keys: string[] = [];
 
   Object.entries(obj).forEach(([key, value]) => {
     const nextKey = prefix ? `${prefix}.${key}` : key;
@@ -76,7 +77,7 @@ function getTranslationParityReport(
 function detectLang() {
   const saved = (() => {
     try {
-      return JSON.parse(localStorage.getItem("bgt_lang"));
+      return JSON.parse(localStorage.getItem("bgt_lang") ?? "null");
     } catch {
       return null;
     }
@@ -84,7 +85,7 @@ function detectLang() {
 
   if (SUPPORTED_LANGS.includes(saved)) return saved;
 
-  const nav = (navigator.language || navigator.userLanguage || DEFAULT_LANG).toLowerCase();
+  const nav = (navigator.language || (navigator as Navigator & { userLanguage?: string }).userLanguage || DEFAULT_LANG).toLowerCase();
   if (nav.startsWith("es")) return "es";
   if (nav.startsWith("de")) return "de";
   if (nav.startsWith("zh")) return "zh";
@@ -101,13 +102,15 @@ function saveLang(lang: string) {
   }
 }
 
-function useT(lang: string) {
-  return useCallback((key) => {
+function useT(lang: string): TranslationFn {
+  return useCallback((key: string) => {
     const parts = key.split(".");
-    let value = TRANSLATIONS[lang] || TRANSLATIONS[DEFAULT_LANG];
+    let value: TranslationValue | undefined = TRANSLATIONS[lang] || TRANSLATIONS[DEFAULT_LANG];
 
-    for (const part of parts) value = value?.[part];
-    return value ?? key;
+    for (const part of parts) {
+      value = typeof value === "object" && value !== null ? value[part] : undefined;
+    }
+    return typeof value === "string" ? value : key;
   }, [lang]);
 }
 

@@ -16,7 +16,7 @@ const LEGACY_PORTION_GAMES: Record<string, GameDefinition> = Object.fromEntries(
   ]),
 );
 
-const GAMES: Record<GameId, GameDefinition> = {
+const GAMES: Record<string, GameDefinition> = {
   uno: {
     id: "uno", name: "UNO", emoji: "🃏", color: "#E63946",
     type: "uno_classic", winScore: 500,
@@ -177,6 +177,10 @@ const TAGLINE_KEYS: Partial<Record<GameId, string>> = {
   canasta: "taglineCanasta",
 };
 
+function getGame(gameId: string | null | undefined): GameDefinition | undefined {
+  return gameId ? (GAMES as Record<string, GameDefinition | undefined>)[gameId] : undefined;
+}
+
 function getTagline(gameId: string, t: (key: string) => string): string {
   const key = TAGLINE_KEYS[gameId as GameId];
   return key ? t(key) : "";
@@ -216,4 +220,4 @@ function getGameName(gameId: string, t: (key: string) => string): string {
   return GAMES[gameId as GameId]?.name || gameId;
 }
 
-export { GAMES, getTagline, getGameName };
+export { GAMES, getGame, getTagline, getGameName };

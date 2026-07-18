@@ -20,7 +20,7 @@ function formatUnoRosterSummary(match: Match | null | undefined): string | null 
 
 type StatsMatchPlayer = string | { name?: string | null };
 
-interface StatsMatch extends Match {
+interface StatsMatch extends Omit<Match, "players"> {
   id?: string;
   rounds?: number;
   players: StatsMatchPlayer[];
@@ -45,7 +45,7 @@ function getPlayerNames(match: StatsMatch): string[] {
   if (!Array.isArray(match?.players)) return [];
   return match.players.map((player) => (
     typeof player === "string" ? player : player?.name
-  )).filter(Boolean);
+  )).filter(Boolean) as string[];
 }
 
 function StatsTab({
@@ -56,10 +56,10 @@ function StatsTab({
   const players = buildStats(matches as Match[]);
   const insights = buildInsights(matches as Match[]);
   const totalRounds = matches.reduce((s, m) => s + (m.rounds || 0), 0);
-  const durations = matches.filter(m => m.duration > 0).map(m => m.duration);
+  const durations = matches.filter(m => (m.duration ?? 0) > 0).map(m => m.duration ?? 0);
   const avgDuration = durations.length ? Math.round(durations.reduce((s, d) => s + d, 0) / durations.length) : null;
   const recentMatches = [...matches]
-    .sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0))
+    .sort((a, b) => Number(new Date(b.date || 0)) - Number(new Date(a.date || 0)))
     .slice(0, 3);
 
   return (
@@ -129,7 +129,7 @@ function StatsTab({
         <div className="detail-history-preview-list">
           {recentMatches.map((match) => {
             const names = getPlayerNames(match);
-            const rosterSummary = formatUnoRosterSummary(match);
+            const rosterSummary = formatUnoRosterSummary(match as Match);
             return (
               <article key={match.id} className="detail-history-preview-entry" data-testid={`detail-history-entry-${match.id}`}>
                 <div className="detail-history-preview-main">

@@ -244,3 +244,9 @@ export interface AppContextValue {
   pendingInvite?: unknown;
   claimPendingInvite?: (...args: unknown[]) => unknown;
 }
+
+export interface NavItem {
+  id: string;
+  label: string;
+  icon: string;
+}

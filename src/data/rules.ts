@@ -16,7 +16,7 @@ import RULES_DATA_RAW from "./rules.json" with { type: "json" };
 const RULES_DATA: RuleEntry[] = RULES_DATA_RAW;
 
 function getRulesData(t: (key: string) => string): RuleEntry[] {
-  const TM = {
+  const TM: Record<string, string> = {
     "Blackjack": "rsBlackjack",
     "Bonificaciones de color": "rsColorBonus",
     "Cartas de acción": "rsActionCards",

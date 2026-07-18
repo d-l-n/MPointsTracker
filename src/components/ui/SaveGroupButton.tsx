@@ -1,23 +1,17 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 
-import type { PlayerGroup, PlayerGroupMember, TranslationFn } from "../../types";
+import type { LinkedPlayer, PlayerGroup, PlayerGroupMember, TranslationFn } from "../../types";
 
 interface PlayerEntry {
   id: string;
   name: string;
 }
 
-interface LinkedPlayerEntry {
-  uid?: string | null;
-  name: string;
-  playerId: string;
-}
-
 interface SaveGroupButtonProps {
   players?: PlayerEntry[];
-  linkedPlayers?: LinkedPlayerEntry[];
+  linkedPlayers?: LinkedPlayer[];
   playerGroups?: PlayerGroup[];
-  onSave: (groups: PlayerGroup[]) => void;
+  onSave?: (groups: PlayerGroup[]) => void;
   t?: TranslationFn;
 }
 
@@ -67,7 +61,7 @@ export default function SaveGroupButton({
 
     const newGroup: PlayerGroup = { name, players: groupPlayers };
     const updated = [...playerGroups.filter((group) => group.name !== name), newGroup];
-    onSave(updated);
+    onSave?.(updated);
     setSaved(true);
     if (savedTimerRef.current) clearTimeout(savedTimerRef.current);
     savedTimerRef.current = setTimeout(() => {

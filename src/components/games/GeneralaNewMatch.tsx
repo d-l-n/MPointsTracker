@@ -85,10 +85,11 @@ interface CellInputProps {
   value: SheetCellValue;
   onChange: (value: SheetCellValue) => void;
   color: string;
+  t: TranslationFn;
   "data-testid"?: string;
 }
 
-function CellInput({ row, value, onChange, color, "data-testid": dataTestId }: CellInputProps) {
+function CellInput({ row, value, onChange, color, t, "data-testid": dataTestId }: CellInputProps) {
   const [open, setOpen] = useState(false);
 
   if (value !== null) {
@@ -150,7 +151,7 @@ function CellInput({ row, value, onChange, color, "data-testid": dataTestId }: C
           max={row.max}
           placeholder="0"
           autoFocus
-          aria-label={row.label}
+          aria-label={t(row.labelKey)}
           style={{
             width: 50,
             height: 34,
@@ -549,6 +550,7 @@ function GeneralaNewMatch({
                         value={(sheets[player.id] || emptySheet())[row.id] ?? null}
                         onChange={(value) => setCell(player.id, row.id, value)}
                         color={color}
+                        t={t}
                         data-testid={`score-${row.id}-${player.id}`}
                       />
                     </div>

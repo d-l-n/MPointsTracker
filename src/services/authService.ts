@@ -50,7 +50,7 @@ export const signInWithGoogleRedirect = async (): Promise<void> => {
 export const signInEmail = (email: string, password: string) =>
   signInWithEmailAndPassword(fbAuth, email, password);
 
-export const signUpEmail = async (email: string, password: string, name: string) => {
+export const signUpEmail = async (email: string, password: string, name?: string) => {
   const cred = await createUserWithEmailAndPassword(fbAuth, email, password);
   if (name?.trim()) {
     await updateProfile(cred.user, { displayName: name.trim() });

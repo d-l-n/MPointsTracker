@@ -3,7 +3,7 @@ import type { CSSProperties } from "react";
 import ConfirmModal from "../components/ui/ConfirmModal";
 import EditMatchModal from "../components/ui/EditMatchModal";
 import { fmtDate } from "../lib/stats";
-import { GAMES, getGameName } from "../data/games";
+import { GAMES, getGameName, getGame } from "../data/games";
 import type { UnoRosterEvent } from "../types";
 
 function formatUnoRosterSummary(match: Match | null | undefined): string | null {
@@ -256,7 +256,7 @@ function GlobalHistoryPage({
   const noResultsMsg = useMemo(() => {
     if (search.trim()) return `${t("noResults")} "${search.trim()}"`;
     if (gameFilter !== "all") {
-      const game = GAMES[gameFilter];
+      const game = getGame(gameFilter);
       return `${t("noResults")} ${game ? getGameName(game.id, t) : gameFilter}`;
     }
     return t("noResults");
@@ -379,7 +379,7 @@ function GlobalHistoryPage({
             <div aria-hidden="true" style={{ height: virtualState.topSpacerHeight }} />
           )}
           {virtualState.items.map((m) => {
-            const game = GAMES[m._gid];
+            const game = getGame(m._gid);
             const displayName  = (m._gid === "custom" && m.gameName)  ? m.gameName  : (game ? getGameName(game.id, t) : m._gid);
             const displayColor = game?.color || "#006D77";
             const rosterSummary = formatUnoRosterSummary(m);
@@ -452,8 +452,8 @@ function GlobalHistoryPage({
 
                   {(() => {
                     const meta = [
-                      m.rounds > 0 ? `${m.rounds} ${t("rounds")}` : null,
-                      m.duration > 0 ? `${m.duration} ${t("durationMin") || "min"}` : null,
+                      (m.rounds ?? 0) > 0 ? `${m.rounds} ${t("rounds")}` : null,
+                      (m.duration ?? 0) > 0 ? `${m.duration} ${t("durationMin") || "min"}` : null,
                       m.limit ? `${t("until")} ${m.limit} pts` : null,
                     ].filter(Boolean).join(" · ");
                     return (
@@ -467,7 +467,7 @@ function GlobalHistoryPage({
                           <span className="history-meta-copy">{meta}</span>
                         </div>
                         <div className="history-meta-actions">
-                          {!m._sharedBy && editMatch && (
+                          {!m._sharedBy && (
                           <button
                             className="history-action-btn"
                             data-testid={`edit-match-${m.id}`}
@@ -525,7 +525,7 @@ function GlobalHistoryPage({
       {editing && (
         <EditMatchModal
           match={editing}
-          onSave={(updated) => { editMatch?.(editing._gid, updated); setEditing(null); }}
+          onSave={(updated) => { editMatch?.(editing._gid, updated as Match & Record<string, unknown>); setEditing(null); }}
           onClose={() => setEditing(null)}
           t={t}
         />

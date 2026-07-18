@@ -8,7 +8,9 @@ import ThemeToggle from "../ui/ThemeToggle";
 import SyncDot from "../ui/SyncDot";
 import UserAvatar from "../ui/UserAvatar";
 import AppHeader from "../ui/AppHeader";
-import type { Match, TranslationFn } from "../../types";
+import type { User } from "firebase/auth";
+import type { Match, ThemeMode, TranslationFn } from "../../types";
+import type { AppUser } from "../../components/settings/shared";
 
 interface HomeTabProps {
   t: TranslationFn;
@@ -16,11 +18,11 @@ interface HomeTabProps {
   data: Record<string, Match[] | unknown>;
   total: number;
   dark: boolean;
-  user: unknown;
+  user: (AppUser | User) | null | undefined;
   syncing: boolean;
   syncError: unknown;
   handleNav: (target: string) => void;
-  handleThemeMode: (mode: string) => void;
+  handleThemeMode: (mode: ThemeMode) => void;
   onThemeSettings?: () => void;
   setShowAuthModal: (value: string) => void;
   getMatches: (gameId: string) => Match[];

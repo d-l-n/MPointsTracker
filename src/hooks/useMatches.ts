@@ -74,7 +74,7 @@ export function useMatches({ userRef, dark, showToast, t }: UseMatchesOptions) {
         const nextData = { ...data, __theme: dark } as AppStorageData;
         await saveDataToCloud(user.uid, nextData);
         setSyncError(false);
-        const stats = computePublicStats(nextData, user.displayName ?? null);
+        const stats = computePublicStats(nextData, user.displayName ?? "");
         if (stats) {
           try {
             await savePublicStats(user.uid, stats);
@@ -143,7 +143,7 @@ export function useMatches({ userRef, dark, showToast, t }: UseMatchesOptions) {
     setData(nextData);
   }, []);
 
-  const mergeSharedMatches = useCallback((toMerge: Record<string, StoredMatch[]>) => {
+  const mergeSharedMatches = useCallback((toMerge: Record<string, Match[]>) => {
     setData((previousData) => {
       const nextData: MatchStore = { ...previousData };
       Object.entries(toMerge).forEach(([gid, newMatches]) => {

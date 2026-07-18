@@ -30,9 +30,9 @@ type MinimalProfileUser = Pick<User, "displayName" | "photoURL"> & Partial<Pick<
 
 export function normalizePublicProfile(raw: LegacyUserDoc = {}): PublicProfile {
   return {
-    displayName: raw.displayName ?? raw.profile?.displayName ?? null,
-    photoURL: raw.photoURL ?? raw.profile?.photoURL ?? null,
-    lastLogin: raw.lastLogin ?? raw.profile?.lastLogin ?? null,
+    displayName: (raw.displayName as string | null | undefined) ?? raw.profile?.displayName ?? null,
+    photoURL: (raw.photoURL as string | null | undefined) ?? raw.profile?.photoURL ?? null,
+    lastLogin: (raw.lastLogin as number | null | undefined) ?? raw.profile?.lastLogin ?? null,
     email: raw.profile?.email ?? null,
   };
 }

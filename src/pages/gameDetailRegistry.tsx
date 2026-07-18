@@ -5,7 +5,8 @@ import { GAMES } from "../data/games";
 import type { GameType } from "../data/games";
 import type { GameId } from "../types";
 
-type GameComponent = LazyExoticComponent<ComponentType<Record<string, unknown>>>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type GameComponent = LazyExoticComponent<ComponentType<any>>;
 type GameLoaderKey =
   | "uno"
   | "truco"

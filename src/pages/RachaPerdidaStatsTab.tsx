@@ -5,7 +5,7 @@ interface RachaPlayer {
   name?: string | null;
 }
 
-interface RachaMatch extends Match {
+interface RachaMatch extends Omit<Match, "players"> {
   id?: string;
   penalty?: string;
   players?: RachaPlayer[];
@@ -44,7 +44,7 @@ function RachaPerdidaStatsTab({
   // Last 5 entries for recent penalty log
   const recent = [...matches].reverse().slice(0, 5);
   const previewMatches = [...matches]
-    .sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0))
+    .sort((a, b) => Number(new Date(b.date || 0)) - Number(new Date(a.date || 0)))
     .slice(0, 3);
 
   return (

@@ -16,19 +16,19 @@ interface DraftPlayer {
   [key: string]: unknown;
 }
 
-interface GameDetailDraft extends DraftRecord {
+export interface GameDetailDraft extends DraftRecord {
   players?: DraftPlayer[];
   p1?: unknown;
   p2?: unknown;
 }
 
-interface GameDetailMatch extends Match {
+export interface GameDetailMatch extends Match {
   rounds?: number;
   penalty?: string;
   players: Match["players"];
 }
 
-interface RematchState {
+export interface RematchState {
   gameId?: string;
   playerNames?: string[] | null;
   linkedPlayers?: LinkedPlayer[];
@@ -38,7 +38,7 @@ interface RematchState {
 interface GameTabContentProps {
   game: GameDefinition;
   matchKey: number;
-  onAddMatch: (match: GameDetailMatch) => Promise<void> | void;
+  onAddMatch: (match: Match) => Promise<void> | void;
   draft: GameDetailDraft | null;
   onDraftChange?: (draft: GameDetailDraft | null) => void;
   linkedPlayers: LinkedPlayer[];
@@ -50,7 +50,7 @@ interface GameDetailProps {
   game: GameDefinition;
   onBack: (options?: { preserveDraft?: boolean }) => void;
   matches: GameDetailMatch[];
-  onAddMatch: (match: GameDetailMatch) => Promise<void> | void;
+  onAddMatch: (match: Match) => Promise<void> | void;
   tab?: "new" | "stats";
   onTabChange?: (tab: "new" | "stats") => void;
   matchKey?: number;
@@ -61,7 +61,7 @@ interface GameDetailProps {
   dark?: boolean;
   onDarkChange?: () => void;
   onOpenHistory?: ((gameId: string) => void) | null;
-  onRematch?: ((payload: { playerNames?: string[] | null; linkedPlayers?: LinkedPlayer[] }) => void) | null;
+  onRematch?: ((payload?: RematchState) => void) | null;
   rematchState?: RematchState | null;
   onRematchStateChange?: (state: RematchState | null) => void;
 }
@@ -145,9 +145,9 @@ function GameDetail({
         setElapsed(Math.floor((Date.now() - (startTimeRef.current || 0)) / 1000));
       }, 1000);
     } else {
-      clearInterval(timerRef.current);
+      if (timerRef.current !== null) clearInterval(timerRef.current);
     }
-    return () => clearInterval(timerRef.current);
+    return () => { if (timerRef.current !== null) clearInterval(timerRef.current); };
   }, [tab]); // eslint-disable-line react-hooks/exhaustive-deps -- elapsed excluded intentionally, see comment above
 
   // Listen for system back gesture dispatched from App.jsx
@@ -209,7 +209,7 @@ function GameDetail({
                 aria-controls={`tabpanel-${id}`}
                 id={`tab-${id}`}
                 className={`tab detail-tab${isActive ? " active" : ""}`}
-                onClick={() => handleTabChange(id as string)}
+                onClick={() => handleTabChange(id as "stats" | "new")}
                 data-testid={`tab-${id}`}
               >
                 {label as string}
@@ -236,7 +236,7 @@ function GameDetail({
                     // playerId will be re-mapped in onRematch using name match
                   }));
                 }
-                clearInterval(timerRef.current);
+                if (timerRef.current !== null) clearInterval(timerRef.current);
                 setElapsed(0);
                 onRematchStateChange?.({
                   gameId: game.id,

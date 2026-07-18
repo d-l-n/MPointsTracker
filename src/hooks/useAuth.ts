@@ -392,7 +392,7 @@ export function useAuth({
   );
 
   const signUpWithEmail = useCallback(
-    async (email: string, password: string, name: string): Promise<string | null> => {
+    async (email: string, password: string, name?: string): Promise<string | null> => {
       try {
         await authSignUpEmail(email, password, name);
       } catch (error) {

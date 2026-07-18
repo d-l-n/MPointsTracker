@@ -10,44 +10,57 @@ import { useAppContext } from "../../context/AppContext";
    - Las CSS variables se inyectan según el tema detectado al montar
 ══════════════════════════════════════════════════════════════════════════ */
 
-const SUITS  = ["♠","♥","♦","♣"];
-const VALUES = ["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
-const CARD_N = {A:11,2:2,3:3,4:4,5:5,6:6,7:7,8:8,9:9,10:10,J:10,Q:10,K:10};
-const RED_S  = new Set(["♥","♦"]);
+type Suit = "♠" | "♥" | "♦" | "♣";
+type Value = "A" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "J" | "Q" | "K";
+type ResultKind = "win" | "lose" | "push" | "bj" | "bust";
+interface CardData {
+  v: Value;
+  s: Suit;
+  id: string;
+}
+
+const SUITS: Suit[]  = ["♠","♥","♦","♣"];
+const VALUES: Value[] = ["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
+const CARD_N: Record<Value, number> = {A:11,"2":2,"3":3,"4":4,"5":5,"6":6,"7":7,"8":8,"9":9,"10":10,J:10,Q:10,K:10};
+const RED_S: Set<Suit>  = new Set<Suit>(["♥","♦"]);
 const NUM_DECKS = 6;
 const RESHUFFLE_AT = Math.floor(NUM_DECKS * 52 * 0.30);
 
-function makeDeck() {
-  const d=[];
+function makeDeck(): CardData[] {
+  const d: CardData[]=[];
   for (let n=0;n<NUM_DECKS;n++)
     for (const s of SUITS)
       for (const v of VALUES)
         d.push({v,s,id:`${n}-${v}-${s}-${Math.random()}`});
   return d;
 }
-function shuffle(arr) {
+function shuffle<T>(arr: T[]): T[] {
   const a=[...arr];
   for (let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
   return a;
 }
-function handVal(cards) {
+function handVal(cards: CardData[]): number {
   let t=0,a=0;
   for (const c of cards){t+=CARD_N[c.v];if(c.v==="A")a++;}
   while(t>21&&a-->0) t-=10;
   return t;
 }
-function isBJ(c)   { return c.length===2&&handVal(c)===21; }
-function isBust(c) { return handVal(c)>21; }
-function isPair(c) { return c.length===2&&CARD_N[c[0].v]===CARD_N[c[1].v]; }
-function isSoft17(c) {
+function isBJ(c: CardData[]): boolean   { return c.length===2&&handVal(c)===21; }
+function isBust(c: CardData[]): boolean { return handVal(c)>21; }
+function isPair(c: CardData[]): boolean { return c.length===2&&CARD_N[c[0].v]===CARD_N[c[1].v]; }
+function isSoft17(c: CardData[]): boolean {
   let t=0,a=0;
   for(const x of c){t+=CARD_N[x.v];if(x.v==="A")a++;}
   return a>0&&t===17;
 }
 
+interface BjStats { wins: number; losses: number; pushes: number; bjs: number; }
+interface HistItem { icon: string; label: string; detail: string; net: number; }
+interface SavedState { chips?: number; stats?: BjStats; hist?: HistItem[]; }
+
 const SK="bj_cpu_v2";
-function loadSaved(){try{return JSON.parse(localStorage.getItem(SK))||null;}catch{return null;}}
-function doSave(s){try{localStorage.setItem(SK,JSON.stringify(s));}catch{/* ignore */}}
+function loadSaved(): SavedState | null {try{return JSON.parse(localStorage.getItem(SK) ?? "null")||null;}catch{return null;}}
+function doSave(s: SavedState){try{localStorage.setItem(SK,JSON.stringify(s));}catch{/* ignore */}}
 
 /* ── Detectar y solicitar cambios de tema desde el portal ──────────────── */
 const THEME_MODE_CHANGE_EVENT = "bgt:theme-mode-change";
@@ -58,12 +71,17 @@ function isDarkTheme() {
   if (activeTheme) return activeTheme === "dark" || activeTheme === "oled";
   return root?.classList.contains("dark") ?? false;
 }
-function requestAppThemeMode(mode) {
+function requestAppThemeMode(mode: "light" | "dark") {
   window.dispatchEvent(new CustomEvent(THEME_MODE_CHANGE_EVENT, { detail: mode }));
 }
 
 /* ── Tokens de tema para el portal (fuera del .app) ───────────────────── */
-function getThemeTokens(dark) {
+interface ThemeTokens {
+  modalBg: string; panelBg: string; panelBorder: string; panelShadow: string;
+  tx: string; tx2: string; tx3: string; bo: string; gc: string;
+  tabActiveBg: string; tabInactiveColor: string; overlayBg: string;
+}
+function getThemeTokens(dark: boolean): ThemeTokens {
   if (dark) {
     return {
       modalBg:     "rgba(5, 18, 20, 0.97)",
@@ -97,7 +115,8 @@ function getThemeTokens(dark) {
 }
 
 /* ── Card ──────────────────────────────────────────────────────────────── */
-function Card({card,hidden=false,animate=false}) {
+interface CardProps { card?: CardData; hidden?: boolean; animate?: boolean; }
+function Card({card,hidden=false,animate=false}: CardProps) {
   const [vis,setVis]=useState(!animate);
   useEffect(()=>{
     if(animate){const t=setTimeout(()=>setVis(true),80);return()=>clearTimeout(t);}
@@ -130,7 +149,17 @@ function Card({card,hidden=false,animate=false}) {
 }
 
 /* ── HandArea ──────────────────────────────────────────────────────────── */
-function HandArea({cards,hideSecond=false,label,bet=0,active=false,result=null,tk,t = (key) => key}) {
+interface HandAreaProps {
+  cards: CardData[];
+  hideSecond?: boolean;
+  label?: string;
+  bet?: number;
+  active?: boolean;
+  result?: ResultKind | null;
+  tk: ThemeTokens;
+  t?: (key: string) => string;
+}
+function HandArea({cards,hideSecond=false,label,bet=0,active=false,result=null,tk,t = (key) => key}: HandAreaProps) {
   const val=hideSecond?handVal([cards[0]]):handVal(cards);
   const bust=!hideSecond&&val>21;
   const bj=isBJ(cards)&&!hideSecond;
@@ -190,7 +219,9 @@ const CHIPS=[
   {v:5,color:"#e63946"},{v:10,color:"#2196f3"},{v:25,color:"#52b788"},
   {v:50,color:"#9c27b0"},{v:100,color:"#ff9800"},{v:500,color:"#f4c430"},
 ];
-function ChipBtn({chip,disabled,onClick}) {
+interface Chip { v: number; color: string; }
+interface ChipBtnProps { chip: Chip; disabled?: boolean; onClick?: () => void; }
+function ChipBtn({chip,disabled,onClick}: ChipBtnProps) {
   return (
     <button onClick={onClick} disabled={disabled} style={{
       width:52,height:52,borderRadius:"50%",cursor:disabled?"not-allowed":"pointer",flexShrink:0,
@@ -209,7 +240,8 @@ function ChipBtn({chip,disabled,onClick}) {
 }
 
 /* ── HistEntry ─────────────────────────────────────────────────────────── */
-function HistEntry({e,tk}) {
+interface HistEntryProps { e: HistItem; tk: ThemeTokens; }
+function HistEntry({e,tk}: HistEntryProps) {
   const col=e.net>0?"#52b788":e.net<0?"#e63946":tk.tx3;
   return (
     <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",
@@ -229,7 +261,8 @@ function HistEntry({e,tk}) {
 /* ══════════════════════════════════════════════════════════════════════════
    MAIN
 ══════════════════════════════════════════════════════════════════════════ */
-function BlackjackCPU({onClose}) {
+interface BlackjackCPUProps { onClose: () => void; }
+function BlackjackCPU({onClose}: BlackjackCPUProps) {
   const { t } = useAppContext();
   const saved=loadSaved();
   const deckRef=useRef(shuffle(makeDeck()));
@@ -872,3 +905,5 @@ function BlackjackCPU({onClose}) {
 
 
 export default BlackjackCPU;
+
+

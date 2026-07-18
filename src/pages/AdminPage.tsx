@@ -5,7 +5,7 @@ import { fmtDate } from "../lib/stats";
 import { GAMES, getGameName } from "../data/games";
 import ConfirmModal from "../components/ui/ConfirmModal";
 import { normalizePublicProfile } from "../services/userService";
-import type { GameDefinition, Match, PublicProfile, TranslationFn } from "../types";
+import type { GameDefinition, LegacyUserDoc, Match, PublicProfile, TranslationFn } from "../types";
 
 const identity = (key: string) => key;
 
@@ -36,7 +36,7 @@ interface StoredPlayer {
   name?: string;
 }
 
-interface StoredMatch extends Match {
+interface StoredMatch extends Omit<Match, "players"> {
   players?: Array<StoredPlayer | string>;
   winner?: string | null;
 }
@@ -302,7 +302,7 @@ function AdminUsers({ showToast, t = identity }: ToastProps) {
         const list = usersSnap.docs.map((entry) => {
           const raw = entry.data() as PrivateDoc;
           const privateDoc = userdataByUid.get(entry.id) || {};
-          const profile = normalizePublicProfile(raw) as PublicProfile;
+          const profile = normalizePublicProfile(raw as LegacyUserDoc) as PublicProfile;
           const parsed = parsePrivateData(raw, privateDoc);
 
           const totalMatches = Object.entries(parsed)
@@ -352,7 +352,7 @@ function AdminUsers({ showToast, t = identity }: ToastProps) {
     if (typeof ts === "object" && "toDate" in ts && typeof ts.toDate === "function") {
       return ts.toDate().toISOString();
     }
-    const date = new Date(ts);
+    const date = new Date(ts as string | number | Date);
     return Number.isNaN(date.getTime()) ? null : date.toISOString();
   };
 

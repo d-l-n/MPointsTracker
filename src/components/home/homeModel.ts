@@ -261,7 +261,7 @@ function buildGameCardModel({
       ...(hasDraft ? [{ key: "continue", label: t("homeActionContinue"), emphasis: "primary" as const }] : []),
       { key: "new", label: t("homeActionNew"), emphasis: hasDraft ? "secondary" : "primary" },
       { key: "stats", label: t("homeActionStats"), emphasis: "quiet" },
-    ],
+    ] as HomeCardAction[],
   };
 }
 
@@ -334,8 +334,6 @@ function buildFamilyCardModel({
 function matchesFilter(card: HomeCardModel, activeFilter: HomeFilter["key"]): boolean {
   switch (activeFilter) {
     case "in-progress":
-      return card.hasDraft;
-    case "recent":
       return card.hasDraft || card.isRecent;
     case "favorites":
       return card.matchCount > 0;
@@ -408,7 +406,7 @@ export function buildHomeViewModel({
         });
         return card ? { ...card, groupKey: group.key } : null;
       })
-      .filter((card): card is HomeCardModel => Boolean(card));
+      .filter((card): card is HomeCardModel & { groupKey: string } => Boolean(card));
 
     cards.forEach((card) => allCards.push(card));
 
@@ -481,7 +479,7 @@ export function buildHomeViewModel({
 
   const savedMatches = Object.entries(data)
     .filter(([key, value]) => !key.startsWith("__") && Array.isArray(value))
-    .reduce((sum, [, value]) => sum + value.length, 0);
+    .reduce((sum, [, value]) => sum + (value as unknown[]).length, 0);
 
   return {
     featured: isInProgress ? null : featured,

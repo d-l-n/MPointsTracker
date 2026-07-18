@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import type { PlayerGroup, TranslationFn } from "../../types";
+import type { LinkedPlayer, PlayerGroup, TranslationFn } from "../../types";
 import LinkedPlayerInput from "../auth/LinkedPlayerInput";
 import ConfirmModal from "../ui/ConfirmModal";
 import EarlyFinishSaveAction from "../ui/EarlyFinishSaveAction";
@@ -10,7 +10,6 @@ import type {
   AccumulatingScoreConfig,
   AccumulatingScoreProps,
   AccumulatingScoreState,
-  LinkedPlayer,
   MatchMode,
   PlayerInputState,
 } from "../../hooks/useAccumulatingScoreMatch";
@@ -165,7 +164,7 @@ export default function AccumulatingScoreUI({
                 setMode("individual");
               }}
               onDiscard={handleDiscard}
-              hasPlayers={step === "playing" || rounds > 0 || named.length > 0}
+              hasPlayers={rounds > 0 || named.length > 0}
             />
             <span className="flbl">{t("players")}</span>
             <div className="rgap">
