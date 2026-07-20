@@ -5,6 +5,8 @@ import { getGameName } from "../../data/games";
 import type { GameDefinition, LinkedPlayer, Match, PlayerGroup, TranslationFn } from "../../types";
 import LinkedPlayerInput from "../auth/LinkedPlayerInput";
 import SaveGroupButton from "../ui/SaveGroupButton";
+import Tooltip from "../ui/Tooltip";
+import { Edit } from "reicon-react";
 
 interface PlayerInputState {
   id: string;
@@ -134,7 +136,7 @@ function CustomNewMatch({
   if (!configured) {
     return (
       <div className="sec">
-        <span className="flbl">{t("customGameEmoji")}</span>
+        <span className="flbl"><Edit size={16} style={{ marginRight: 4 }} />{t("customGameEmoji")}</span>
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 14 }}>
           {EMOJI_PRESETS.map((emoji) => (
             <button
@@ -156,7 +158,7 @@ function CustomNewMatch({
           <input
             id="custom-emoji"
             className="inp"
-            placeholder="✏️"
+            placeholder=""
             value={EMOJI_PRESETS.includes(customEmoji) ? "" : customEmoji}
             onChange={(event) => {
               if (event.target.value) setCustomEmoji(event.target.value.slice(-2));
@@ -213,6 +215,7 @@ function CustomNewMatch({
                   t={t}
                   allLinkedUids={linkedPlayers.map((linkedPlayer) => linkedPlayer.uid)}
                 />
+                <Tooltip text={`${t("delete")} ${player.name || `${t("playerN")} ${index + 1}`}`}>
                 <button
                   className="btnrm"
                   aria-label={`${t("delete")} ${player.name || `${t("playerN")} ${index + 1}`}`}
@@ -225,6 +228,7 @@ function CustomNewMatch({
                 >
                   ✕
                 </button>
+                </Tooltip>
               </div>
             ))}
           </div>

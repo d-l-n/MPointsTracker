@@ -1,6 +1,7 @@
 import { useCallback, type ChangeEvent } from "react";
 import { type MatchStore, type TranslationFn } from "../../types";
 import { SectionLabel, SettingsToggleRow } from "./shared";
+import { Monitor, PhoneVibrate, DocumentDownload } from "reicon-react";
 
 type BackupResult =
   | { ok: true; data: MatchStore; matchCount: number }
@@ -89,7 +90,7 @@ export default function AdvancedSection({
     <div className="page">
       {"wakeLock" in navigator && (
         <>
-          <SectionLabel label={t("displaySection")} />
+          <SectionLabel label={t("displaySection")} icon={<Monitor size={14} />} />
           <div className="about-card" style={{ marginBottom: "14px" }}>
             <SettingsToggleRow
               title={t("screenOn")}
@@ -103,7 +104,7 @@ export default function AdvancedSection({
 
       {"vibrate" in navigator && (
         <>
-          <SectionLabel label={t("interactionSection")} />
+          <SectionLabel label={t("interactionSection")} icon={<PhoneVibrate size={14} />} />
           <div className="about-card" style={{ marginBottom: "14px" }}>
             <SettingsToggleRow
               title={t("hapticFeedback")}
@@ -115,7 +116,7 @@ export default function AdvancedSection({
         </>
       )}
 
-      <SectionLabel label={t("dataSection")} />
+      <SectionLabel label={t("dataSection")} icon={<DocumentDownload size={14} />} />
       <div className="about-card" style={{ marginBottom: "14px" }}>
         <div style={{ padding: "4px 0 4px" }}>
           <div style={{ fontSize: ".78rem", color: "var(--tx2)", marginBottom: 12 }}>

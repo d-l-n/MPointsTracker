@@ -65,8 +65,11 @@ hooks/
 ponytail-audit-plan.md
 docs/agents/
 docs/superpowers/
-graphify-out/cost.json
-graphify-out/cache/
+graphify-out/
+
+# Windows junk / local scripts
+nul
+crear_zip_chatgpt.cmd
 
 # Share opencode graphify config with the team
 !.opencode/opencode.json

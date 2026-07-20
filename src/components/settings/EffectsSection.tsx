@@ -1,5 +1,7 @@
 import { type TranslationFn } from "../../types";
+import Dropdown from "../ui/Dropdown";
 import { SectionLabel, SettingsToggleRow } from "./shared";
+import { Accessibility, Music } from "reicon-react";
 
 export interface EffectsSectionProps {
   reduceEffects: boolean;
@@ -22,7 +24,7 @@ export default function EffectsSection({
 }: EffectsSectionProps) {
   return (
     <>
-      <SectionLabel label={t("accessibilitySection")} />
+      <SectionLabel label={t("accessibilitySection")} icon={<Accessibility size={14} />} />
       <div className="about-card" style={{ marginBottom: "14px" }}>
         <SettingsToggleRow
           title={t("reduceEffects")}
@@ -34,7 +36,7 @@ export default function EffectsSection({
         />
       </div>
 
-      <SectionLabel label={t("spotifySection")} />
+      <SectionLabel label={t("spotifySection")} icon={<Music size={14} />} />
       <div className="about-card" style={{ marginBottom: "14px" }}>
         <SettingsToggleRow
           title={t("spotifyIntegration")}
@@ -47,19 +49,17 @@ export default function EffectsSection({
         />
         {spotifyEnabled && (
           <div className="about-row" style={{ marginTop: "12px", borderTop: "1px solid var(--bo2)", paddingTop: "12px", display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 8 }}>
-            <span className="about-label" style={{ fontSize: ".82rem", color: "var(--tx2)", fontWeight: 600 }}>{t("spotifyPosition")}</span>
-            <select
+            <Dropdown
               value={spotifyPosition}
-              onChange={(e) => onSpotifyPositionChange(e.target.value as "center" | "left" | "right" | "draggable")}
-              className="inp"
-              style={{ padding: "6px 10px", fontSize: ".85rem", width: "100%", maxWidth: "200px" }}
-              data-testid="spotify-position-select"
-            >
-              <option value="center">{t("spotifyPosCenter")}</option>
-              <option value="left">{t("spotifyPosLeft")}</option>
-              <option value="right">{t("spotifyPosRight")}</option>
-              <option value="draggable">{t("spotifyPosDraggable")}</option>
-            </select>
+              onChange={(v) => onSpotifyPositionChange(v as "center" | "left" | "right" | "draggable")}
+              options={[
+                { value: "center", label: t("spotifyPosCenter") },
+                { value: "left", label: t("spotifyPosLeft") },
+                { value: "right", label: t("spotifyPosRight") },
+                { value: "draggable", label: t("spotifyPosDraggable") },
+              ]}
+              testId="spotify-position-select"
+            />
           </div>
         )}
       </div>

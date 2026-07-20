@@ -5,6 +5,7 @@ import RachaPerdidaStatsTab from "./RachaPerdidaStatsTab";
 import ThemeToggle from "../components/ui/ThemeToggle";
 import ReloadButton from "../components/ui/ReloadButton";
 import { ShareResultButton } from "../components/ui/ShareResultCard";
+import { X, ArrowLeft } from "reicon-react";
 import AppHeader from "../components/ui/AppHeader";
 import { useAppContext } from "../context/AppContext";
 import { getGameComponent } from "./gameDetailRegistry";
@@ -181,7 +182,7 @@ function GameDetail({
       >
         <AppHeader className="detail-header detail-header--with-tabs">
           <div className="detail-header-row">
-            <button className="ibtn" onClick={handleBack} aria-label={t("back")}>←</button>
+            <button className="ibtn" onClick={handleBack} aria-label={t("back")}><ArrowLeft size={20} /></button>
             <div className="page-title-block page-title-block--grow">
               <h1 className="htitle detail-title">{getGameName(game.id, t)}</h1>
               <span className="hsub">{matches.length} {t("matchesPlayed")}</span>
@@ -277,7 +278,7 @@ function GameDetail({
               className="detail-rematch-dismiss"
               aria-label={t("closeMenu")}
               onClick={() => { onRematchStateChange?.(null); onTabChange?.("new"); }}
-            >✕</button>
+            ><X size={16} /></button>
           </div>
         )}
         {isStatsVisible && (

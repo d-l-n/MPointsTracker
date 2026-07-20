@@ -1,3 +1,7 @@
+import {
+  Cards, Ghost, ArrowsRotate, Hand, Mug, Bone, Grid, Target, Diamonds,
+  ThreeDCube, Crown, FoodTray, ForkKnife, ChefHat, Car, Gamepad,
+} from "reicon-react";
 import { PORTION_FOODS, getPortionFoodByKey } from "./portionFoods";
 import type { GameDefinition, GameId } from "../types";
 
@@ -8,6 +12,7 @@ const LEGACY_PORTION_GAMES: Record<string, GameDefinition> = Object.fromEntries(
       id: food.key,
       name: food.name,
       emoji: food.emoji,
+      icon: food.icon,
       color: food.color,
       type: "porcion" as const,
       hiddenFromCatalog: true,
@@ -18,123 +23,123 @@ const LEGACY_PORTION_GAMES: Record<string, GameDefinition> = Object.fromEntries(
 
 const GAMES: Record<string, GameDefinition> = {
   uno: {
-    id: "uno", name: "UNO", emoji: "🃏", color: "#E63946",
+    id: "uno", name: "UNO", emoji: "🃏", icon: Cards, color: "#E63946",
     type: "uno_classic", winScore: 500,
     tagline: "500 pts · Clasico",
     coverImage: "/games/covers/uno.webp"},
   uno_no_mercy: {
-    id: "uno_no_mercy", name: "UNO No Mercy", emoji: "💀", color: "var(--nomercy)",
+    id: "uno_no_mercy", name: "UNO No Mercy", emoji: "💀", icon: Ghost, color: "var(--nomercy)",
     type: "uno_nomercy", winScore: 1000,
     tagline: "1000 pts · Mercy Rule",
     coverImage: "/games/covers/uno_no_mercy.webp"},
   uno_flip: {
-    id: "uno_flip", name: "UNO Flip", emoji: "🔄", color: "#7B2FBE",
+    id: "uno_flip", name: "UNO Flip", emoji: "🔄", icon: ArrowsRotate, color: "#7B2FBE",
     type: "uno_flip", winScore: 500,
     tagline: "500 pts · Lado Claro y Oscuro · 2 a 6 jugadores",
     coverImage: "/games/covers/uno_flip.webp"},
   uno_dos: {
-    id: "uno_dos", name: "DOS", emoji: "✌️", color: "#2980B9",
+    id: "uno_dos", name: "DOS", emoji: "✌️", icon: Hand, color: "#2980B9",
     type: "uno_dos", winScore: 200,
     tagline: "200 pts · Dos pilas",
     coverImage: "/games/covers/uno_dos.webp"},
   truco: {
-    id: "truco", name: "Truco", emoji: "🧉", color: "#8B5E3C",
+    id: "truco", name: "Truco", emoji: "🧉", icon: Mug, color: "#8B5E3C",
     type: "truco",
     tagline: "15 o 30 pts · Equipos o Individual",
     coverImage: "/games/covers/truco.webp"},
   chancho: {
-    id: "chancho", name: "Chancho", emoji: "🐷", color: "#E91E8C",
+    id: "chancho", name: "Chancho", emoji: "🐷", icon: Bone, color: "#E91E8C",
     type: "chancho",
     tagline: "Eliminacion · C-H-A-N-C-H-O",
     coverImage: "/games/covers/chancho.webp"},
   esquinados: {
-    id: "esquinados", name: "Esquinados", emoji: "🟩", color: "#2E7D32",
+    id: "esquinados", name: "Esquinados", emoji: "🟩", icon: Grid, color: "#2E7D32",
     type: "esquinados",
     tagline: "Ganador por ronda · Maldon",
     coverImage: "/games/covers/esquinados.webp"},
   chin: {
-    id: "chin", name: "Chin", emoji: "🎯", color: "#8B1A1A",
+    id: "chin", name: "Chin", emoji: "🎯", icon: Target, color: "#8B1A1A",
     type: "chin",
     tagline: "1v1 · Quien se queda sin cartas gana",
     coverImage: "/games/covers/chin.webp"},
   chinchon: {
-    id: "chinchon", name: "Chinchon", emoji: "🀄", color: "#E67E22",
+    id: "chinchon", name: "Chinchon", emoji: "🀄", icon: Cards, color: "#E67E22",
     type: "chinchon",
     tagline: "Eliminacion · Limite 100 pts",
     coverImage: "/games/covers/chinchon.webp"},
   rummy: {
-    id: "rummy", name: "Rummy", emoji: "🃏", color: "#2980B9",
+    id: "rummy", name: "Rummy", emoji: "🃏", icon: Cards, color: "#2980B9",
     type: "rummy",
     tagline: "500 pts · Combinaciones",
     coverImage: "/games/covers/rummy.webp"},
   poker: {
-    id: "poker", name: "Poker", emoji: "♦️", color: "#E63946",
+    id: "poker", name: "Poker", emoji: "♦️", icon: Diamonds, color: "#E63946",
     type: "poker",
     tagline: "Ganador por ronda",
     coverImage: "/games/covers/poker.webp"},
   blackjack: {
-    id: "blackjack", name: "Blackjack", emoji: "♣️", color: "var(--nomercy)",
+    id: "blackjack", name: "Blackjack", emoji: "♣️", icon: Cards, color: "var(--nomercy)",
     type: "blackjack",
     tagline: "21 · Ganador por ronda",
     coverImage: "/games/covers/blackjack.webp"},
   burako: {
-    id: "burako", name: "Burako", emoji: "🅱️", color: "#8E44AD",
+    id: "burako", name: "Burako", emoji: "🅱️", icon: Cards, color: "#8E44AD",
     type: "burako",
     tagline: "2000 pts · Individual o Equipos",
     coverImage: "/games/covers/burako.webp"},
   generala: {
-    id: "generala", name: "Generala", emoji: "🎲", color: "#D4A017",
+    id: "generala", name: "Generala", emoji: "🎲", icon: ThreeDCube, color: "#D4A017",
     type: "generala",
     tagline: "Combinaciones de dados · 5 dados",
     coverImage: "/games/covers/generala.webp"},
   ajedrez: {
-    id: "ajedrez", name: "Ajedrez", emoji: "♟️", color: "#4A4A6A",
+    id: "ajedrez", name: "Ajedrez", emoji: "♟️", icon: Crown, color: "#4A4A6A",
     type: "ajedrez",
     tagline: "1v1 · Ganador por partida",
     coverImage: "/games/covers/ajedrez.webp"},
   racha_perdida: {
-    id: "racha_perdida", name: "Racha Perdida", emoji: "💀", color: "#6C3483",
+    id: "racha_perdida", name: "Racha Perdida", emoji: "💀", icon: Ghost, color: "#6C3483",
     type: "racha_perdida",
     tagline: "Registra quien rompio la racha",
     coverImage: "/games/covers/racha_perdida.webp"},
   sushi_do: {
-    id: "sushi_do", name: "Sushi Do!", emoji: "🍣", color: "#D94841",
+    id: "sushi_do", name: "Sushi Do!", emoji: "🍣", icon: FoodTray, color: "#D94841",
     type: "sushi_do", winScore: 500,
     tagline: "500 pts · 6 iguales por sabor",
     coverImage: "/games/covers/sushi_do.webp"},
   portion_counter: {
-    id: "portion_counter", name: "Contador de Porciones", emoji: "🍽️", color: "#1ABC9C",
+    id: "portion_counter", name: "Contador de Porciones", emoji: "🍽️", icon: ForkKnife, color: "#1ABC9C",
     type: "porcion",
     tagline: "Elegi la comida y apuesten a cuantas unidades llega cada uno!",
     coverImage: "/games/covers/portion_counter.webp"},
   basta_dym: {
-    id: "basta_dym", name: "Basta!", emoji: "🔤", color: "#2F7DE1",
+    id: "basta_dym", name: "Basta!", emoji: "🔤", icon: Grid, color: "#2F7DE1",
     type: "basta_dym", winScore: 3,
     tagline: "3 cartas · Letras y tematicas",
     coverImage: "/games/covers/basta_dym.webp"},
   ...LEGACY_PORTION_GAMES,
   otros_porciones: {
-    id: "otros_porciones", name: "Otros", emoji: "🍽️", color: "#1ABC9C",
+    id: "otros_porciones", name: "Otros", emoji: "🍽️", icon: ForkKnife, color: "#1ABC9C",
     type: "porcion",
     hiddenFromCatalog: true,
     tagline: "Contador personalizado"},
   monopoly: {
-    id: "monopoly", name: "Monopoly", emoji: "🎩", color: "#E63946",
+    id: "monopoly", name: "Monopoly", emoji: "🎩", icon: ChefHat, color: "#E63946",
     type: "monopoly",
     tagline: "Ganador por partida",
     coverImage: "/games/covers/monopoly.webp"},
   life: {
-    id: "life", name: "Life", emoji: "🚗", color: "#27AE60",
+    id: "life", name: "Life", emoji: "🚗", icon: Car, color: "#27AE60",
     type: "life",
     tagline: "Ganador por partida",
     coverImage: "/games/covers/life.webp"},
   custom: {
-    id: "custom", name: "Juego libre", emoji: "🎮", color: "#006D77",
+    id: "custom", name: "Juego libre", emoji: "🎮", icon: Gamepad, color: "#006D77",
     type: "custom", winScore: 0,
     tagline: "Puntaje libre · Sin limite fijo",
     coverImage: "/games/covers/custom.webp"},
   canasta: {
-    id: "canasta", name: "Canasta", emoji: "🃏", color: "#C0392B",
+    id: "canasta", name: "Canasta", emoji: "🃏", icon: Cards, color: "#C0392B",
     type: "canasta", winScore: 5000,
     tagline: "5000 pts · Equipos o individual",
     coverImage: "/games/covers/canasta.webp"},

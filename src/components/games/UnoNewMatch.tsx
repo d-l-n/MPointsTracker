@@ -9,6 +9,8 @@ import EarlyFinishSaveAction from "../ui/EarlyFinishSaveAction";
 import LinkedPlayerInput from "../auth/LinkedPlayerInput";
 import MercyEliminator from "./MercyEliminator";
 import { SCORE_TABLES } from "../../data/scoreTables";
+import Tooltip from "../ui/Tooltip";
+import { Trash } from "reicon-react";
 
 interface PlayerInputState {
   id: string;
@@ -455,6 +457,7 @@ function UnoNewMatch({
                   t={t}
                   allLinkedUids={linkedPlayers.map((linkedPlayer) => linkedPlayer.uid)}
                 />
+                <Tooltip text={`${t("delete")} ${player.name || `${t("playerN")} ${index + 1}`}`}>
                 <button
                   className="btnrm"
                   aria-label={`${t("delete")} ${player.name || `${t("playerN")} ${index + 1}`}`}
@@ -467,6 +470,7 @@ function UnoNewMatch({
                 >
                   ✕
                 </button>
+                </Tooltip>
               </div>
             ))}
           </div>
@@ -542,6 +546,7 @@ function UnoNewMatch({
               {active.map((player) => (
                 <div className="irow" key={`active-${player.id}`}>
                   <div className="inp" style={{ display: "flex", alignItems: "center" }}>{player.name}</div>
+                  <Tooltip text={`${t("remove")} ${player.name}`}>
                   <button
                     className="btnrm"
                     data-testid="leave-player"
@@ -549,8 +554,9 @@ function UnoNewMatch({
                     disabled={active.length <= 2}
                     onClick={() => setPendingLeavePlayerId(player.id)}
                   >
-                    🗑️
+                    <Trash size={16} />
                   </button>
+                  </Tooltip>
                 </div>
               ))}
               {pendingJoinPlayers.map((player, index) => (

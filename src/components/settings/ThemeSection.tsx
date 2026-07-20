@@ -1,5 +1,6 @@
 import { type ThemeMode, type ThemeAccentMode, type TranslationFn } from "../../types";
 import { SectionLabel, SettingsToggleRow } from "./shared";
+import { Sun, ColorSwatch, Moon } from "reicon-react";
 
 export interface ThemeSectionProps {
   dark: boolean;
@@ -30,7 +31,7 @@ export default function ThemeSection({
 
   return (
     <>
-      <SectionLabel label={t("themeModeLabel")} />
+      <SectionLabel label={t("themeModeLabel")} icon={<Sun size={14} />} />
       <div className="about-card" style={{ marginBottom: "18px" }}>
         <div style={{ padding: "14px 0 10px" }}>
           <div style={{ display: "flex", gap: 8 }}>
@@ -54,7 +55,7 @@ export default function ThemeSection({
         </div>
       </div>
 
-      <SectionLabel label={t("themeAccentLabel") || "Accent"} />
+      <SectionLabel label={t("themeAccentLabel") || "Accent"} icon={<ColorSwatch size={14} />} />
       <div className="about-card" style={{ marginBottom: "14px" }}>
         <SettingsToggleRow
           title="Monet"
@@ -65,7 +66,7 @@ export default function ThemeSection({
         />
       </div>
 
-      <SectionLabel label={t("oledMode") || "OLED Mode"} />
+      <SectionLabel label={t("oledMode") || "OLED Mode"} icon={<Moon size={14} />} />
       <div className="about-card" style={{ marginBottom: "14px" }}>
         <SettingsToggleRow
           title={t("oledMode")}

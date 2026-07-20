@@ -22,6 +22,7 @@ function formatUnoRosterSummary(match: Match | null | undefined): string | null 
     .join(" · ") || null;
 }
 import { useAppContext } from "../context/AppContext";
+import { X, Edit, Trash } from "reicon-react";
 import type { AppContextValue, Match, TranslationFn } from "../types";
 
 interface HistoryPlayer {
@@ -315,7 +316,7 @@ function GlobalHistoryPage({
           aria-label={t("searchPlayer")}
         />
         {search && (
-          <button className="search-clear-btn" onClick={() => setSearch("")} aria-label={t("clearSearch")}>✕</button>
+          <button className="search-clear-btn" onClick={() => setSearch("")} aria-label={t("clearSearch")}><X size={14} /></button>
         )}
       </div>
 
@@ -473,13 +474,13 @@ function GlobalHistoryPage({
                             data-testid={`edit-match-${m.id}`}
                             title={t("editMatch")}
                             onClick={() => setEditing(m)}
-                            >{t("editMatch")}</button>
+                            ><Edit size={16} /> {t("editMatch")}</button>
                           )}
                           <button
                             className="history-action-btn history-action-btn--delete"
                             data-testid={`delete-match-${m.id}`}
                             onClick={() => setConfirm({ gid: m._gid, mid: m.id })}
-                          >{t("deleteMatch")}</button>
+                          ><Trash size={16} /> {t("deleteMatch")}</button>
                         </div>
                       </div>
                     );

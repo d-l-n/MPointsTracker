@@ -1,5 +1,6 @@
 import { memo } from "react";
 
+import { WifiOff } from "reicon-react";
 import type { TranslationFn } from "../../types";
 
 interface SyncDotProps {
@@ -11,7 +12,7 @@ interface SyncDotProps {
 
 const SyncDot = memo(function SyncDot({ syncing, error, t, isOnline = true }: SyncDotProps) {
   if (!isOnline) {
-    return <span className="sync-dot sync-dot--offline" title={t("offline")}>🛜</span>;
+    return <span className="sync-dot sync-dot--offline" title={t("offline")}><WifiOff size={14} /></span>;
   }
   return (
     <span

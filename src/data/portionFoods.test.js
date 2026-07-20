@@ -12,6 +12,7 @@ describe("portionFoods dataset", () => {
         key: expect.any(String),
         name: expect.any(String),
         emoji: expect.any(String),
+        icon: expect.any(Object),
         color: expect.any(String),
         tKey: expect.any(String),
       });

@@ -4,13 +4,13 @@ import ThemeToggle from "./ThemeToggle";
 
 describe("ThemeToggle", () => {
   test("renders moon icon when dark mode", () => {
-    render(<ThemeToggle dark={true} onChange={() => {}} />);
-    expect(screen.getByText("🌙")).toBeInTheDocument();
+    const { container } = render(<ThemeToggle dark={true} onChange={() => {}} />);
+    expect(container.querySelector("svg")).toBeInTheDocument();
   });
 
   test("renders sun icon when light mode", () => {
-    render(<ThemeToggle dark={false} onChange={() => {}} />);
-    expect(screen.getByText("☀️")).toBeInTheDocument();
+    const { container } = render(<ThemeToggle dark={false} onChange={() => {}} />);
+    expect(container.querySelector("svg")).toBeInTheDocument();
   });
 
   test("calls onChange on click", () => {

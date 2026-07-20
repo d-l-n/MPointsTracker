@@ -6,6 +6,7 @@ import ConfirmModal from "../ui/ConfirmModal";
 import EarlyFinishSaveAction from "../ui/EarlyFinishSaveAction";
 import GroupPicker from "../ui/GroupPicker";
 import SaveGroupButton from "../ui/SaveGroupButton";
+import Tooltip from "../ui/Tooltip";
 import type {
   AccumulatingScoreConfig,
   AccumulatingScoreProps,
@@ -206,6 +207,7 @@ export default function AccumulatingScoreUI({
                     t={t}
                     allLinkedUids={linkedPlayers.map((lp) => lp.uid)}
                   />
+                  <Tooltip text={`${t("delete")} ${player.name || `${t("playerN")} ${index + 1}`}`}>
                   <button
                     className="btnrm"
                     aria-label={`${t("delete")} ${player.name || `${t("playerN")} ${index + 1}`}`}
@@ -222,6 +224,7 @@ export default function AccumulatingScoreUI({
                   >
                     ✕
                   </button>
+                  </Tooltip>
                 </div>
               ))}
             </div>

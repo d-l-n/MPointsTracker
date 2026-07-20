@@ -1,11 +1,13 @@
 import { memo, useEffect, useState } from "react";
 
 import { haptic, mkId } from "../../lib/storage";
+import { User } from "reicon-react";
 import type { GameDefinition, LinkedPlayer, Match, PlayerGroup, TranslationFn } from "../../types";
 import GroupPicker from "../ui/GroupPicker";
 import SaveGroupButton from "../ui/SaveGroupButton";
 import EarlyFinishSaveAction from "../ui/EarlyFinishSaveAction";
 import LinkedPlayerInput from "../auth/LinkedPlayerInput";
+import Tooltip from "../ui/Tooltip";
 
 interface PlayerInputState {
   id: string;
@@ -358,6 +360,7 @@ function GenericNewMatch({
                   t={t}
                   allLinkedUids={linkedPlayers.map((linkedPlayer) => linkedPlayer.uid)}
                 />
+                <Tooltip text={`${t("delete")} ${player.name || `${t("playerN")} ${index + 1}`}`}>
                 <button
                   className="btnrm"
                   aria-label={`${t("delete")} ${player.name || `${t("playerN")} ${index + 1}`}`}
@@ -370,6 +373,7 @@ function GenericNewMatch({
                 >
                   ✕
                 </button>
+                </Tooltip>
               </div>
             ))}
           </div>
@@ -509,7 +513,7 @@ function GenericNewMatch({
                   <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
                     <span style={{ fontSize: ".76rem", fontWeight: 700, color: "var(--tx)" }}>{`${t("roundLabel")} ${index + 1}`}</span>
                     <span style={{ fontSize: ".72rem", color: "var(--tx3)" }}>
-                      {winnerName ? `${game.emoji} ${winnerName}` : t("noWinnerRound")}
+                      {winnerName ? <><game.icon size={14} /> {winnerName}</> : t("noWinnerRound")}
                       {entry.theme ? ` · ${entry.theme}` : ""}
                     </span>
                   </div>
@@ -708,7 +712,7 @@ function GenericNewMatch({
           <div className="wnrbtns">
             {active.map((player) => (
               <button key={player.id} className="wnrbtn" onClick={() => { haptic("light"); commitRound(player.id); }} data-testid={`win-button-${player.id}`} disabled={!bastaCanCommit}>
-                {game.emoji} {player.name}
+                <User size={14} /> {player.name}
                 {cfg.hasBet && bets[player.id] && parseFloat(bets[player.id]) > 0 && (
                   <span style={{ marginLeft: 8, fontSize: ".72rem", opacity: 0.7, fontWeight: 600 }}>
                     {t("currency")}

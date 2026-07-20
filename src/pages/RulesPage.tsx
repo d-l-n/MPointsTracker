@@ -1,4 +1,5 @@
 import { useMemo, useState, type CSSProperties } from "react";
+import { ChevronDown } from "reicon-react";
 import { getRulesData } from "../data/rules";
 import { GAMES, getTagline, getGame, getGameName } from "../data/games";
 import type { TranslationFn } from "../types";
@@ -101,7 +102,7 @@ function RulesPage({
                   </div>
                   <span className="home-card-action is-quiet rule-game-action">
                     <span>{expanded ? t("detailViewLess") : t("rulesViewAction")}</span>
-                    <span className={`rule-chevron${expanded ? " open" : ""}`}>▼</span>
+                    <span className={`rule-chevron${expanded ? " open" : ""}`}><ChevronDown size={16} /></span>
                   </span>
                 </button>
                 {expanded && (

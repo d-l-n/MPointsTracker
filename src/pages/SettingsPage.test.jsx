@@ -202,7 +202,12 @@ describe("SettingsPage", () => {
     renderSettingsPage({ subPage: "prefs" });
 
     const selector = screen.getByTestId("spotify-position-select");
-    fireEvent.change(selector, { target: { value: "left" } });
+    const trigger = selector.querySelector("button");
+    expect(trigger).not.toBeNull();
+    if (trigger) fireEvent.click(trigger);
+
+    const leftOption = screen.getByRole("option", { name: /left/i });
+    fireEvent.mouseDown(leftOption);
 
     expect(saveSpotifyPosition).toHaveBeenCalledWith("left");
   });

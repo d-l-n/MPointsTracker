@@ -1,4 +1,4 @@
-import type { CSSProperties } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import type { PlayerGroupMember, TranslationFn } from "../../types";
 import PillSwitch from "../ui/PillSwitch";
 
@@ -40,6 +40,7 @@ export interface LinkModalState {
 
 export interface SectionLabelProps {
   label: string;
+  icon?: ReactNode;
 }
 
 export interface SettingsRowProps {
@@ -47,6 +48,7 @@ export interface SettingsRowProps {
   desc?: string | null;
   onClick?: () => void;
   testId?: string;
+  icon?: ReactNode;
 }
 
 export interface SettingsToggleRowProps {
@@ -86,15 +88,16 @@ export function getMemberName(player: PlayerGroupMember | GroupDraftPlayer): str
   return typeof player === "string" ? player : player.name;
 }
 
-export function SectionLabel({ label }: SectionLabelProps) {
+export function SectionLabel({ label, icon }: SectionLabelProps) {
   return (
-    <span className="flbl" style={{ display: "block", marginBottom: "10px", fontSize: ".65rem", letterSpacing: 2 }}>
+    <span className="flbl" style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: "10px", fontSize: ".65rem", letterSpacing: 2 }}>
+      {icon && <span style={{ display: "flex" }}>{icon}</span>}
       {label.toUpperCase()}
     </span>
   );
 }
 
-export function SettingsRow({ title, desc, onClick, testId }: SettingsRowProps) {
+export function SettingsRow({ title, desc, onClick, testId, icon }: SettingsRowProps) {
   return (
     <button
       className="settings-row"
@@ -110,6 +113,7 @@ export function SettingsRow({ title, desc, onClick, testId }: SettingsRowProps) 
       }}
     >
       <div style={{ display: "flex", alignItems: "center", gap: 14, fontFamily: "'Google Sans',sans-serif", fontSize: ".78rem", letterSpacing: "normal" }}>
+        {icon && <span style={{ display: "flex", color: "var(--tx2)", flexShrink: 0 }}>{icon}</span>}
         <div>
           <div style={{ fontSize: ".78rem", fontWeight: 600, color: "var(--tx)", letterSpacing: "normal", lineHeight: 1.2 }}>
             {title}

@@ -1,5 +1,6 @@
 import { type TranslationFn } from "../../types";
 import { SectionLabel, LANGUAGE_OPTIONS } from "./shared";
+import { Global } from "reicon-react";
 
 export interface LanguageSectionProps {
   lang: string;
@@ -10,7 +11,7 @@ export interface LanguageSectionProps {
 export default function LanguageSection({ lang, onLangChange, t }: LanguageSectionProps) {
   return (
     <>
-      <SectionLabel label={t("language")} />
+      <SectionLabel label={t("language")} icon={<Global size={14} />} />
       <div className="about-card" style={{ marginBottom: "14px" }}>
         <div className="about-row" style={{ flexDirection: "column", alignItems: "flex-start", gap: 8 }}>
           <span className="about-label">{t("languageLabel")}</span>

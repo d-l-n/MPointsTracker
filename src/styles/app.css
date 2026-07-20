@@ -424,6 +424,9 @@ body{margin:0;padding:0;background:var(--bg)}
   .page-header-compact .user-row{
     flex:0 0 auto;min-width:0;margin-left:0;justify-content:flex-end;flex-wrap:nowrap;
   }
+  .app-layout-header-actions{
+    flex:0 0 auto;max-width:70%;overflow:hidden;
+  }
 }
 .tgtoggle{display:flex;align-items:center;height:28px}
 .tgtrack{width:52px;height:28px;border-radius:14px;background:var(--theme-control-fill-strong);cursor:pointer;border:1px solid color-mix(in srgb,var(--theme-control-outline) 84%,transparent);position:relative;flex-shrink:0;box-shadow:0 1px 0 rgba(255,255,255,.08) inset,0 6px 14px rgba(0,0,0,.12)}
@@ -465,7 +468,7 @@ body{margin:0;padding:0;background:var(--bg)}
 .home-section-title{font-family:'Bebas Neue',sans-serif;font-size:1.32rem;letter-spacing:2px;color:var(--tx);text-shadow:var(--ts-title)}
 .home-card-stack{display:grid;gap:12px}
 .home-card-stack.home-card-stack--rail{display:flex;flex-wrap:nowrap;gap:12px;overflow-x:auto;overflow-y:hidden;padding-bottom:4px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch}
-.home-card-stack.home-card-stack--rail>.home-action-card{flex:0 0 min(320px,calc(100vw - 64px));scroll-snap-align:start}
+.home-card-stack.home-card-stack--rail>.home-action-card{flex:0 0 min(400px,calc(100vw - 40px));scroll-snap-align:start}
 .home-rail-wrapper{position:relative;display:flex;align-items:stretch}
 .home-rail-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:3;width:36px;height:36px;border-radius:50%;border:1px solid var(--glass-border);background:var(--glass-bg);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);color:var(--tx);font-size:1.4rem;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;pointer-events:none;transition:opacity .2s var(--ease),background .18s var(--ease);box-shadow:0 4px 14px rgba(0,0,0,.12)}
 .home-rail-arrow:hover{background:color-mix(in srgb,var(--accent-primary) 18%,var(--glass-bg))}
@@ -782,6 +785,7 @@ html:not(.dark) .btnsec.nav-leave-discard:hover{color:#5A1E35;border-color:rgba(
 .btnpri:disabled{opacity:.28;cursor:not-allowed;transform:none}
 .btnsec{padding:7px 13px;border:1.5px solid var(--bo2);border-radius:var(--rxs);background:none;color:var(--tx);cursor:pointer;font-family:'Google Sans',sans-serif;font-size:.78rem;font-weight:600}
 .btnsec:hover{border-color:var(--gc);color:var(--gc)}
+.btnsec:active{background:color-mix(in srgb,var(--gc) 12%,transparent);border-color:color-mix(in srgb,var(--gc) 40%,transparent);color:var(--gc);transform:scale(.97)}
 .rgap{display:flex;flex-direction:column;gap:8px}
 .pillrow{display:flex;gap:10px}
 
@@ -816,7 +820,7 @@ html:not(.dark) .btnsec.nav-leave-discard:hover{color:#5A1E35;border-color:rgba(
 .rdlbl{font-size:.67rem;color:var(--tx2);letter-spacing:.8px;text-transform:uppercase;white-space:normal;line-height:1.3}
 .rdtotal{font-family:'Bebas Neue',sans-serif;font-size:1rem;color:var(--gc);letter-spacing:1px;padding-top:10px;min-width:44px;text-align:right;flex-shrink:0;text-shadow:var(--ts-strong)}
 .wnrbtns{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
-.wnrbtn{padding:9px 13px;border:1.5px solid var(--content-border);border-radius:var(--rxs);background:var(--content-surface);backdrop-filter:var(--content-blur);-webkit-backdrop-filter:var(--content-blur);color:var(--tx2);cursor:pointer;font-family:'Google Sans',sans-serif;font-size:.86rem;font-weight:600;text-align:left;box-shadow:var(--content-input-shadow);transition:border-color .18s var(--ease),background .18s var(--ease),color .18s var(--ease),transform .18s var(--ease)}
+.wnrbtn{padding:9px 13px;border:1.5px solid var(--content-border);border-radius:var(--rxs);background:var(--content-surface);backdrop-filter:var(--content-blur);-webkit-backdrop-filter:var(--content-blur);color:var(--tx2);cursor:pointer;font-family:'Google Sans',sans-serif;font-size:.86rem;font-weight:600;text-align:left;box-shadow:var(--content-input-shadow);transition:border-color .18s var(--ease),background .18s var(--ease),color .18s var(--ease),transform .18s var(--ease);display:inline-flex;align-items:center;gap:6px}
 .wnrbtn:hover{border-color:var(--gc);color:var(--gc);background:color-mix(in srgb,var(--gc) 8%,var(--content-surface))}
 .wnrbtn:active{transform:scale(.98)}
 .mercybadge{background:color-mix(in srgb,var(--gc) 8%,var(--content-surface));backdrop-filter:var(--content-blur);-webkit-backdrop-filter:var(--content-blur);border:1px solid color-mix(in srgb,var(--gc) 28%,var(--content-border));border-radius:var(--rxs);padding:9px 13px;margin-bottom:12px;display:flex;flex-direction:column;gap:7px;box-shadow:var(--content-shadow)}
@@ -862,7 +866,7 @@ html:not(.dark) .btnsec.nav-leave-discard:hover{color:#5A1E35;border-color:rgba(
 .history-meta-start{display:flex;align-items:center;gap:6px;min-width:0;flex:1}
 .history-meta-copy{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.69rem;color:var(--tx2)}
 .history-meta-actions{display:flex;gap:6px;align-items:center;flex-shrink:0}
-.history-action-btn{padding:3px 10px;border-radius:999px;border:1px solid var(--bo2);background:var(--content-surface);color:var(--tx2);cursor:pointer;font-family:'Google Sans',sans-serif;font-size:.65rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;flex-shrink:0;line-height:1.5;transition:border-color .18s var(--ease),color .18s var(--ease),background .18s var(--ease)}
+.history-action-btn{padding:3px 10px;border-radius:999px;border:1px solid var(--bo2);background:var(--content-surface);color:var(--tx2);cursor:pointer;font-family:'Google Sans',sans-serif;font-size:.65rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;flex-shrink:0;line-height:1.5;display:inline-flex;align-items:center;gap:4px;transition:border-color .18s var(--ease),color .18s var(--ease),background .18s var(--ease)}
 .history-action-btn:hover{border-color:var(--gc);color:var(--gc);background:color-mix(in srgb,var(--gc) 8%,transparent)}
 .history-action-btn--delete{color:#E63946;border-color:color-mix(in srgb,#E63946 35%,transparent);background:color-mix(in srgb,#E63946 8%,transparent)}
 .history-action-btn--delete:hover{color:#fff;background:#E63946;border-color:#E63946}
@@ -1235,7 +1239,7 @@ html:not(.dark) .btnsec.nav-leave-discard:hover{color:#5A1E35;border-color:rgba(
 .admin-from{font-size:.72rem;color:var(--tx2)}
 .admin-from strong{color:var(--tx2)}
 .admin-actions{display:flex;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid var(--bo)}
-.admin-action-btn{padding:5px 12px;border:1px solid var(--bo2);border-radius:var(--rxs);background:none;color:var(--tx2);cursor:pointer;font-family:'Google Sans',sans-serif;font-size:.72rem;font-weight:600}
+.admin-action-btn{padding:5px 12px;border:1px solid var(--bo2);border-radius:var(--rxs);background:none;color:var(--tx2);cursor:pointer;font-family:'Google Sans',sans-serif;font-size:.72rem;font-weight:600;display:inline-flex;align-items:center;gap:4px}
 .admin-action-btn:hover{border-color:var(--gc);color:var(--gc)}
 .admin-action-btn.danger:hover{border-color:#ff4444;color:#ff4444}
 .admin-empty{text-align:center;padding:40px 20px;color:var(--tx2);font-size:.84rem;font-weight:500}
@@ -1590,6 +1594,8 @@ html:not(.dark) .btnsec.nav-leave-discard:hover{color:#5A1E35;border-color:rgba(
     transition:opacity .2s var(--ease),transform .2s var(--ease),background .18s var(--ease);
   }
   .scroll-to-top:hover{background:var(--accent-primary);color:#fff;border-color:var(--accent-primary)}
+  .scroll-to-top:active{background:var(--accent-primary);color:#fff;border-color:var(--accent-primary);transform:scale(.92)}
+  .dark .scroll-to-top:active{background:var(--accent-primary);color:#fff;border-color:var(--accent-primary);box-shadow:0 0 0 2px rgba(255,255,255,.3)}
   .scroll-to-top--visible{opacity:1;transform:translateY(0);pointer-events:auto}
 }
 
@@ -2147,6 +2153,7 @@ html:not(.dark) .btnsec.nav-leave-discard:hover{color:#5A1E35;border-color:rgba(
 .about-card button:focus-visible,
 .about-card input:focus-visible,
 .about-row button:focus-visible,
+.settings-row:active{background:color-mix(in srgb,var(--accent-primary) 10%,var(--content-surface))}
 .btnsec:focus-visible,
 .btnpri:focus-visible,
 .btndash:focus-visible,

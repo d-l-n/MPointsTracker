@@ -1,7 +1,9 @@
 import { memo, useEffect, useState, type CSSProperties } from "react";
 
 import { useAppContext } from "../../context/AppContext";
+import { Link, Search, UserHand, X, LinkOff } from "reicon-react";
 import type { PendingInvite, TranslationFn } from "../../types";
+import Tooltip from "../ui/Tooltip";
 import PlayerInput from "../ui/PlayerInput";
 import InviteLinkModal from "./InviteLinkModal";
 import UserSearchModal from "./UserSearchModal";
@@ -150,7 +152,7 @@ function LinkedPlayerInput({
           <div style={{ flex: 1, minWidth: 0 }}>
             {linkedUid ? (
             <div data-testid="linked-player-chip" style={linkedChipStyle}>
-              <span style={linkedNameStyle}>🔗 {linkedName}</span>
+              <span style={linkedNameStyle}><Link size={16} /> {linkedName}</span>
               <span className="player-tag linked" style={{ flexShrink: 0 }}>
                 {t("linkedPlayer")}
               </span>
@@ -160,24 +162,29 @@ function LinkedPlayerInput({
           )}
         </div>
         {!linkedUid && (
-          <button onClick={() => setShowSearch(true)} style={baseButtonStyle} title={t("searchBtnTitle")} aria-label={t("searchBtnTitle")}>
-            🔍
-          </button>
+          <Tooltip text={t("searchBtnTitle")}>
+            <button onClick={() => setShowSearch(true)} style={baseButtonStyle} aria-label={t("searchBtnTitle")}>
+              <Search size={16} />
+            </button>
+          </Tooltip>
         )}
         {!linkedUid && currentUser && (
-          <button data-testid="invite-link-button" onClick={() => setShowInvite(true)} style={baseButtonStyle} title={t("inviteLinkBtn")} aria-label={t("inviteLinkBtn")}>
-            🔗
-          </button>
+          <Tooltip text={t("inviteLinkBtn")}>
+            <button data-testid="invite-link-button" onClick={() => setShowInvite(true)} style={baseButtonStyle} aria-label={t("inviteLinkBtn")}>
+              <Link size={16} />
+            </button>
+          </Tooltip>
         )}
         {linkedUid && (
-          <button
-            onClick={onUnlink}
-            style={{ ...baseButtonStyle, border: "1.5px solid rgba(255,68,68,.4)", background: "rgba(255,68,68,.12)", color: "#ff6b6b" }}
-            title={t("unlinkTitle")}
-            aria-label={t("unlinkTitle")}
-          >
-            ✕
-          </button>
+          <Tooltip text={t("unlinkTitle")}>
+            <button
+              onClick={onUnlink}
+              style={{ ...baseButtonStyle, border: "1.5px solid rgba(255,68,68,.4)", background: "rgba(255,68,68,.12)", color: "#ff6b6b" }}
+              aria-label={t("unlinkTitle")}
+            >
+              <LinkOff size={18} />
+            </button>
+          </Tooltip>
         )}
         {!linkedUid && currentUser && !selfAlreadyLinked && selfName && (
           <button
@@ -186,7 +193,7 @@ function LinkedPlayerInput({
             title={`${t("addMeAs")} ${selfName}`}
             aria-label={`${t("addMeAs")} ${selfName}`}
           >
-            {t("selfBtn")}
+            <UserHand size={16} /> {t("selfBtn")}
           </button>
         )}
         </div>

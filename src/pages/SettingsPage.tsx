@@ -11,6 +11,7 @@ import PlayerGroupsSection from "../components/settings/PlayerGroupsSection";
 import ThemeSection from "../components/settings/ThemeSection";
 import VersionTapper from "../components/ui/VersionTapper";
 import { SectionLabel, SettingsRow, type AppUser, type LanguageCode, type SettingsSubPage } from "../components/settings/shared";
+import { Sun, Cpu, Information, MessageText } from "reicon-react";
 import type {
   AppContextValue,
   Match,
@@ -55,12 +56,12 @@ function AboutSubPage({ user, showToast, t }: {
         <div className="about-intro-text">{t("appTagline")} {t("appSyncDesc")}</div>
       </div>
 
-      <SectionLabel label={t("version")} />
+      <SectionLabel label={t("version")} icon={<Information size={14} />} />
       <div className="about-card" style={{ marginBottom: "14px" }}>
         <div className="about-row"><span className="about-label">{t("version")}</span><VersionTapper /></div>
       </div>
 
-      <SectionLabel label={t("feedbackSection")} />
+      <SectionLabel label={t("feedbackSection")} icon={<MessageText size={14} />} />
       <div className="about-card" style={{ marginBottom: "14px", padding: 0, overflow: "hidden" }}>
         <FeedbackPage user={user} showToast={showToast} t={t} />
       </div>
@@ -179,8 +180,8 @@ function SettingsPage({
   if (subPage === "prefs") {
     return (
       <div className="page">
-        <SettingsRow title={t("settingsAppThemeTitle")} desc={t("settingsAppThemeDesc")} onClick={() => onSubPage("apptheme")} />
-        <SettingsRow title={t("settingsAdvancedTitle")} desc={t("settingsAdvancedDesc")} onClick={() => onSubPage("advanced")} />
+        <SettingsRow title={t("settingsAppThemeTitle")} desc={t("settingsAppThemeDesc")} onClick={() => onSubPage("apptheme")} icon={<Sun size={18} />} />
+        <SettingsRow title={t("settingsAdvancedTitle")} desc={t("settingsAdvancedDesc")} onClick={() => onSubPage("advanced")} icon={<Cpu size={18} />} />
         <EffectsSection
           reduceEffects={reduceEffects}
           onToggleReduceEffects={onToggleReduceEffects}

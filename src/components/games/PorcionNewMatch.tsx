@@ -7,6 +7,7 @@ import LinkedPlayerInput from "../auth/LinkedPlayerInput";
 import ConfirmModal from "../ui/ConfirmModal";
 import GroupPicker from "../ui/GroupPicker";
 import SaveGroupButton from "../ui/SaveGroupButton";
+import Tooltip from "../ui/Tooltip";
 
 interface PortionFood {
   key: string;
@@ -258,6 +259,7 @@ function PorcionNewMatch({
                   t={t}
                   allLinkedUids={linkedPlayers.map((linkedPlayer) => linkedPlayer.uid)}
                 />
+                <Tooltip text={`${t("delete")} ${player.name || `${t("playerN")} ${index + 1}`}`}>
                 <button
                   className="btnrm"
                   aria-label={`${t("delete")} ${player.name || `${t("playerN")} ${index + 1}`}`}
@@ -270,6 +272,7 @@ function PorcionNewMatch({
                 >
                   ✕
                 </button>
+                </Tooltip>
               </div>
             ))}
           </div>

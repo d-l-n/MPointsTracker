@@ -2,10 +2,12 @@ import { memo, useCallback, useEffect, useMemo, useState, type CSSProperties } f
 
 import { haptic, mkId } from "../../lib/storage";
 import type { GameDefinition, LinkedPlayer, Match, PlayerGroup, TranslationFn } from "../../types";
+import Dropdown from "../ui/Dropdown";
 import GroupPicker from "../ui/GroupPicker";
 import SaveGroupButton from "../ui/SaveGroupButton";
 import LinkedPlayerInput from "../auth/LinkedPlayerInput";
 import EarlyFinishSaveAction from "../ui/EarlyFinishSaveAction";
+import Tooltip from "../ui/Tooltip";
 import {
   SUSHI_DO_FLAVORS,
   SUSHI_DO_MAX_PLAYERS,
@@ -430,6 +432,7 @@ function SushiDoNewMatch({
                   t={t}
                   allLinkedUids={linkedPlayers.map((linkedPlayer) => linkedPlayer.uid)}
                 />
+                <Tooltip text={`${t("delete")} ${player.name || `${t("playerN")} ${index + 1}`}`}>
                 <button
                   className="btnrm"
                   aria-label={`${t("delete")} ${player.name || `${t("playerN")} ${index + 1}`}`}
@@ -441,6 +444,7 @@ function SushiDoNewMatch({
                 >
                   ✕
                 </button>
+                </Tooltip>
               </div>
             ))}
           </div>
@@ -478,21 +482,12 @@ function SushiDoNewMatch({
                       <div style={{ fontWeight: 700 }}>{index + 1}. {flavor?.label}</div>
                       <div style={{ color: "var(--tx2)" }}>{flavor?.points} {t("ptsLabel")}</div>
                     </div>
-                    <select
-                      id={`sushi-do-flavor-select-${index}`}
-                      className="inp"
-                      data-testid={`sushi-do-flavor-select-${index}`}
+                    <Dropdown
                       value={flavorKey}
-                      onChange={(event) => replaceFlavorAt(index, event.target.value)}
-                      style={{ marginTop: 10 }}
-                      aria-label={`${t("sushiDoFlavors")} ${index + 1}`}
-                    >
-                      {getFlavorOptions(index).map((option: SushiFlavor) => (
-                        <option key={option.key} value={option.key}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </select>
+                      onChange={(v) => replaceFlavorAt(index, v)}
+                      options={getFlavorOptions(index).map((opt: SushiFlavor) => ({ value: opt.key, label: opt.label }))}
+                      testId={`sushi-do-flavor-select-${index}`}
+                    />
                   </div>
                 );
               })}

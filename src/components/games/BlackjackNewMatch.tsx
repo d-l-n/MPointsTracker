@@ -6,6 +6,7 @@ import LinkedPlayerInput from "../auth/LinkedPlayerInput";
 import GroupPicker from "../ui/GroupPicker";
 import SaveGroupButton from "../ui/SaveGroupButton";
 import PillSwitch from "../ui/PillSwitch";
+import Tooltip from "../ui/Tooltip";
 
 interface PlayerInputState {
   id: string;
@@ -212,6 +213,7 @@ function BlackjackNewMatch({
                   t={t}
                   allLinkedUids={linkedPlayers.map((linkedPlayer) => linkedPlayer.uid)}
                 />
+                <Tooltip text={`${t("delete")} ${player.name || `${t("playerN")} ${index + 1}`}`}>
                 <button
                   className="btnrm"
                   aria-label={`${t("delete")} ${player.name || `${t("playerN")} ${index + 1}`}`}
@@ -224,6 +226,7 @@ function BlackjackNewMatch({
                 >
                   ✕
                 </button>
+                </Tooltip>
               </div>
             ))}
           </div>

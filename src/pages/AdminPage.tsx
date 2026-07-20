@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState, type CSSProperties } from "react";
 import { collection, doc, getDocs, query, updateDoc, where } from "firebase/firestore";
 import { fbDb } from "../lib/firebase";
+import { User, Trash } from "reicon-react";
 import { fmtDate } from "../lib/stats";
 import { GAMES, getGameName } from "../data/games";
 import ConfirmModal from "../components/ui/ConfirmModal";
@@ -264,7 +265,7 @@ function AdminReports({ showToast, t = identity }: ToastProps) {
                     {item.read ? t("markUnread") : t("markRead")}
                   </button>
                   <button className="admin-action-btn danger" onClick={() => setConfirm(item.id)}>
-                    {t("deleteReport")}
+                    <Trash size={16} /> {t("deleteReport")}
                   </button>
                 </div>
               </div>
@@ -400,7 +401,7 @@ function AdminUserCard({ u, i, normTs, t = identity }: AdminUserCardProps) {
           }}
         />
       ) : (
-        <div className="admin-user-avatar">{initials || "👤"}</div>
+        <div className="admin-user-avatar">{initials || <User size={20} />}</div>
       )}
       <div className="admin-user-info">
         <div className="admin-user-name" style={{ display: "flex", alignItems: "center", gap: 6 }}>

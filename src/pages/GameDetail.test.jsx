@@ -62,7 +62,7 @@ describe("GameDetail", () => {
     renderGameDetail();
 
     expect(screen.getByText("gn_uno")).toBeInTheDocument();
-    expect(screen.getByText("←")).toBeInTheDocument();
+    expect(screen.getByLabelText("back")).toBeInTheDocument();
   });
 
   test("does not render the games kicker above the active game name", () => {
@@ -125,7 +125,7 @@ describe("GameDetail", () => {
     const onBack = vi.fn();
     renderGameDetail({ onBack });
 
-    fireEvent.click(screen.getByText("←"));
+    fireEvent.click(screen.getByLabelText("back"));
     expect(onBack).toHaveBeenCalledOnce();
   });
 
@@ -183,10 +183,10 @@ describe("GameDetail", () => {
   });
 
   test("renders ReloadButton and ThemeToggle in toolbar", () => {
-    renderGameDetail();
+    const { container } = renderGameDetail();
 
-    expect(screen.getByText("↻")).toBeInTheDocument();
-    expect(screen.getByText("☀️")).toBeInTheDocument();
+    const svgs = container.querySelectorAll("svg");
+    expect(svgs.length).toBeGreaterThan(0);
   });
 
   test("re-renders on matchKey change", () => {

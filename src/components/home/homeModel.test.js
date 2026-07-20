@@ -31,9 +31,7 @@ describe("homeModel", () => {
       locale: "es",
     });
 
-    expect(viewModel.featured?.id).toBe("uno-family");
-    expect(viewModel.featured?.isFamily).toBe(true);
-    expect(viewModel.featured?.variants?.map((v) => v.id)).toEqual(["uno", "uno_flip", "uno_dos", "uno_no_mercy"]);
+    expect(viewModel.featured?.id).toBe("uno");
     expect(viewModel.recentCards.some((card) => card.id === "uno")).toBe(false);
     expect(viewModel.groups.some((group) => group.cards.some((card) => card.id === "uno"))).toBe(false);
     expect(viewModel.groups.length).toBeGreaterThan(0);
@@ -92,15 +90,12 @@ describe("homeModel", () => {
     expect(viewModel.groups[0].cards.map((card) => card.id)).toEqual(["poker"]);
   });
 
-  test("renders a single UNO family card grouping all variants (no loose variant cards)", () => {
-    const matchesByGame = {
-      uno: [{ id: "m-1", date: "2026-05-15T12:00:00.000Z", players: [{ name: "Ana" }], winner: "Ana" }],
-    };
-    const getMatches = (gameId) => matchesByGame[gameId] || [];
+  test("renders UNO variants as individual cards in the cards group", () => {
+    const getMatches = () => [];
     const getDraft = () => null;
 
     const viewModel = buildHomeViewModel({
-      data: matchesByGame,
+      data: {},
       getMatches,
       getDraft,
       t,
@@ -112,18 +107,8 @@ describe("homeModel", () => {
       ...viewModel.recentCards,
       ...viewModel.groups.flatMap((g) => g.cards),
     ];
-    const familyCard = allCards.find((c) => c.isFamily);
-    expect(familyCard?.isFamily).toBe(true);
-    expect(familyCard?.variants?.map((v) => v.id)).toEqual([
-      "uno",
-      "uno_flip",
-      "uno_dos",
-      "uno_no_mercy",
-    ]);
-    const looseIds = allCards.map((c) => c.id);
-    expect(looseIds).not.toContain("uno");
-    expect(looseIds).not.toContain("uno_flip");
-    expect(looseIds).not.toContain("uno_dos");
-    expect(looseIds).not.toContain("uno_no_mercy");
+    const unoCards = allCards.filter((c) => c.id === "uno" || c.id === "uno_flip" || c.id === "uno_dos" || c.id === "uno_no_mercy");
+    expect(unoCards.length).toBe(4);
+    unoCards.forEach((card) => expect(card.groupKey).toBe("cards"));
   });
 });

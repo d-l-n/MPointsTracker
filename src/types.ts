@@ -1,3 +1,6 @@
+import type { ReactNode } from "react";
+import type { IconComponent } from "reicon-react";
+
 export type GameId =
   | "uno"
   | "uno_no_mercy"
@@ -56,6 +59,7 @@ export interface GameDefinition {
   id: GameId;
   name: string;
   emoji: string;
+  icon: IconComponent;
   color: string;
   type: string;
   winScore?: number;
@@ -248,5 +252,5 @@ export interface AppContextValue {
 export interface NavItem {
   id: string;
   label: string;
-  icon: string;
+  icon: ReactNode;
 }

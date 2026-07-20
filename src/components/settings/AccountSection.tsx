@@ -14,6 +14,7 @@ import { fbAuth, fbDb } from "../../lib/firebase";
 import { updateProfile } from "firebase/auth";
 import { deleteDoc, doc } from "firebase/firestore";
 import { saveUserProfile } from "../../services/userService";
+import { Sliders, Information, Logout, Trash } from "reicon-react";
 
 export interface AccountSectionProps {
   user: AppUser | null;
@@ -231,8 +232,8 @@ export default function AccountSection({
         </div>
       )}
 
-      <SettingsRow title={t("settingsPrefs")} desc={t("settingsPrefsDesc")} onClick={() => onSubPage("prefs")} testId="settings-row-prefs" />
-      <SettingsRow title={t("settingsAbout")} desc={t("settingsAboutDesc")} onClick={() => onSubPage("about")} />
+      <SettingsRow title={t("settingsPrefs")} desc={t("settingsPrefsDesc")} onClick={() => onSubPage("prefs")} testId="settings-row-prefs" icon={<Sliders size={18} />} />
+      <SettingsRow title={t("settingsAbout")} desc={t("settingsAboutDesc")} onClick={() => onSubPage("about")} icon={<Information size={18} />} />
 
       {user && (
         <div className="about-card settings-account-actions" data-testid="settings-account-actions">
@@ -241,6 +242,7 @@ export default function AccountSection({
             onClick={() => setConfirmSignOut(true)}
           >
             <span className="settings-account-action-copy">
+              <Logout size={16} style={{ flexShrink: 0 }} />
               <span className="settings-account-action-title">{t("signOut")}</span>
             </span>
             <span className="settings-account-action-chevron">›</span>
@@ -251,6 +253,7 @@ export default function AccountSection({
             onClick={() => setConfirmDeleteAccount(true)}
           >
             <span className="settings-account-action-copy">
+              <Trash size={16} style={{ flexShrink: 0 }} />
               <span className="settings-account-action-title">{t("deleteAccountBtn")}</span>
             </span>
             <span className="settings-account-action-chevron">›</span>

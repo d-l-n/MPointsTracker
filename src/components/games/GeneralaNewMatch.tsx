@@ -5,6 +5,7 @@ import type { LinkedPlayer, Match, PlayerGroup, TranslationFn } from "../../type
 import LinkedPlayerInput from "../auth/LinkedPlayerInput";
 import GroupPicker from "../ui/GroupPicker";
 import SaveGroupButton from "../ui/SaveGroupButton";
+import Tooltip from "../ui/Tooltip";
 
 interface PlayerInputState {
   id: string;
@@ -397,6 +398,7 @@ function GeneralaNewMatch({
                   t={t}
                   allLinkedUids={linkedPlayers.map((linkedPlayer) => linkedPlayer.uid)}
                 />
+                <Tooltip text={`${t("delete")} ${player.name || `${t("playerN")} ${index + 1}`}`}>
                 <button
                   className="btnrm"
                   aria-label={`${t("delete")} ${player.name || `${t("playerN")} ${index + 1}`}`}
@@ -409,6 +411,7 @@ function GeneralaNewMatch({
                 >
                   ✕
                 </button>
+                </Tooltip>
               </div>
             ))}
           </div>

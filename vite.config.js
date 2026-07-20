@@ -17,6 +17,19 @@ function validateEnvPlugin() {
   };
 }
 
+function coopHeaders() {
+  return {
+    name: "coop-headers",
+    configureServer(server) {
+      server.middlewares.use((_req, res, next) => {
+        res.setHeader("Cross-Origin-Opener-Policy", "same-origin-allow-popups");
+        res.setHeader("Cross-Origin-Embedder-Policy", "unsafe-none");
+        next();
+      });
+    },
+  };
+}
+
 function stripCrossOrigin() {
   return {
     name: "strip-crossorigin",
@@ -28,7 +41,7 @@ function stripCrossOrigin() {
 }
 
 export default defineConfig({
-  plugins: [validateEnvPlugin(), react(), stripCrossOrigin()],
+  plugins: [validateEnvPlugin(), coopHeaders(), react(), stripCrossOrigin()],
   build: {
     crossOriginLoading: false,
     rolldownOptions: {

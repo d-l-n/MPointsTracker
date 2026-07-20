@@ -3,16 +3,18 @@ import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 
 
 import { fbDb } from "../lib/firebase";
+import { Bug, Lightbulb, Gamepad, MessageText, CheckCircle, Check } from "reicon-react";
+import type { IconComponent } from "reicon-react";
 import type { TranslationFn } from "../types";
 
 const FEEDBACK_MAX_CHARS = 800;
 
-const FB_TYPE_IDS = [
-  { id: "bug", emoji: "🐛", color: "#E63946" },
-  { id: "suggestion", emoji: "💡", color: "#FF8C00" },
-  { id: "new_game", emoji: "🎮", color: "#9B59B6" },
-  { id: "general", emoji: "💬", color: "#52B788" },
-] as const;
+const FB_TYPE_IDS: Array<{ id: string; emoji: string; icon: IconComponent; color: string; name: string }> = [
+  { id: "bug", emoji: "🐛", icon: Bug, color: "#E63946", name: "bug" },
+  { id: "suggestion", emoji: "💡", icon: Lightbulb, color: "#FF8C00", name: "suggestion" },
+  { id: "new_game", emoji: "🎮", icon: Gamepad, color: "#9B59B6", name: "new_game" },
+  { id: "general", emoji: "💬", icon: MessageText, color: "#52B788", name: "general" },
+];
 
 interface FeedbackUser {
   displayName?: string | null;
@@ -82,7 +84,7 @@ function FeedbackPage({ user, showToast, t = ((key: string) => key) as Translati
     return (
       <div className="fb-page">
         <div className="fb-sent">
-          <div className="fb-sent-ico">✅</div>
+          <div className="fb-sent-ico"><CheckCircle size={40} /></div>
           <div className="fb-sent-title">{t("sent")}</div>
           <div className="fb-sent-sub">
             {t("sentMsg")}
@@ -116,14 +118,14 @@ function FeedbackPage({ user, showToast, t = ((key: string) => key) as Translati
               style={{ "--fb-color": type.color } as CSSProperties}
               onClick={() => setSelected(type.id)}
             >
-              <span className="fb-type-ico">{type.emoji}</span>
+              <span className="fb-type-ico"><type.icon size={20} /></span>
               <div className="fb-type-info">
                 <div className="fb-type-name" style={{ color: selected === type.id ? type.color : "var(--tx)" }}>
                   {type.name}
                 </div>
                 <div className="fb-type-desc">{type.desc}</div>
               </div>
-              <span className="fb-type-check">✓</span>
+              <span className="fb-type-check"><Check size={16} /></span>
             </button>
           ))}
         </div>

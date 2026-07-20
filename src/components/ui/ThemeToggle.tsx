@@ -1,5 +1,7 @@
 import { useRef } from "react";
 
+import { DarkLight } from "reicon-react";
+
 interface ThemeToggleProps {
   dark: boolean;
   onChange?: () => void;
@@ -47,6 +49,6 @@ export default function ThemeToggle({ dark, onChange, onLongPress, t = (key) => 
         flexShrink: 0, lineHeight: 1,
         WebkitUserSelect: "none", userSelect: "none",
       }}
-    >{dark ? "🌙" : "☀️"}</button>
+      ><DarkLight size={18} /></button>
   );
 }

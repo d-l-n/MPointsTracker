@@ -10,6 +10,7 @@ import {
 import ConfirmModal from "../ui/ConfirmModal";
 import UserSearchModal from "../auth/UserSearchModal";
 import type { LinkedProfile } from "./shared";
+import { Users } from "reicon-react";
 
 export interface PlayerGroupsSectionProps {
   playerGroups: PlayerGroup[];
@@ -60,7 +61,7 @@ export default function PlayerGroupsSection({
 
   return (
     <>
-      <SectionLabel label={t("playerGroupsTitle")} />
+      <SectionLabel label={t("playerGroupsTitle")} icon={<Users size={14} />} />
       <div className="about-card" style={{ marginBottom: "14px", padding: 0, overflow: "hidden" }}>
         <div style={{ padding: "14px 18px 10px" }}>
           {playerGroups.length === 0

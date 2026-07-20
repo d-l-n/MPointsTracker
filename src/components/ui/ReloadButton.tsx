@@ -1,6 +1,7 @@
 import { useEffect, useState, type CSSProperties, type MouseEvent } from "react";
 
 import type { TranslationFn } from "../../types";
+import { ArrowUp, ArrowRotate, WifiOff } from "reicon-react";
 
 declare global {
   interface Window {
@@ -21,6 +22,7 @@ const baseIconStyle: CSSProperties = {
   alignItems: "center",
   justifyContent: "center",
   flexShrink: 0,
+  flexBasis: "auto",
   lineHeight: 1,
 };
 
@@ -78,8 +80,8 @@ export default function ReloadButton({ t = ((key: string) => key) as Translation
           cursor: "default",
         }}
       >
-        📶
-      </div>
+          <WifiOff size={16} />
+        </div>
     );
   }
 
@@ -99,7 +101,7 @@ export default function ReloadButton({ t = ((key: string) => key) as Translation
           animation: "pulse-green 1.5s ease-in-out infinite",
         }}
       >
-        ↑
+        <ArrowUp size={16} />
       </button>
     );
   }
@@ -121,7 +123,7 @@ export default function ReloadButton({ t = ((key: string) => key) as Translation
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      ↻
+      <ArrowRotate size={16} />
     </button>
   );
 }
