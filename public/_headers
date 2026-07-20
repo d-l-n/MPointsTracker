@@ -3,7 +3,7 @@
   X-Frame-Options: DENY
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(self), microphone=(self), geolocation=()
-  Content-Security-Policy: default-src 'self'; script-src 'self' https://sdk.scdn.co 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' https://www.gstatic.com https://i.scdn.co data: blob:; connect-src 'self' https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com wss://firestore.googleapis.com https://fonts.googleapis.com https://fonts.gstatic.com https://accounts.spotify.com https://api.spotify.com/v1; frame-src 'none'; worker-src 'self'; media-src 'none'; manifest-src 'self'; base-uri 'self'; form-action 'self'
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://sdk.scdn.co 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' https://www.gstatic.com https://i.scdn.co data: blob:; connect-src 'self' https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com wss://firestore.googleapis.com https://fonts.googleapis.com https://fonts.gstatic.com https://accounts.spotify.com https://api.spotify.com/v1 wss://dealer.spotify.com wss://ap.spotify.com; frame-src 'none'; worker-src 'self'; media-src 'none'; manifest-src 'self'; base-uri 'self'; form-action 'self'
 
 /manifest.webmanifest
   Content-Type: application/manifest+json; charset=utf-8
