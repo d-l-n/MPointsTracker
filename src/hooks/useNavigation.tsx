@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { GAMES } from "../data/games";
-import { Book, Crown, Gamepad, InfoCircle, Settings } from "reicon-react";
+import { Book, Crown, Gamepad, Settings2, Settings } from "reicon-react";
 import type { GameId, NavItem, TranslationFn } from "../types";
 
 type NavId = "home" | "champs" | "rules" | "about" | "admin";
@@ -245,7 +245,7 @@ export function useNavigation({
       { id: "home", label: t("games"), icon: <Gamepad size={24} /> },
       { id: "champs", label: t("champions"), icon: <Crown size={24} /> },
       { id: "rules", label: t("rules"), icon: <Book size={24} /> },
-      { id: "about", label: t("info"), icon: <InfoCircle size={24} /> },
+      { id: "about", label: t("info"), icon: <Settings2 size={24} /> },
       ...(isAdmin ? [{ id: "admin", label: t("admin"), icon: <Settings size={24} /> }] : []),
     ],
     [isAdmin, t],

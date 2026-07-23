@@ -1126,7 +1126,7 @@ html:not(.dark) .btnsec.nav-leave-discard:hover{color:#5A1E35;border-color:rgba(
 }
 .settings-account-action:last-child{border-bottom:0}
 .settings-account-action:hover{background:color-mix(in srgb,var(--gc) 6%,transparent)}
-.settings-account-action-copy{display:flex;flex-direction:column;min-width:0}
+.settings-account-action-copy{display:flex;flex-direction:row;align-items:center;gap:10px;min-width:0}
 .settings-account-action-title{font-size:.78rem;font-weight:700;line-height:1.2;color:inherit}
 .settings-account-action-chevron{color:var(--tx3);font-size:1.4rem;line-height:1;flex-shrink:0}
 .settings-account-action--danger{color:#B93143}
