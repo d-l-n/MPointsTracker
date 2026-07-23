@@ -427,7 +427,7 @@ export default function AppLayout({
   if (!user && (!guestMode || isLoginRoute)) {
     return (
       <AppShell dark={dark} toast={toast} t={t}>
-        <InstallBanner dark={dark} t={t} />
+        {!isLoginRoute && <InstallBanner dark={dark} t={t} />}
         {!isOnline && <OfflineBanner t={t} />}
         {showDebug && (
           <div className="debug-panel">

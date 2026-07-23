@@ -17,10 +17,19 @@ interface InstallBannerProps {
   t?: TranslationFn;
 }
 
+// Module-level capture: survives component unmount/remount across route transitions
+let _capturedPrompt: BeforeInstallPromptEvent | null = null;
+if (typeof window !== "undefined") {
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    _capturedPrompt = e as BeforeInstallPromptEvent;
+  }, { once: true });
+}
+
 function InstallBanner({ dark: _dark, t = ((key: string) => key) as TranslationFn }: InstallBannerProps) {
   const [mode, setMode] = useState<InstallMode | null>(null);
   const [hiding, setHiding] = useState(false);
-  const deferredPrompt = useRef<BeforeInstallPromptEvent | null>(null);
+  const deferredPrompt = useRef<BeforeInstallPromptEvent | null>(_capturedPrompt);
   const showTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const DISMISSED_KEY = "bgt_install_dismissed";
@@ -56,14 +65,22 @@ function InstallBanner({ dark: _dark, t = ((key: string) => key) as TranslationF
     const iosNavigator = window.navigator as Navigator & { standalone?: boolean };
     if (iosNavigator.standalone) return;
 
-    const handler = (event: Event) => {
-      const installEvent = event as BeforeInstallPromptEvent;
-      installEvent.preventDefault();
-      deferredPrompt.current = installEvent;
-      showTimerRef.current = setTimeout(() => setMode("android"), 3500);
-    };
+    if (!deferredPrompt.current) {
+      const handler = (event: Event) => {
+        const installEvent = event as BeforeInstallPromptEvent;
+        installEvent.preventDefault();
+        deferredPrompt.current = installEvent;
+        showTimerRef.current = setTimeout(() => setMode("android"), 3500);
+      };
+      window.addEventListener("beforeinstallprompt", handler);
+      return () => {
+        window.removeEventListener("beforeinstallprompt", handler);
+        if (showTimerRef.current) clearTimeout(showTimerRef.current);
+        if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
+      };
+    }
 
-    window.addEventListener("beforeinstallprompt", handler);
+    showTimerRef.current = setTimeout(() => setMode("android"), 3500);
 
     const isIosSafari =
       /iphone|ipad|ipod/i.test(navigator.userAgent) &&
@@ -75,7 +92,6 @@ function InstallBanner({ dark: _dark, t = ((key: string) => key) as TranslationF
     }
 
     return () => {
-      window.removeEventListener("beforeinstallprompt", handler);
       if (showTimerRef.current) clearTimeout(showTimerRef.current);
       if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
     };
