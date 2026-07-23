@@ -10,7 +10,7 @@ interface TooltipProps {
 export default function Tooltip({ text, children, delay = 300 }: TooltipProps) {
   const [show, setShow] = useState(false);
   const [style, setStyle] = useState<React.CSSProperties>({});
-  const timerRef = useRef<ReturnType<typeof setTimeout>>();
+  const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
   const targetRef = useRef<HTMLSpanElement>(null);
 
   const position = useCallback(() => {
