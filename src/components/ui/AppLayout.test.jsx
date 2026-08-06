@@ -365,7 +365,7 @@ describe("AppLayout", () => {
     );
 
     expect(source).toContain('import HomeTab from "../home/HomeTab"');
-    expect(source).toContain('import GameDetail from "../../pages/GameDetail"');
+    expect(source).toContain("const GameDetail = lazy(()");
     // ponytail: secondary pages lazy-loaded — SpotifyMiniPlayer was already lazy
     expect(source).toContain("const RulesPage = lazy(()");
     expect(source).toContain("const ChampsPage = lazy(()");

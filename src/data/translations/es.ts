@@ -737,6 +737,7 @@ const es = {
   "customGameEmoji": "Emoji",
   "savedCloud": "✅ Guardado en la nube",
   "savedLocal": "✅ Partida guardada",
+  "savedRacha": "💀 Racha registrada",
   "deleted": "🗑️ Partida eliminada",
   "deletedUndone": "↩️ Partida restaurada",
   "renamePlayer": "Renombrar jugador",

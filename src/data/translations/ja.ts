@@ -862,6 +862,7 @@ const ja = {
   "tappingFor": "タップ対象",
   "savedCloud": "✅ クラウドに保存",
   "savedLocal": "✅ 試合を保存しました",
+  "savedRacha": "💀 連勝を記録",
   "deleted": "🗑️ 試合を削除しました",
   "deletedUndone": "↩️ 試合を復元しました",
   "renamePlayer": "プレイヤー名を変更",

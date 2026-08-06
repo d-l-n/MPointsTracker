@@ -50,6 +50,13 @@ interface UseMatchesOptions {
 
 type StoredMatch = Match & Record<string, unknown>;
 
+function buildSavedMatchToast(gid: string, match: StoredMatch, hasCloud: boolean, t: TranslationFn): string {
+  if (gid === "racha_perdida") return t("savedRacha");
+  if (!match.winner) return hasCloud ? t("savedCloud") : t("savedLocal");
+  const rounds = typeof match.rounds === "number" ? ` · ${match.rounds} ${t("rounds")}` : "";
+  return `🏆 ${match.winner}${rounds}`;
+}
+
 export function useMatches({ userRef, dark, showToast, t }: UseMatchesOptions) {
   const [data, setData] = useState<MatchStore>(() => load() as MatchStore);
   const [syncing, setSyncing] = useState(false);
@@ -108,7 +115,7 @@ export function useMatches({ userRef, dark, showToast, t }: UseMatchesOptions) {
           { ...match, game: gid },
         ],
       }));
-      showToast(user ? t("savedCloud") : t("savedLocal"));
+      showToast(buildSavedMatchToast(gid, match, Boolean(user), t));
     },
     [userRef, showToast, t],
   );

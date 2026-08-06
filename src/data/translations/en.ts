@@ -862,6 +862,7 @@ const en = {
   "customGameEmoji": "Emoji",
   "savedCloud": "✅ Saved to cloud",
   "savedLocal": "✅ Match saved",
+  "savedRacha": "💀 Streak recorded",
   "deleted": "🗑️ Match deleted",
   "deletedUndone": "↩️ Match restored",
   "renamePlayer": "Rename player",

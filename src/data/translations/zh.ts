@@ -862,6 +862,7 @@ const zh = {
   "tappingFor": "点击以计数",
   "savedCloud": "✅ 已保存到云端",
   "savedLocal": "✅ 比赛已保存",
+  "savedRacha": "💀 已记录连胜",
   "deleted": "🗑️ 比赛已删除",
   "deletedUndone": "↩️ 比赛已恢复",
   "renamePlayer": "重命名玩家",

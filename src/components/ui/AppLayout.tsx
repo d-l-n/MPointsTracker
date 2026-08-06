@@ -38,7 +38,7 @@ import type { AppUser } from "../settings/shared";
 import type { GameDetailMatch, GameDetailDraft, RematchState } from "../../pages/GameDetail";
 import type { SettingsSubPage } from "../../components/settings/shared";
 import { scrollCurrentSectionToTop } from "../../hooks/useNavigation";
-import GameDetail from "../../pages/GameDetail";
+const GameDetail = lazy(() => import("../../pages/GameDetail"));
 const RulesPage = lazy(() => import("../../pages/RulesPage"));
 const ChampsPage = lazy(() => import("../../pages/ChampsPage"));
 const SettingsPage = lazy(() => import("../../pages/SettingsPage"));
@@ -523,7 +523,8 @@ export default function AppLayout({
         data-game-accent={accentGameId}
       >
         {selected && (
-          <GameDetail
+          <Suspense fallback={<div className="boot-loader" />}>
+            <GameDetail
             game={selectedGame!}
             onBack={() => {
               if (hasDraftPlayer()) {
@@ -551,6 +552,7 @@ export default function AppLayout({
             dark={dark}
             onDarkChange={() => handleThemeMode(dark ? "light" : "dark")}
           />
+          </Suspense>
         )}
       </div>
 
@@ -794,7 +796,7 @@ export default function AppLayout({
           </div>
         </nav>
       )}
-      {showNavOverlay && <div className="nav-overlay" onClick={() => setNavOpen(false)} />}
+      {showNavOverlay && <div className="nav-overlay" role="presentation" onClick={() => setNavOpen(false)} />}
 
       {showAuthModal && showAuthModal !== "google" && (
         <div className="app-layout-auth-modal-shell" role="dialog" aria-modal="true" aria-label={t("connect")}>

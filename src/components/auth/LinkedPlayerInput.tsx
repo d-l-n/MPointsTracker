@@ -148,7 +148,7 @@ function LinkedPlayerInput({
       {showInvite && currentUser && <InviteLinkModal user={currentUser} onClose={() => setShowInvite(false)} t={t} />}
       <div className={label ? "inp-group" : ""} style={{ width: "100%", minWidth: 0 }}>
         {label && id && <label htmlFor={id} className="inp-label">{label}</label>}
-        <div style={{ display: "flex", gap: 6, alignItems: "center", width: "100%", minWidth: 0 }}>
+        <div style={{ display: "flex", gap: 6, alignItems: "center", width: "100%", minWidth: 0, position: "relative" }}>
           <div style={{ flex: 1, minWidth: 0 }}>
             {linkedUid ? (
             <div data-testid="linked-player-chip" style={linkedChipStyle}>

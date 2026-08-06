@@ -862,6 +862,7 @@ const de = {
   "tappingFor": "Tippen für",
   "savedCloud": "✅ In der Cloud gespeichert",
   "savedLocal": "✅ Spiel gespeichert",
+  "savedRacha": "💀 Serie aufgezeichnet",
   "deleted": "🗑️ Spiel gelöscht",
   "deletedUndone": "↩️ Spiel wiederhergestellt",
   "renamePlayer": "Spieler umbenennen",

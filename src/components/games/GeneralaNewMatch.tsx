@@ -279,10 +279,14 @@ function GeneralaNewMatch({
   useEffect(() => {
     setSheets((currentSheets) => {
       const next = { ...currentSheets };
+      let changed = false;
       named.forEach((player) => {
-        if (!next[player.id]) next[player.id] = emptySheet();
+        if (!next[player.id]) {
+          next[player.id] = emptySheet();
+          changed = true;
+        }
       });
-      return next;
+      return changed ? next : currentSheets;
     });
   }, [named]);
 

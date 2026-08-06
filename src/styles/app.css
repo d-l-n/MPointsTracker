@@ -1796,7 +1796,12 @@ html:not(.dark) .btnsec.nav-leave-discard:hover{color:#5A1E35;border-color:rgba(
 /* ── USER SEARCH MODAL ── */
 .usearch-root{position:fixed;inset:0;z-index:700;display:flex;align-items:flex-end;justify-content:center;padding:0}
 .usearch-overlay{position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:flex;align-items:flex-end;justify-content:center;padding:0}
-@media (min-width:900px){.usearch-root{position:absolute}}
+@media (min-width:900px){
+  .usearch-root{position:absolute;inset:auto 0 auto auto;top:calc(100% + 10px);width:min(460px,calc(100vw - 32px));z-index:710;align-items:stretch;padding:0;border-radius:var(--r);box-shadow:0 12px 32px rgba(0,0,0,.28)}
+  .usearch-overlay{position:absolute;inset:0;background:rgba(0,0,0,.5);border-radius:var(--r);align-items:stretch}
+  .usearch-sheet{width:100%;max-width:none;border-radius:var(--r);border:1px solid var(--glass-border);box-shadow:none}
+  .detail-wrapper .sec .rgap{padding:0 15px}
+}
 
 /* ── FAMILY VARIANT PICKER ── */
 .family-picker-overlay{position:fixed;inset:0;z-index:700;display:flex;align-items:flex-end;justify-content:center;padding:0}

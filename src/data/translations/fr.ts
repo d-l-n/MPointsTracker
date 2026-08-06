@@ -862,6 +862,7 @@ const fr = {
   "tappingFor": "En train de compter pour",
   "savedCloud": "✅ Enregistré dans le cloud",
   "savedLocal": "✅ Partie enregistrée",
+  "savedRacha": "💀 Série enregistrée",
   "deleted": "🗑️ Partie supprimée",
   "deletedUndone": "↩️ Partie restaurée",
   "renamePlayer": "Renommer le joueur",
