@@ -408,14 +408,14 @@ export default function AppLayout({
             setShowSplash(false);
           }}
         />
-        <InstallBanner dark={dark} t={t} />
+        <InstallBanner t={t} />
       </>
     );
   }
 
   if (!authChecked || (hadPreviousSession && user === undefined)) {
     return (
-      <AppShell dark={dark} toast={toast} t={t}>
+      <AppShell dark={dark} toast={toast}>
         <BootShell
           stage="loading"
           copy={t("loadingCopy")}
@@ -427,8 +427,8 @@ export default function AppLayout({
 
   if (!user && (!guestMode || isLoginRoute)) {
     return (
-      <AppShell dark={dark} toast={toast} t={t}>
-        {!isLoginRoute && <InstallBanner dark={dark} t={t} />}
+      <AppShell dark={dark} toast={toast}>
+        {!isLoginRoute && <InstallBanner t={t} />}
         {!isOnline && <OfflineBanner t={t} />}
         {showDebug && (
           <div className="debug-panel">
@@ -485,8 +485,8 @@ export default function AppLayout({
         image={seoImage}
         url={selected ? `https://mpoints-tracker.pages.dev/game/${selected}` : undefined}
       />
-      <AppShell dark={dark} toast={toast} t={t}>
-      <InstallBanner dark={dark} t={t} />
+      <AppShell dark={dark} toast={toast}>
+      <InstallBanner t={t} />
       {pendingInvite && nav === "home" && !selected && (
         <div
           data-testid="pending-invite-banner"
@@ -794,30 +794,30 @@ export default function AppLayout({
         <div className="app-layout-auth-modal-shell" role="dialog" aria-modal="true" aria-label={t("connect")}>
           <button type="button" data-testid="auth-modal-backdrop" onClick={() => setShowAuthModal(false)} aria-label={t("cancel")} style={{ position: "absolute", inset: 0, border: 0, padding: 0, background: "transparent" }} />
           <div style={{ position: "relative", zIndex: 1 }}>
-          <EmailAuthScreen
-            t={t}
-            initialMode={showAuthModal}
-            lang={lang}
-            onLangChange={changeLang}
-            dark={dark}
-            onDarkChange={() => handleThemeMode(dark ? "light" : "dark")}
-            isOnline={isOnline}
-            onGoogle={async () => { await signInGoogle(); setShowAuthModal(false); }}
-            onSignIn={async (email, password) => {
-              const error = await signInWithEmail(email, password);
-              if (!error) setShowAuthModal(false);
-              return error;
-            }}
-            onSignUp={async (email, password, name) => {
-              const error = await signUpWithEmail(email, password, name);
-              if (!error) setShowAuthModal(false);
-              return error;
-            }}
-            onReset={sendPasswordReset}
-            onLogoTap={handleLogoTap}
-            onClose={() => setShowAuthModal(false)}
-            showDebug={false}
-          />
+            <EmailAuthScreen
+              t={t}
+              initialMode={showAuthModal}
+              lang={lang}
+              onLangChange={changeLang}
+              dark={dark}
+              onDarkChange={() => handleThemeMode(dark ? "light" : "dark")}
+              isOnline={isOnline}
+              onGoogle={async () => { await signInGoogle(); setShowAuthModal(false); }}
+              onSignIn={async (email, password) => {
+                const error = await signInWithEmail(email, password);
+                if (!error) setShowAuthModal(false);
+                return error;
+              }}
+              onSignUp={async (email, password, name) => {
+                const error = await signUpWithEmail(email, password, name);
+                if (!error) setShowAuthModal(false);
+                return error;
+              }}
+              onReset={sendPasswordReset}
+              onLogoTap={handleLogoTap}
+              onClose={() => setShowAuthModal(false)}
+              showDebug={false}
+            />
           </div>
         </div>
       )}

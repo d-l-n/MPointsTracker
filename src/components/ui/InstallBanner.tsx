@@ -13,7 +13,6 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 interface InstallBannerProps {
-  dark?: boolean;
   t?: TranslationFn;
 }
 
@@ -26,7 +25,7 @@ if (typeof window !== "undefined") {
   }, { once: true });
 }
 
-function InstallBanner({ dark: _dark, t = ((key: string) => key) as TranslationFn }: InstallBannerProps) {
+function InstallBanner({ t = ((key: string) => key) as TranslationFn }: InstallBannerProps) {
   const [mode, setMode] = useState<InstallMode | null>(null);
   const [hiding, setHiding] = useState(false);
   const deferredPrompt = useRef<BeforeInstallPromptEvent | null>(_capturedPrompt);

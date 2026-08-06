@@ -36,7 +36,7 @@ function haptic(type: "light" | "medium" | "strong" = "light"): void {
   if (type === "strong") navigator.vibrate([12, 40, 12]);
 }
 
-const APP_VERSION = "26.07.04";
+const APP_VERSION = __APP_VERSION__;
 const ADMIN_UID = "5UpEw50cQXcNnZQS4i7AaDQzY7J2";
 
 export { load, persist, mkId, haptic, APP_VERSION, ADMIN_UID, STORAGE_KEY };

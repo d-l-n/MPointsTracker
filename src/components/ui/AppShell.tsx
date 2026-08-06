@@ -1,6 +1,6 @@
 import { useRef, type ReactNode, type TouchEvent, type WheelEvent } from "react";
 
-import type { ToastState, TranslationFn } from "../../types";
+import type { ToastState } from "../../types";
 import Toast from "./Toast";
 
 const LOCAL_DEVELOPMENT_HOSTS = new Set(["localhost", "127.0.0.1", "::1"]);
@@ -13,10 +13,9 @@ interface AppShellProps {
   dark: boolean;
   toast: ToastState;
   children: ReactNode;
-  t?: TranslationFn;
 }
 
-export default function AppShell({ dark, toast, children, t: _t = (key) => key }: AppShellProps) {
+export default function AppShell({ dark, toast, children }: AppShellProps) {
   const contentRef = useRef<HTMLDivElement | null>(null);
   const touchStartY = useRef<number | null>(null);
   const showDevelopmentIndicator = isLocalDevelopmentHost();

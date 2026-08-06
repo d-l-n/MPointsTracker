@@ -105,7 +105,7 @@ function UserSearchModal({ onLink, onClose, t, knownNames = [] }: UserSearchModa
   }
 
   return (
-    <div style={{ position: "fixed", inset: 0, zIndex: 700, display: "flex", alignItems: "flex-end", justifyContent: "center", padding: 0 }}>
+    <div className="usearch-root">
       <button type="button" className="usearch-overlay" onClick={onClose} data-testid="user-search-backdrop" aria-label={t("cancel")} style={{ position: "absolute", inset: 0, border: 0, padding: 0 }} />
       <div className="usearch-sheet" style={{ position: "relative", zIndex: 701 }} role="dialog" aria-modal="true" aria-labelledby="usearch-title">
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>

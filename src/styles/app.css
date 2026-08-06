@@ -1509,7 +1509,7 @@ html:not(.dark) .btnsec.nav-leave-discard:hover{color:#5A1E35;border-color:rgba(
 
   /* On desktop the outer app-content scrolls — inner containers just flow */
   .tbody,.page,.admin-page,.fb-page{overflow-y:visible}
-  .detail .tbody{max-width:1080px;margin:0 auto}
+  .detail .tbody{max-width:1080px;width:100%;margin:0 auto}
   .detail{display:flex;flex-direction:column;min-height:0;flex:1}
   .detail-wrapper{overflow-y:auto !important;flex:1 !important;min-height:0 !important}
   .app-content-inner{overflow-y:visible}
@@ -1794,7 +1794,9 @@ html:not(.dark) .btnsec.nav-leave-discard:hover{color:#5A1E35;border-color:rgba(
 }
 
 /* ── USER SEARCH MODAL ── */
+.usearch-root{position:fixed;inset:0;z-index:700;display:flex;align-items:flex-end;justify-content:center;padding:0}
 .usearch-overlay{position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:flex;align-items:flex-end;justify-content:center;padding:0}
+@media (min-width:900px){.usearch-root{position:absolute}}
 
 /* ── FAMILY VARIANT PICKER ── */
 .family-picker-overlay{position:fixed;inset:0;z-index:700;display:flex;align-items:flex-end;justify-content:center;padding:0}

@@ -40,7 +40,19 @@ function stripCrossOrigin() {
   };
 }
 
+function dateVersion() {
+  const d = new Date();
+  const y = String(d.getFullYear()).slice(-2);
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}.${m}.${day}`;
+}
+
 export default defineConfig({
+  // App version = date of this build/deploy (YY.MM.DD)
+  define: {
+    __APP_VERSION__: JSON.stringify(dateVersion()),
+  },
   plugins: [validateEnvPlugin(), coopHeaders(), react(), stripCrossOrigin()],
   build: {
     crossOriginLoading: false,
