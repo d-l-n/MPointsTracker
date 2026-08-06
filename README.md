@@ -1,6 +1,6 @@
 # MPOINTS TRACKER — README
 
-> **v3.7.2** · React + Vite + Firebase PWA · Multi-device score tracker
+> **26.07.04** · React + Vite + Firebase PWA · Multi-device score tracker
 
 ---
 
@@ -10,7 +10,7 @@ PWA para registrar puntajes de juegos de mesa y cartas entre amigos. El catálog
 
 **Deploy:** Cloudflare Pages  
 **URL prod:** `mpoints-tracker.pages.dev`  
-**Release actual:** `3.7.2`
+**Release actual:** `26.07.04`
 
 ---
 
@@ -77,7 +77,7 @@ node .\node_modules\eslint\bin\eslint.js .
 node .\scripts\typecheck.mjs
 node .\node_modules\vite\bin\vite.js build
 node .\node_modules\vitest\vitest.mjs run
-node .\node_modules\playwright\cli.js test --project=logic tests\reusable-switch-contract.spec.js
+node .\node_modules\playwright\cli.js test --project=logic tests\reusable-switches.spec.js
 ```
 
 `node .\scripts\typecheck.mjs` usa `node_modules/typescript` si existe y, si no, cae a un toolchain temporal vía `corepack pnpm dlx` con cache local en `.corepack/`.
@@ -149,7 +149,6 @@ src/
 │       ├── AppShell.tsx           # Fuente tipada del shell base con toast y scroll container
 │       ├── AutocompleteInput.tsx   # Fuente tipada del input con sugerencias de nombres
 │       ├── BlackjackCPU.tsx        # Fuente tipada del easter egg/modal Blackjack vs CPU
-│       ├── CollapseSection.jsx     # Sección colapsable
 │       ├── ConfirmModal.tsx        # Fuente tipada del modal de confirmación genérico
 │       ├── EditMatchModal.tsx      # Fuente tipada de la edición de partidas pasadas
 │       ├── GroupPicker.tsx         # Fuente tipada del selector de grupo de jugadores
@@ -190,10 +189,9 @@ src/
 │   ├── useDraft.ts             # Draft de partida en curso (localStorage)
 │   ├── useGameSession.ts       # Selección de juego, rematch y session state
 │   ├── useMatches.ts           # CRUD de partidas (local + cloud sync debounced)
-│   ├── useNavigation.ts        # Estado de navegación por URL, back button e history subpages
-│   ├── useNavVisibility.ts     # Estado de nav móvil y auto-hide por scroll
-│   ├── useNavVisibility.js     # Estado de nav móvil y auto-hide por scroll
-│   ├── useOnlineStatus.ts      # Estado online/offline para UI y fallback
+│   ├── useNavigation.tsx           # Estado de navegación por URL, back button e history subpages
+│   ├── useNavVisibility.ts         # Estado de nav móvil y auto-hide por scroll
+│   ├── useOnlineStatus.ts          # Estado online/offline para UI y fallback
 │   ├── usePendingInvite.ts     # Resolución de invites desde URL + claim/dismiss
 │   ├── useTheme.ts             # Tema light/dark/oled/system + persistencia
 │   ├── useToast.ts             # Estado del toast global
@@ -206,19 +204,16 @@ src/
 │   ├── inviteService.ts        # Fuente tipada de invitaciones por URL/código + TTL
 │   ├── publicData.ts           # Fuente tipada de datos públicos / perfiles compartidos
 │   ├── stats.ts                # Fuente tipada de buildStats(), getAllPastPlayerNames(), fmtDate()
-│   ├── storage.ts              # Fuente tipada de localStorage helpers + APP_VERSION + ADMIN_UID
+│   ├── storage.ts              # Fuente tipada de localStorage helpers + APP_VERSION
 │
 ├── pages/
-│   ├── AboutPage.jsx           # Información/landing interna
-│   ├── AdminPage.tsx           # Fuente tipada del panel de admin (solo ADMIN_UID)
-│   ├── AppInfoPage.jsx         # Información de versión y app
+│   ├── AdminPage.tsx           # Fuente tipada del panel de admin (solo claim admin)
 │   ├── ChampsPage.tsx          # Fuente tipada del ranking global de campeones
 │   ├── FeedbackPage.tsx        # Fuente tipada del formulario de feedback
 │   ├── GameDetail.tsx          # Fuente tipada del detalle de juego: shell compartido + tabs New / History / Stats
 │   ├── gameDetailRegistry.tsx  # Registro lazy/preload de componentes NewMatch por tipo de juego
 │   ├── GlobalHistoryPage.tsx   # Fuente tipada del historial cross-game compartido
 │   ├── HeadToHeadPage.tsx      # Fuente tipada del mano a mano integrado en campeones
-│   ├── HistoryTab.jsx          # Historial filtrable por jugador
 │   ├── PublicProfilePage.tsx   # Fuente tipada del perfil público de otro usuario
 │   ├── RachaPerdidaStatsTab.tsx# Fuente tipada de stats específicos de Racha Perdida
 │   ├── RulesPage.tsx           # Fuente tipada de reglas, búsqueda y expansión por juego
@@ -401,14 +396,14 @@ createBrowserRouter
 
 | Proyecto | Viewport |
 |----------|---------|
-| `mobile-small` | Pixel 5 |
-| `mobile-large` | iPhone 14 Pro |
-| `tablet` | iPad Pro 11 |
-| `foldable-open` | 768×1024 |
-| `foldable-closed` | 360×740 |
-| `desktop` | 1440×900 |
+| `mobile-small` | 375×667 |
+| `mobile-large` | 430×932 |
+| `tablet` | 768×1024 |
+| `foldable-open` | 717×512 |
+| `foldable-closed` | 412×914 |
+| `desktop` | 1280×800 |
 | `layout-legacy` | 1280×800 |
-| `logic` | 1440×900 |
+| `logic` | 1280×800 |
 
 Tests en `./tests/` · Config en `playwright.config.js`
 
@@ -504,6 +499,15 @@ Scopes usados por el mini reproductor: `streaming`, `user-read-playback-state`, 
 | `bgt_splash_seen` | `"1"` si ya se mostró el splash |
 | `bgt_lang` | Idioma guardado |
 | `bgt_drafts` | Drafts de partida por juego (`{ [gameId]: draft }`) |
+| `bgt_haptic` | `"0"` si feedback háptico desactivado |
+| `bgt_reduce_effects` | `"1"` si efectos reducidos |
+| `bgt_last_uid` | Último UID con sesión (hint de sesión) |
+| `bgt_player_groups` | Grupos de jugadores guardados |
+| `bgt_last_group_v` | Último grupo usado por juego |
+| `bgt_nav_order` | Orden de la nav inferior |
+| `bgt_onboarding_seen` | `"1"` si se completó el onboarding |
+| `bgt_guest_mode` / `bgt_guest_name` | Modo invitado / nombre del invitado |
+| `bgt_install_dismissed` / `_later` | Dismiss del banner de instalación |
 
 ### Backup e historial
 
@@ -529,8 +533,9 @@ Los drafts de UNO ahora pueden persistir:
 
 ## Admin
 
-- `ADMIN_UID = "5UpEw50cQXcNnZQS4i7AaDQzY7J2"` (hardcodeado en `storage.ts`)
-- Nav item "Admin" solo visible para ese UID
+- Acceso admin por Firebase custom claims: `{ admin: true }` (verificado en `useAuth.ts` vía `token.claims.admin`).
+- Setear el claim desde un entorno Firebase Admin de confianza y forzar refresh del ID token.
+- Nav item "Admin" solo visible cuando el claim `admin` es `true`.
 - `AdminPage.tsx` gestiona operaciones privilegiadas.
 
 ---
