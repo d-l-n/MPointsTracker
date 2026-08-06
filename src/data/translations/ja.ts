@@ -96,7 +96,6 @@ const ja = {
   "searchGameOrMatch": "ゲームや試合を検索",
   "homeFilterAll": "すべて",
   "homeFilterInProgress": "進行中",
-  "homeFilterRecent": "最近",
   "homeFilterFavorites": "お気に入り",
   "homeFilterCards": "カード",
   "homeFilterTokens": "ボード",

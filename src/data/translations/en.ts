@@ -96,7 +96,6 @@ const en = {
   "searchGameOrMatch": "Search game or match",
   "homeFilterAll": "All",
   "homeFilterInProgress": "In progress",
-  "homeFilterRecent": "Recent",
   "homeFilterFavorites": "Favorites",
   "homeFilterCards": "Cards",
   "homeFilterTokens": "Board",

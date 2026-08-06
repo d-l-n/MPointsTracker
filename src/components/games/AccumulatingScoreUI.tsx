@@ -207,24 +207,24 @@ export default function AccumulatingScoreUI({
                     t={t}
                     allLinkedUids={linkedPlayers.map((lp) => lp.uid)}
                   />
+                  {players.length > 2 && player.name.trim() && (
                   <Tooltip text={`${t("delete")} ${player.name || `${t("playerN")} ${index + 1}`}`}>
                   <button
                     className="btnrm"
                     aria-label={`${t("delete")} ${player.name || `${t("playerN")} ${index + 1}`}`}
                     onClick={() => {
-                      if (players.length > 2) {
-                        setPlayers((prev) =>
-                          prev.filter((p) => p.id !== player.id),
-                        );
-                        onLinkedPlayersChange(
-                          linkedPlayers.filter((lp) => lp.playerId !== player.id),
-                        );
-                      }
+                      setPlayers((prev) =>
+                        prev.filter((p) => p.id !== player.id),
+                      );
+                      onLinkedPlayersChange(
+                        linkedPlayers.filter((lp) => lp.playerId !== player.id),
+                      );
                     }}
                   >
                     ✕
                   </button>
                   </Tooltip>
+                  )}
                 </div>
               ))}
             </div>
@@ -269,25 +269,30 @@ export default function AccumulatingScoreUI({
   return (
     <div>
       <div className="tscores">
-        {labels.map((label, index) => (
-          <div
-            key={label}
-            className={`tcard${scores[index] >= effectiveGoal ? " win" : ""}`}
-            data-testid={`team-score-${index}`}
-          >
-            <div className="ttname">{label}</div>
-            <div className="ttscore">{fmtScore(scores[index])}</div>
-            <div className="ttlimit">
-              {t("of")} {fmtLimit(effectiveGoal)}
+        {labels.map((label, index) => {
+          // Defensive default: individual mode supports more players than the
+          // legacy 2-slot drafts, so a missing slot must never crash formatting.
+          const score = scores[index] || 0;
+          return (
+            <div
+              key={label}
+              className={`tcard${score >= effectiveGoal ? " win" : ""}`}
+              data-testid={`team-score-${index}`}
+            >
+              <div className="ttname">{label}</div>
+              <div className="ttscore">{fmtScore(score)}</div>
+              <div className="ttlimit">
+                {t("of")} {fmtLimit(effectiveGoal)}
+              </div>
+              <div className="tprog">
+                <div
+                  className="tbar"
+                  style={{ width: `${Math.min((score / effectiveGoal) * 100, 100)}%` }}
+                />
+              </div>
             </div>
-            <div className="tprog">
-              <div
-                className="tbar"
-                style={{ width: `${Math.min((scores[index] / effectiveGoal) * 100, 100)}%` }}
-              />
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {over && wi !== null && (

@@ -31,9 +31,13 @@ describe("homeModel", () => {
       locale: "es",
     });
 
-    expect(viewModel.featured?.id).toBe("uno");
-    expect(viewModel.recentCards.some((card) => card.id === "uno")).toBe(false);
-    expect(viewModel.groups.some((group) => group.cards.some((card) => card.id === "uno"))).toBe(false);
+    // After the family-variant refactor, the UNO draft surfaces as a single
+    // family card ("uno-family") instead of four individual cards.
+    expect(viewModel.featured?.id).toBe("uno-family");
+    expect(viewModel.featured?.isFamily).toBe(true);
+    expect(viewModel.featured?.variants?.some((variant) => variant.id === "uno" && variant.hasDraft)).toBe(true);
+    expect(viewModel.recentCards.some((card) => card.id === "uno-family")).toBe(false);
+    expect(viewModel.groups.some((group) => group.cards.some((card) => card.id === "uno-family"))).toBe(false);
     expect(viewModel.groups.length).toBeGreaterThan(0);
   });
 
@@ -63,6 +67,7 @@ describe("homeModel", () => {
     ];
 
     expect(visibleIds).toContain("monopoly");
+    expect(visibleIds).not.toContain("uno-family");
     expect(visibleIds).not.toContain("uno");
     expect(new Set(visibleIds).size).toBe(visibleIds.length);
   });
@@ -90,7 +95,7 @@ describe("homeModel", () => {
     expect(viewModel.groups[0].cards.map((card) => card.id)).toEqual(["poker"]);
   });
 
-  test("renders UNO variants as individual cards in the cards group", () => {
+  test("renders the UNO family as a single card carrying all variants", () => {
     const getMatches = () => [];
     const getDraft = () => null;
 
@@ -107,8 +112,17 @@ describe("homeModel", () => {
       ...viewModel.recentCards,
       ...viewModel.groups.flatMap((g) => g.cards),
     ];
-    const unoCards = allCards.filter((c) => c.id === "uno" || c.id === "uno_flip" || c.id === "uno_dos" || c.id === "uno_no_mercy");
-    expect(unoCards.length).toBe(4);
-    unoCards.forEach((card) => expect(card.groupKey).toBe("cards"));
+
+    const familyCard = allCards.find((card) => card.id === "uno-family");
+    expect(familyCard).toBeDefined();
+    // The "Familia UNO" chip is removed from the filters, but the catalog group stays.
+    expect(viewModel.filters.map((filter) => filter.key)).not.toContain("uno-family");
+    expect(familyCard.isFamily).toBe(true);
+    expect(familyCard.groupKey).toBe("uno-family");
+    expect(familyCard.variants.map((variant) => variant.id)).toEqual(["uno", "uno_flip", "uno_dos", "uno_no_mercy"]);
+
+    // Individual UNO variants are no longer rendered as separate cards.
+    const unoVariantCards = allCards.filter((card) => ["uno", "uno_flip", "uno_dos", "uno_no_mercy"].includes(card.id));
+    expect(unoVariantCards).toHaveLength(0);
   });
 });

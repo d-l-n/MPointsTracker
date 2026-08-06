@@ -99,7 +99,6 @@ const zh = {
   "searchGameOrMatch": "搜索游戏或对局",
   "homeFilterAll": "全部",
   "homeFilterInProgress": "进行中",
-  "homeFilterRecent": "最近",
   "homeFilterFavorites": "常玩",
   "homeFilterCards": "卡牌",
   "homeFilterTokens": "桌游",

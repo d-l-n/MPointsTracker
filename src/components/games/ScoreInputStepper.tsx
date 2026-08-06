@@ -37,11 +37,10 @@ export default function ScoreInputStepper({
               <button
                 className="stepbtn"
                 onClick={() =>
-                  setAdds(
-                    (prev) =>
-                      prev.map((v, i) =>
-                        i === index ? Math.max(0, v - 1) : v,
-                      ) as [number, number],
+                  setAdds((prev) =>
+                    prev.map((v, i) =>
+                      i === index ? Math.max(0, v - 1) : v,
+                    ),
                   )
                 }
                 data-testid={`team-minus-${index}`}
@@ -50,14 +49,13 @@ export default function ScoreInputStepper({
                 −
               </button>
               <span className="stepval" data-testid={`team-adds-${index}`}>
-                {adds[index]}
+                {adds[index] || 0}
               </span>
               <button
                 className="stepbtn"
                 onClick={() =>
-                  setAdds(
-                    (prev) =>
-                      prev.map((v, i) => (i === index ? v + 1 : v)) as [number, number],
+                  setAdds((prev) =>
+                    prev.map((v, i) => (i === index ? v + 1 : v)),
                   )
                 }
                 data-testid={`team-plus-${index}`}

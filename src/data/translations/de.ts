@@ -96,7 +96,6 @@ const de = {
   "searchGameOrMatch": "Spiel oder Partie suchen",
   "homeFilterAll": "Alle",
   "homeFilterInProgress": "Laufend",
-  "homeFilterRecent": "Zuletzt",
   "homeFilterFavorites": "Favoriten",
   "homeFilterCards": "Karten",
   "homeFilterTokens": "Brett",

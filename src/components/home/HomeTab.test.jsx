@@ -31,13 +31,21 @@ const baseProps = {
 };
 
 describe("HomeTab filter chips", () => {
-  test("renders cards filter chip and filters by it", () => {
+  test("removes the UNO family filter chip but keeps the catalog card", () => {
     const matchesByGame = {
       uno: [{ id: "m-1", date: "2026-05-15T12:00:00.000Z", players: [{ name: "Ana" }], winner: "Ana" }],
     };
     const getMatches = (g) => matchesByGame[g] || [];
     render(<HomeTab {...baseProps} data={matchesByGame} getMatches={getMatches} />);
 
-    expect(screen.getByTestId("game-uno")).toBeDefined();
+    // UNO renders as a single "uno-family" card in the catalog (default view).
+    expect(screen.getByTestId("game-uno-family")).toBeDefined();
+
+    // The "Familia UNO" filter chip is no longer rendered.
+    expect(screen.queryByRole("button", { name: "unoFamily" })).not.toBeInTheDocument();
+
+    // The generic "cards" chip still excludes the UNO family card.
+    fireEvent.click(screen.getByRole("button", { name: "cardsGroup" }));
+    expect(screen.queryByTestId("game-uno-family")).not.toBeInTheDocument();
   });
 });

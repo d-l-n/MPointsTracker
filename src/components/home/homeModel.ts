@@ -71,7 +71,7 @@ interface HomeCardGroup {
   matchCount?: number;
 }
 
-type HomeFilterKey = "all" | "in-progress" | "recent" | "favorites" | "uno-family" | "cards" | "tokens" | "casino" | "random";
+export type HomeFilterKey = "all" | "in-progress" | "favorites" | "cards" | "tokens" | "casino" | "random";
 
 interface HomeFilter {
   key: HomeFilterKey;
@@ -335,11 +335,8 @@ function matchesFilter(card: HomeCardModel, activeFilter: HomeFilter["key"]): bo
   switch (activeFilter) {
     case "in-progress":
       return card.hasDraft;
-    case "recent":
-      return card.hasDraft || card.isRecent;
     case "favorites":
       return card.matchCount > 0;
-    case "uno-family":
     case "cards":
     case "tokens":
     case "casino":
@@ -492,7 +489,7 @@ export function buildHomeViewModel({
       { key: "all", label: t("homeFilterAll") },
       { key: "in-progress", label: t("homeFilterInProgress") },
       { key: "favorites", label: t("homeFilterFavorites") },
-      ...HOME_GROUPS.map((g) => ({ key: g.key as HomeFilterKey, label: t(g.labelKey) })),
+      ...HOME_GROUPS.filter((g) => g.key !== "uno-family").map((g) => ({ key: g.key as HomeFilterKey, label: t(g.labelKey) })),
     ],
     emptyState: hasContent
       ? null

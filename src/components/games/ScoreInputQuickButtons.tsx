@@ -1,5 +1,4 @@
 import type { TranslationFn } from "../../types";
-import type { RoundInputValue } from "../../hooks/useAccumulatingScoreMatch";
 import type { RenderInputOptions } from "./AccumulatingScoreUI";
 import { haptic } from "../../lib/storage";
 
@@ -45,13 +44,12 @@ export default function ScoreInputQuickButtons({
                 (v) => !v || Number(v) === 0,
               );
               const resolvedTarget = targetIndex === -1 ? 0 : targetIndex;
-              setRoundInputs(
-                (prev) =>
-                  prev.map((v, i) =>
-                    i === resolvedTarget
-                      ? String((Number(v) || 0) + value)
-                      : v,
-                  ) as [RoundInputValue, RoundInputValue],
+              setRoundInputs((prev) =>
+                prev.map((v, i) =>
+                  i === resolvedTarget
+                    ? String((Number(v) || 0) + value)
+                    : v,
+                ),
               );
             }}
             style={{
@@ -89,11 +87,10 @@ export default function ScoreInputQuickButtons({
                   placeholder="0"
                   value={roundInputs[index] || ""}
                   onChange={(event) =>
-                    setRoundInputs(
-                      (prev) =>
-                        prev.map((v, i) =>
-                          i === index ? event.target.value : v,
-                        ) as [RoundInputValue, RoundInputValue],
+                    setRoundInputs((prev) =>
+                      prev.map((v, i) =>
+                        i === index ? event.target.value : v,
+                      ),
                     )
                   }
                   aria-label={`${t(`${i18nPrefix}Label`)} ${label}`}

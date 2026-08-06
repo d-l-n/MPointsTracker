@@ -1,6 +1,6 @@
 import { memo, useEffect, useMemo, useRef, useState } from "react";
 
-import { buildHomeViewModel } from "./homeModel";
+import { buildHomeViewModel, type HomeFilterKey } from "./homeModel";
 import HomeActionCard from "./HomeActionCard";
 import FamilyVariantPicker from "./FamilyVariantPicker";
 import ReloadButton from "../ui/ReloadButton";
@@ -60,7 +60,7 @@ const HomeTab = memo(function HomeTab({
   const [familyPicker, setFamilyPicker] = useState<import("./homeModel").HomeCardModel | null>(null);
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 300);
-  const [activeFilter, setActiveFilter] = useState<"all" | "in-progress" | "recent" | "favorites" | "uno-family" | "cards" | "tokens" | "casino" | "random">("all");
+  const [activeFilter, setActiveFilter] = useState<HomeFilterKey>("all");
   const railRef = useRef<HTMLDivElement | null>(null);
   const filterRef = useRef<HTMLDivElement | null>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
