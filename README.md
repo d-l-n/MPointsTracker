@@ -1,6 +1,6 @@
 # MPOINTS TRACKER — README
 
-> **26.07.04** · React + Vite + Firebase PWA · Multi-device score tracker
+> **26.08.06** · React + Vite + Firebase PWA · Multi-device score tracker
 
 ---
 
@@ -10,7 +10,7 @@ PWA para registrar puntajes de juegos de mesa y cartas entre amigos. El catálog
 
 **Deploy:** Cloudflare Pages  
 **URL prod:** `mpoints-tracker.pages.dev`  
-**Release actual:** `26.07.04`
+**Release actual:** `26.08.06`
 
 ---
 

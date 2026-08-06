@@ -48,4 +48,33 @@ describe("HomeTab filter chips", () => {
     fireEvent.click(screen.getByRole("button", { name: "cardsGroup" }));
     expect(screen.queryByTestId("game-uno-family")).not.toBeInTheDocument();
   });
+
+  test("in-progress filter lists every game with a saved draft", () => {
+    const getMatches = () => [];
+    const getDraft = (g) => {
+      if (g === "uno") return { players: [{ name: "Ana" }], _savedAt: 100 };
+      if (g === "truco") return { players: [{ name: "Beto" }], _savedAt: 200 };
+      if (g === "poker") return { players: [{ name: "Clara" }], _savedAt: 300 };
+      return null;
+    };
+    render(<HomeTab {...baseProps} getMatches={getMatches} getDraft={getDraft} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "homeFilterInProgress" }));
+
+    // The UNO draft surfaces as the family card plus each other game with a draft.
+    expect(screen.getByTestId("game-uno-family")).toBeInTheDocument();
+    expect(screen.getByTestId("game-truco")).toBeInTheDocument();
+    expect(screen.getByTestId("game-poker")).toBeInTheDocument();
+  });
+
+  test("in-progress filter renders no featured hero and no recent rail", () => {
+    const getMatches = () => [];
+    const getDraft = (g) => (g === "truco" ? { players: [{ name: "Beto" }], _savedAt: 100 } : null);
+    const { container } = render(<HomeTab {...baseProps} getMatches={getMatches} getDraft={getDraft} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "homeFilterInProgress" }));
+
+    expect(container.querySelector(".home-top-shell")).toBeNull();
+    expect(screen.getByTestId("game-truco")).toBeInTheDocument();
+  });
 });

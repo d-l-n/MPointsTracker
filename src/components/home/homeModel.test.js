@@ -95,6 +95,58 @@ describe("homeModel", () => {
     expect(viewModel.groups[0].cards.map((card) => card.id)).toEqual(["poker"]);
   });
 
+  test("in-progress view lists every game with a draft (UNO family + other games)", () => {
+    const matchesByGame = {
+      uno: [{ id: "m-1", date: "2026-05-15T12:00:00.000Z", players: [{ name: "Ana" }], winner: "Ana" }],
+      truco: [{ id: "m-2", date: "2026-05-14T12:00:00.000Z", players: [{ name: "Beto" }], winner: "Beto" }],
+      poker: [{ id: "m-3", date: "2026-05-13T12:00:00.000Z", players: [{ name: "Clara" }], winner: "Clara" }],
+    };
+    const getMatches = (gameId) => matchesByGame[gameId] || [];
+    const getDraft = (gameId) => {
+      if (gameId === "uno") return { players: [{ name: "Ana" }], _savedAt: 300 };
+      if (gameId === "truco") return { players: [{ name: "Beto" }], _savedAt: 200 };
+      if (gameId === "poker") return { players: [{ name: "Clara" }], _savedAt: 100 };
+      return null;
+    };
+
+    const viewModel = buildHomeViewModel({
+      data: matchesByGame,
+      getMatches,
+      getDraft,
+      t,
+      locale: "es",
+      activeFilter: "in-progress",
+    });
+
+    expect(viewModel.featured).toBeNull();
+    expect(viewModel.recentCards).toEqual([]);
+    expect(viewModel.groups).toHaveLength(1);
+    const draftIds = viewModel.groups[0].cards.map((card) => card.id);
+    // The UNO draft surfaces as the family card, plus each other game with a draft.
+    expect(draftIds).toEqual(["uno-family", "truco", "poker"]);
+    expect(viewModel.groups[0].cards.every((card) => card.hasDraft)).toBe(true);
+  });
+
+  test("in-progress view sorts drafts by most recently saved", () => {
+    const getMatches = () => [];
+    const getDraft = (gameId) => {
+      if (gameId === "uno") return { players: [{ name: "Ana" }], _savedAt: 100 };
+      if (gameId === "truco") return { players: [{ name: "Beto" }], _savedAt: 400 };
+      return null;
+    };
+
+    const viewModel = buildHomeViewModel({
+      data: {},
+      getMatches,
+      getDraft,
+      t,
+      locale: "es",
+      activeFilter: "in-progress",
+    });
+
+    expect(viewModel.groups[0].cards.map((card) => card.id)).toEqual(["truco", "uno-family"]);
+  });
+
   test("renders the UNO family as a single card carrying all variants", () => {
     const getMatches = () => [];
     const getDraft = () => null;

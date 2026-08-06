@@ -12,6 +12,12 @@ if ("serviceWorker" in navigator && import.meta.env.PROD) {
       .then((registration) => {
         console.log("[SW] Registrado:", registration.scope);
 
+        // Keep a handle to the registration so the update button can signal
+        // the *waiting* worker directly. Posting SKIP_WAITING to the current
+        // controller is a no-op for the newly installed worker, which left the
+        // update button unable to apply the new version until a manual reload.
+        window.__swRegistration = registration;
+
         registration.addEventListener("updatefound", () => {
           const newWorker = registration.installing;
           if (!newWorker) return;

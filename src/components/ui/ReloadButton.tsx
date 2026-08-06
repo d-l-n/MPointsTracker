@@ -6,6 +6,7 @@ import { ArrowUp, ArrowRotate, WifiOff } from "reicon-react";
 declare global {
   interface Window {
     __swPendingReload?: boolean;
+    __swRegistration?: ServiceWorkerRegistration;
   }
 }
 
@@ -50,7 +51,13 @@ export default function ReloadButton({ t = ((key: string) => key) as Translation
   const handleClick = () => {
     if (updateReady) {
       window.__swPendingReload = true;
-      if (navigator.serviceWorker?.controller) {
+      const registration = window.__swRegistration;
+      const newWorker = registration?.waiting || registration?.installing;
+      if (newWorker) {
+        // Signal the newly installed (waiting) worker directly: it is the one
+        // that must skipWaiting() to take control and trigger the reload.
+        newWorker.postMessage({ type: "SKIP_WAITING" });
+      } else if (navigator.serviceWorker?.controller) {
         navigator.serviceWorker.controller.postMessage({ type: "SKIP_WAITING" });
       } else {
         window.location.reload();

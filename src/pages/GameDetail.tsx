@@ -183,7 +183,7 @@ function GameDetail({
         <AppHeader className="detail-header detail-header--with-tabs">
           <div className="detail-header-row">
             <button className="ibtn" onClick={handleBack} aria-label={t("back")}><ArrowLeft size={20} /></button>
-            <div className="page-title-block page-title-block--grow">
+            <div className="page-title-block page-title-block--grow page-title-block--row">
               <h1 className="htitle detail-title">{getGameName(game.id, t)}</h1>
               <span className="hsub">{matches.length} {t("matchesPlayed")}</span>
             </div>

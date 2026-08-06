@@ -47,6 +47,7 @@ interface GroupPickerProps {
   maxGroupSize?: number;
   onDiscard?: () => void;
   hasPlayers?: boolean;
+  style?: CSSProperties;
 }
 
 function getMemberName(member: PlayerGroupMember): string {
@@ -66,6 +67,7 @@ export default function GroupPicker({
   maxGroupSize,
   onDiscard,
   hasPlayers,
+  style,
 }: GroupPickerProps) {
   const [open, setOpen] = useState(false);
   const [showDiscardConfirm, setShowDiscardConfirm] = useState(false);
@@ -127,7 +129,7 @@ export default function GroupPicker({
   };
 
   return (
-    <div style={{ marginTop: 12, marginBottom: 12 }}>
+    <div style={{ marginTop: 12, marginBottom: 12, ...style }}>
       {lastGroup && (
         <button
           onClick={() => handleLoad(lastGroup)}

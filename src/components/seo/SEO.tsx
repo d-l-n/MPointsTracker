@@ -31,7 +31,7 @@ export function SEO({
   url,
   type = "website",
 }: SEOProps) {
-  const pageTitle = title ? `${title} | ${SITE_NAME}` : SITE_NAME;
+  const pageTitle = title ? `${SITE_NAME} | ${title}` : SITE_NAME;
 
   useEffect(() => {
     document.title = pageTitle;

@@ -425,7 +425,7 @@ body{margin:0;padding:0;background:var(--bg)}
     flex:0 0 auto;min-width:0;margin-left:0;justify-content:flex-end;flex-wrap:nowrap;
   }
   .app-layout-header-actions{
-    flex:0 0 auto;max-width:70%;overflow:hidden;
+    flex:0 0 auto;max-width:70%;overflow-x:clip;overflow-y:visible;
   }
 }
 .tgtoggle{display:flex;align-items:center;height:28px}
