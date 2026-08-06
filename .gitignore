@@ -62,7 +62,7 @@ vite-dev.pid
 opencode.json
 AGENTS.md
 skills/
-hooks/
+/hooks/
 ponytail-audit-plan.md
 docs/agents/
 docs/superpowers/

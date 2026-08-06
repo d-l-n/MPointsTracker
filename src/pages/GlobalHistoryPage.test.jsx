@@ -145,6 +145,45 @@ describe("GlobalHistoryPage", () => {
     expect(screen.getByText("+Clara R2 · -Bruno R4")).toBeInTheDocument();
   });
 
+  test("legacy matches without a game field still render and are filterable (#18)", () => {
+    renderPage({
+      data: {
+        truco: [
+          {
+            id: "legacy-m1",
+            date: "2026-06-01T12:00:00.000Z",
+            players: [{ name: "Alice", score: 15 }, { name: "Bob", score: 10 }],
+            winner: "Alice",
+            rounds: 3,
+          },
+        ],
+        uno: [
+          {
+            id: "new-m2",
+            date: "2026-06-02T12:00:00.000Z",
+            game: "uno",
+            players: [{ name: "Alice", score: 12 }, { name: "Bob", score: 8 }],
+            winner: "Bob",
+            rounds: 2,
+          },
+        ],
+      },
+    });
+
+    // Legacy match has no `game` property — must fall back to the storage key (truco)
+    expect(screen.getByTestId("match-legacy-m1")).toBeInTheDocument();
+    expect(screen.getByTestId("match-legacy-m1")).toHaveTextContent("Alice");
+    expect(screen.getByTestId("match-new-m2")).toBeInTheDocument();
+
+    // Game filter is derived from the fallback, so the legacy game is listed and selectable
+    const gameFilterButton = screen.getByTestId("history-filter-game-truco");
+    expect(gameFilterButton).toBeInTheDocument();
+    fireEvent.click(gameFilterButton);
+
+    expect(screen.getByTestId("match-legacy-m1")).toBeInTheDocument();
+    expect(screen.queryByTestId("match-new-m2")).not.toBeInTheDocument();
+  });
+
   describe("undo delete (T3)", () => {
     test("shows confirm modal then shows undo toast on confirm", () => {
       const { showToast, delMatch } = renderPage();

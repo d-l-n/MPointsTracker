@@ -121,6 +121,8 @@ interface AppLayoutProps {
   setSettingsSubPage: (value: string | null) => void;
   wakeLockEnabled: boolean;
   setWakeLockEnabled: (value: boolean) => void;
+  hapticEnabled: boolean;
+  setHapticEnabled: (value: boolean) => void;
   oledEnabled: boolean;
   handleToggleOled: (value: boolean) => void;
   themeMode: ThemeMode;
@@ -266,6 +268,8 @@ export default function AppLayout({
   setSettingsSubPage,
   wakeLockEnabled,
   setWakeLockEnabled,
+  hapticEnabled,
+  setHapticEnabled,
   oledEnabled,
   handleToggleOled,
   themeMode,
@@ -718,6 +722,8 @@ export default function AppLayout({
                   onLangChange={changeLang}
                   wakeLockEnabled={wakeLockEnabled}
                   onToggleWakeLock={setWakeLockEnabled}
+                  hapticEnabled={hapticEnabled}
+                  onToggleHaptic={setHapticEnabled}
                   oledEnabled={oledEnabled}
                   onToggleOled={handleToggleOled}
                   dark={dark}

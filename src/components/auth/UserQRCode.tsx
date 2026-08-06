@@ -12,14 +12,21 @@ interface UserQRCodeProps {
 
 function UserQRCode({ uid, displayName, t = ((key: string) => key) as TranslationFn }: UserQRCodeProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const [payloadKey, setPayloadKey] = useState<string>(`${uid ?? ""}:${displayName ?? ""}`);
   const [ready, setReady] = useState(false);
   const [error, setError] = useState(false);
+
+  const nextPayloadKey = `${uid ?? ""}:${displayName ?? ""}`;
+  if (nextPayloadKey !== payloadKey) {
+    // Reset QR state when the identity changes (React-recommended render-phase adjustment)
+    setPayloadKey(nextPayloadKey);
+    setReady(false);
+    setError(false);
+  }
 
   useEffect(() => {
     if (!uid || !canvasRef.current) return;
     let cancelled = false;
-    setReady(false);
-    setError(false);
 
     const payload = JSON.stringify({ uid, name: displayName || "" });
 
@@ -39,7 +46,7 @@ function UserQRCode({ uid, displayName, t = ((key: string) => key) as Translatio
     return () => {
       cancelled = true;
     };
-  }, [uid, displayName]);
+  }, [uid, displayName, payloadKey]);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>

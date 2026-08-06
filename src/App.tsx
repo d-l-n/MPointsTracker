@@ -22,6 +22,7 @@ import { buildHomePath, useNavigation } from "./hooks/useNavigation";
 import { useNavVisibility } from "./hooks/useNavVisibility";
 import { usePendingInvite } from "./hooks/usePendingInvite";
 import { useWakeLock } from "./hooks/useWakeLock";
+import { useHaptic } from "./hooks/useHaptic";
 
 // Context
 import { AppProvider } from "./context/AppContext";
@@ -122,6 +123,7 @@ export default function App() {
     handleRematchRequest: handleRematchRequestBase,
   } = useGameSession({ navigate });
   const { wakeLockEnabled, setWakeLockEnabled } = useWakeLock(selected);
+  const { hapticEnabled, setHapticEnabled } = useHaptic();
 
   // ── Misc UI ────────────────────────────────────────────────────────────────
   const [showSplash, setShowSplash] = useState(() => !localStorage.getItem("bgt_splash_seen"));
@@ -327,6 +329,8 @@ export default function App() {
         setSettingsSubPage={setSettingsSubPage}
         wakeLockEnabled={wakeLockEnabled}
         setWakeLockEnabled={setWakeLockEnabled}
+        hapticEnabled={hapticEnabled}
+        setHapticEnabled={setHapticEnabled}
         oledEnabled={oledEnabled}
         handleToggleOled={handleToggleOled}
         themeMode={themeMode}

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useAppContext } from "../context/AppContext";
 import { buildStats } from "../lib/stats";
 import FeedbackPage from "./FeedbackPage";
@@ -31,6 +31,8 @@ interface SettingsPageProps {
   onLangChange: (lang: LanguageCode | string) => void;
   wakeLockEnabled: boolean;
   onToggleWakeLock: (value: boolean) => void;
+  hapticEnabled: boolean;
+  onToggleHaptic: (value: boolean) => void;
   oledEnabled: boolean;
   onToggleOled: (value: boolean) => void;
   dark: boolean;
@@ -79,6 +81,8 @@ function SettingsPage({
   onLangChange,
   wakeLockEnabled,
   onToggleWakeLock,
+  hapticEnabled,
+  onToggleHaptic,
   oledEnabled,
   onToggleOled,
   dark,
@@ -110,23 +114,6 @@ function SettingsPage({
     saveSpotifyPreference: (enabled: boolean) => Promise<void> | void;
     saveSpotifyPosition: (position: "center" | "left" | "right" | "draggable") => Promise<void> | void;
   };
-  const [hapticEnabled, setHapticEnabled] = useState<boolean>(() => {
-    try {
-      return localStorage.getItem("bgt_haptic") !== "0";
-    } catch {
-      return true;
-    }
-  });
-
-  const handleToggleHaptic = useCallback((value: boolean) => {
-    setHapticEnabled(value);
-    try {
-      localStorage.setItem("bgt_haptic", value ? "1" : "0");
-    } catch {
-      // ignore
-    }
-  }, []);
-
   useEffect(() => {
     if (subPage) {
       scrollCurrentSectionToTop();
@@ -169,7 +156,7 @@ function SettingsPage({
         wakeLockEnabled={wakeLockEnabled}
         onToggleWakeLock={onToggleWakeLock}
         hapticEnabled={hapticEnabled}
-        onToggleHaptic={handleToggleHaptic}
+        onToggleHaptic={onToggleHaptic}
         data={data}
         onImportData={onImportData}
         showToast={showToast}

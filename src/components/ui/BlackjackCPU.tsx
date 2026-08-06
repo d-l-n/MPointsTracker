@@ -265,7 +265,10 @@ interface BlackjackCPUProps { onClose: () => void; }
 function BlackjackCPU({onClose}: BlackjackCPUProps) {
   const { t } = useAppContext();
   const saved=loadSaved();
-  const deckRef=useRef(shuffle(makeDeck()));
+  const deckRef=useRef<CardData[] | null>(null);
+  if (deckRef.current === null) {
+    deckRef.current = shuffle(makeDeck());
+  }
 
   // ── Tema propio: lee html[data-theme] y escucha cambios del hook global ─
   const [dark, setDark] = useState(isDarkTheme);
