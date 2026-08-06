@@ -57,7 +57,8 @@ vite-dev.pid
 
 # AI agent configuration
 .agents/
-.opencode/node_modules/
+.ai/
+.opencode/
 opencode.json
 AGENTS.md
 skills/
@@ -76,7 +77,7 @@ Backup.cmd
 .impeccable/
 *.tsbuildinfo
 
-# Share opencode graphify config with the team
-!.opencode/opencode.json
-!.opencode/plugins/
-!.opencode/skills/
+# Local dev artifacts
+lint-output.txt
+analyze_lint.py
+scripts/memanto.ps1

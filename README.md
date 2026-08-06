@@ -28,13 +28,6 @@ PWA para registrar puntajes de juegos de mesa y cartas entre amigos. El catálog
 
 ---
 
-## Herramientas de agente
-
-- Este proyecto usa el flujo multi-agente descrito en [AGENTS.md](AGENTS.md) y el paquete operativo de [docs/agents/README.md](docs/agents/README.md).
-- Las Google Cloud Skills de [`google/skills`](https://github.com/google/skills), ruta `skills/cloud`, están instaladas localmente en Codex para asistir tareas de Firebase, Google Cloud, Gemini, BigQuery, Cloud Run, Cloud SQL, GKE, AlloyDB, `gcloud` y Well-Architected Framework.
-- Las skills son herramientas del entorno de desarrollo, no dependencias runtime de la PWA. Para que Codex las detecte después de instalarlas o actualizarlas, reiniciá Codex.
-
----
 
 ## Comandos
 
