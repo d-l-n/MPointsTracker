@@ -112,17 +112,18 @@ export default function EditMatchModal({
     display: "flex",
     flexDirection: "column",
     gap: 14,
+    position: "relative",
+    zIndex: 601,
   };
 
   return (
     <div style={{ position: "fixed", inset: 0, zIndex: 600, display: "flex", alignItems: "center", justifyContent: "center", padding: 16, overflowY: "auto" }}>
-      <div style={{ ...overlayStyle, position: "absolute" }} inert onClick={onClose} />
+      <button type="button" style={{ ...overlayStyle, position: "absolute", border: 0, padding: 0 }} onClick={onClose} data-testid="edit-match-backdrop" aria-label={t("cancel")} />
       <div
         style={boxStyle}
         role="dialog"
         aria-modal="true"
         aria-label={t("editMatch")}
-        onClick={(event) => event.stopPropagation()}
         autoFocus
       >
         <div style={{ fontFamily: "'Bebas Neue',sans-serif", fontSize: "1.3rem", letterSpacing: "2px", color: "var(--tx)" }}>

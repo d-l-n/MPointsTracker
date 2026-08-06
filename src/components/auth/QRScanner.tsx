@@ -78,8 +78,8 @@ function QRScanner({ onScan, onClose, t }: QRScannerProps) {
 
   return (
     <div style={{ position: "fixed", inset: 0, zIndex: 600, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 24, gap: 16 }}>
-      <div className="qr-modal" inert onClick={onClose} style={{ position: "absolute", inset: 0 }} />
-      <div className="qr-box" onClick={(event) => event.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="qr-title" autoFocus>
+      <button type="button" className="qr-modal" onClick={onClose} aria-label={t("cancel")} style={{ position: "absolute", inset: 0, border: 0, padding: 0 }} />
+      <div className="qr-box" style={{ position: "relative", zIndex: 601 }} role="dialog" aria-modal="true" aria-labelledby="qr-title" autoFocus>
         <div id="qr-title" className="qr-title">📷 {t("scanQR")}</div>
         {error ? (
           <div style={{ color: "#ff4444", fontSize: ".8rem", textAlign: "center" }}>{error}</div>

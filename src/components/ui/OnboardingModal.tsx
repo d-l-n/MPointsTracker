@@ -42,13 +42,12 @@ function OnboardingModal({ t, onDone }: OnboardingModalProps) {
 
   return (
     <div style={{ position: "fixed", inset: 0, zIndex: 500, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
-      <div className="modal-overlay" inert onClick={onDone} aria-hidden="true" style={{ position: "absolute", inset: 0 }} />
+      <button type="button" className="modal-overlay" onClick={onDone} aria-label={t("onboardingSkip")} style={{ position: "absolute", inset: 0, border: 0, padding: 0 }} />
       <div
         className="modal-box"
         role="dialog"
         aria-modal="true"
         aria-labelledby="onboarding-title"
-        onClick={(e) => e.stopPropagation()}
         autoFocus
       >
         <div className="onboarding-header">

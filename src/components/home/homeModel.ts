@@ -71,7 +71,7 @@ interface HomeCardGroup {
   matchCount?: number;
 }
 
-type HomeFilterKey = "all" | "in-progress" | "favorites" | "uno-family" | "cards" | "tokens" | "casino" | "random";
+type HomeFilterKey = "all" | "in-progress" | "recent" | "favorites" | "uno-family" | "cards" | "tokens" | "casino" | "random";
 
 interface HomeFilter {
   key: HomeFilterKey;

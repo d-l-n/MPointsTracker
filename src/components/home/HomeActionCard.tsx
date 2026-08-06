@@ -21,7 +21,7 @@ interface HomeActionCardProps {
   testIdBase?: string;
   onOpenGame: (gameId: string) => void;
   onQuickAction: (gameId: string, actionKey: string) => void;
-  onPickFamily: (card: HomeCardModel) => void;
+  onPickFamily?: (card: HomeCardModel) => void;
 }
 
 export default function HomeActionCard({
@@ -40,7 +40,7 @@ export default function HomeActionCard({
 
   const handleSurface = () => {
     if (card.isFamily && card.variants?.length) {
-      onPickFamily(card);
+      onPickFamily?.(card);
       return;
     }
     onOpenGame(card.id);
@@ -95,7 +95,7 @@ export default function HomeActionCard({
             onClick={(event) => {
               event.stopPropagation();
               if (card.isFamily && card.variants?.length) {
-                onPickFamily(card);
+                onPickFamily?.(card);
                 return;
               }
               onQuickAction(card.id, action.key);

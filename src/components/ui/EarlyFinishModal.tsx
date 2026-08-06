@@ -49,13 +49,12 @@ export default function EarlyFinishModal({
 
   return (
     <div style={{ position: "fixed", inset: 0, zIndex: 500, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
-      <div className="modal-overlay" inert onClick={onCancel} data-testid="early-finish-modal" aria-hidden="true" style={{ position: "absolute", inset: 0 }} />
+      <button type="button" className="modal-overlay" onClick={onCancel} data-testid="early-finish-modal" aria-label={t("cancel")} style={{ position: "absolute", inset: 0, border: 0, padding: 0 }} />
       <div
         className="modal-box modal-box--strong early-finish-modal-box"
         role="dialog"
         aria-modal="true"
         aria-labelledby="early-finish-title"
-        onClick={(event) => event.stopPropagation()}
         autoFocus
       >
         <div id="early-finish-title" className="modal-title">{t("finishMatchEarlyTitle")}</div>

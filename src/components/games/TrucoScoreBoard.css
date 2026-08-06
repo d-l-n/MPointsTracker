@@ -1,0 +1,352 @@
+/* TrucoScoreBoard.css - Anotador Tradicional de Truco */
+
+.truco-board-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+/* Main score notebook/slate card */
+.truco-slate {
+  background: var(--ibg);
+  border: 1.5px solid var(--bo2);
+  border-radius: var(--rmd, 16px);
+  padding: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle top wood/slate decorative accent */
+.truco-slate-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  border-bottom: 2px dashed var(--bo2);
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+  position: relative;
+}
+
+.truco-slate-header::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--bo2);
+  transform: translateX(-50%);
+}
+
+.truco-team-col-header {
+  text-align: center;
+  padding: 0 8px;
+}
+
+.truco-team-name {
+  font-family: 'Google Sans', sans-serif;
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: var(--tx1);
+  letter-spacing: 0.5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.truco-team-total {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.5rem;
+  line-height: 1;
+  color: var(--gc);
+  margin-top: 4px;
+  letter-spacing: 1px;
+}
+
+.truco-team-phase {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--gc) 15%, transparent);
+  color: var(--gc);
+  margin-top: 4px;
+  text-transform: uppercase;
+}
+
+/* Sections for Malas and Buenas */
+.truco-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.truco-section:last-child {
+  margin-bottom: 0;
+}
+
+.truco-section-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  color: var(--tx2);
+  text-transform: uppercase;
+}
+
+.truco-section-title::before,
+.truco-section-title::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--bo2);
+}
+
+.truco-section-active .truco-section-title {
+  color: var(--gc);
+}
+
+/* Matchstick tally grid: Left column (Team 1) and Right column (Team 2) */
+.truco-tally-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  position: relative;
+  min-height: 90px;
+}
+
+.truco-tally-row::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--bo2);
+  transform: translateX(-50%);
+}
+
+.truco-boxes-col {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-content: center;
+  gap: 12px;
+  padding: 8px;
+}
+
+/* Single 5-point matchstick box */
+.truco-match-box {
+  width: 58px;
+  height: 58px;
+  position: relative;
+  background: color-mix(in srgb, var(--tx1) 3%, transparent);
+  border: 1px dashed color-mix(in srgb, var(--tx2) 30%, transparent);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+
+.truco-match-box.filled-box {
+  background: color-mix(in srgb, var(--gc) 8%, transparent);
+  border-style: solid;
+  border-color: color-mix(in srgb, var(--gc) 30%, transparent);
+}
+
+.truco-match-box svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* Matchstick SVG animations */
+.truco-stick {
+  stroke-dasharray: 60;
+  stroke-dashoffset: 0;
+  animation: strokePop 0.25s ease-out forwards;
+}
+
+@keyframes strokePop {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Quick Action Controls (Botonera) */
+.truco-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.truco-team-action-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.truco-team-control-card {
+  background: var(--ibg);
+  border: 1.5px solid var(--bo2);
+  border-radius: var(--rmd, 12px);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.truco-team-control-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--tx2);
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.truco-stepper-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.truco-btn-step {
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: var(--rxs, 8px);
+  border: 1.5px solid var(--bo2);
+  background: var(--ibg);
+  color: var(--tx1);
+  font-size: 1.25rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.truco-btn-step:active {
+  transform: scale(0.95);
+  background: color-mix(in srgb, var(--gc) 20%, transparent);
+}
+
+.truco-current-add {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.6rem;
+  color: var(--gc);
+  min-width: 32px;
+  text-align: center;
+}
+
+/* Preset score buttons (+1, +2, +3, +4) */
+.truco-preset-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.truco-preset-btn {
+  min-height: 40px;
+  padding: 4px 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  border-radius: var(--rxs, 6px);
+  border: 1px solid var(--bo2);
+  background: color-mix(in srgb, var(--tx1) 4%, transparent);
+  color: var(--tx1);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.truco-preset-btn:hover,
+.truco-preset-btn:active {
+  border-color: var(--gc);
+  color: var(--gc);
+  background: color-mix(in srgb, var(--gc) 12%, transparent);
+}
+
+.truco-action-bar {
+  display: flex;
+  gap: 8px;
+}
+
+.truco-action-bar button {
+  min-height: 44px;
+}
+
+/* ===== Board Theme: Wood ===== */
+[data-truco-theme="wood"] .truco-slate {
+  background: linear-gradient(145deg, #8B6914 0%, #A0784C 30%, #6B4E2F 100%);
+  border-color: #5a3e1f;
+  color: #fdf8ef;
+}
+
+[data-truco-theme="wood"] .truco-team-name,
+[data-truco-theme="wood"] .truco-section-title {
+  color: #fdf8ef;
+}
+
+[data-truco-theme="wood"] .truco-slate-header::after,
+[data-truco-theme="wood"] .truco-tally-row::after,
+[data-truco-theme="wood"] .truco-section-title::before,
+[data-truco-theme="wood"] .truco-section-title::after,
+[data-truco-theme="wood"] .truco-slate-header {
+  border-color: rgba(253, 248, 239, 0.25);
+}
+
+[data-truco-theme="wood"] .truco-match-box {
+  background: rgba(253, 248, 239, 0.08);
+  border-color: rgba(253, 248, 239, 0.2);
+}
+
+[data-truco-theme="wood"] .truco-match-box.filled-box {
+  background: rgba(253, 248, 239, 0.15);
+  border-color: rgba(253, 248, 239, 0.35);
+}
+
+/* ===== Board Theme: Minimal ===== */
+[data-truco-theme="minimal"] .truco-slate {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 8px 0;
+}
+
+[data-truco-theme="minimal"] .truco-slate-header {
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+}
+
+[data-truco-theme="minimal"] .truco-match-box {
+  border-style: solid;
+  border-radius: 4px;
+}
+
+[data-truco-theme="minimal"] .truco-section-title::before,
+[data-truco-theme="minimal"] .truco-section-title::after {
+  display: none;
+}

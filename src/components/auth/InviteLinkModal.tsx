@@ -134,8 +134,8 @@ function InviteLinkModal({ user, onClose, t = ((key: string) => key) as Translat
 
   return (
     <div style={{ position: "fixed", inset: 0, zIndex: 700, display: "flex", alignItems: "flex-end", justifyContent: "center", padding: 0 }}>
-      <div className="usearch-overlay" inert onClick={onClose} style={{ position: "absolute", inset: 0 }} />
-      <div className="usearch-sheet" onClick={(event) => event.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="invite-title">
+      <button type="button" className="usearch-overlay" onClick={onClose} aria-label={t("cancel")} style={{ position: "absolute", inset: 0, border: 0, padding: 0 }} />
+      <div className="usearch-sheet" style={{ position: "relative", zIndex: 701 }} role="dialog" aria-modal="true" aria-labelledby="invite-title">
         <div style={headerStyle}>
           <span id="invite-title" className="usearch-title">{t("inviteTitle")}</span>
           <button onClick={onClose} style={closeButtonStyle} aria-label={t("closeMenu")}>

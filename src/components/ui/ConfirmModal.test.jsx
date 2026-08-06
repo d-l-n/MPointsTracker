@@ -53,7 +53,7 @@ describe("ConfirmModal", () => {
     const { container } = render(
       <ConfirmModal title="T" msg="M" onConfirm={() => {}} onCancel={() => {}} onOverlayClick={onOverlay} />,
     );
-    const overlay = container.querySelector("[inert]");
+    const overlay = container.querySelector(".modal-overlay");
     fireEvent.click(overlay);
     expect(onOverlay).toHaveBeenCalled();
   });

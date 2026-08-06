@@ -48,13 +48,12 @@ function ConfirmModal({
 
   return (
     <div style={{ position: "fixed", inset: 0, zIndex: 500, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
-      <div className="modal-overlay" inert onClick={onOverlayClick ?? onCancel} aria-hidden="true" style={{ position: "absolute", inset: 0 }} />
+      <button type="button" className="modal-overlay" onClick={onOverlayClick ?? onCancel} aria-label={cancelText} style={{ position: "absolute", inset: 0, border: 0, padding: 0 }} />
       <div
         className="modal-box"
         role="dialog"
         aria-modal="true"
         aria-labelledby="confirm-modal-title"
-        onClick={(event) => event.stopPropagation()}
         autoFocus
       >
         <div id="confirm-modal-title" className="modal-title">{title}</div>

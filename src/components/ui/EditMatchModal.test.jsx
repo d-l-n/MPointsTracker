@@ -51,7 +51,7 @@ describe("EditMatchModal", () => {
     const onClose = vi.fn();
     const { container } = render(<EditMatchModal match={baseMatch()} onSave={vi.fn()} onClose={onClose} t={t} />);
 
-    const overlay = container.querySelector("[inert]");
+    const overlay = container.querySelector("[data-testid=edit-match-backdrop]");
     fireEvent.click(overlay);
     expect(onClose).toHaveBeenCalledOnce();
   });
