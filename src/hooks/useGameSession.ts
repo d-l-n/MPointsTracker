@@ -3,7 +3,7 @@ import { useCallback, useState } from "react";
 import { GAMES } from "../data/games";
 import { mkId } from "../lib/storage";
 import { useDraft } from "./useDraft";
-import { buildHomePath } from "./useNavigation";
+import { buildHomePath, hasDraftPlayer } from "./useNavigation";
 import type { GameId, LinkedPlayer, SharedMatchRecipient } from "../types";
 import type { RematchState } from "../pages/GameDetail";
 
@@ -54,8 +54,15 @@ export function useGameSession({ navigate }: UseGameSessionOptions) {
     setActiveGame(gameId);
     setSelected(gameId);
     if (resetDraft) setGameMatchKey((currentKey) => currentKey + 1);
+    // A fresh match (no draft with players to resume) must not inherit linked
+    // accounts from a previous session: stale uids would suppress the "add me"
+    // (yo) button on every player row. (On resetDraft the draft was just
+    // cleared above, so this also holds for that path.)
+    if (!hasDraftPlayer(getDraft(gameId))) {
+      setLinkedPlayers((current) => ({ ...current, [gameId]: [] }));
+    }
     navigate(buildHomePath(gameId));
-  }, [clearDraft, navigate]);
+  }, [clearDraft, getDraft, navigate, setLinkedPlayers]);
 
   const handleHomeQuickAction = useCallback((gameId: string, action: string) => {
     if (action === "continue") {

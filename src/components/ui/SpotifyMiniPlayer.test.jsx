@@ -174,13 +174,13 @@ function NavigateToGameButton() {
   return <button type="button" onClick={() => navigate("/game/uno")}>go game</button>;
 }
 
-async function renderSpotifyMiniPlayer(contextValue = createContextValue(), { route = "/settings", withNavigator = false } = {}) {
+async function renderSpotifyMiniPlayer(contextValue = createContextValue(), { route = "/settings", withNavigator = false, inAppShell = false } = {}) {
   vi.resetModules();
   vi.stubEnv("VITE_SPOTIFY_CLIENT_ID", "spotify-client-id");
   const { AppProvider } = await import("../../context/AppContext");
   const { default: SpotifyMiniPlayer } = await import("./SpotifyMiniPlayer");
 
-  render(
+  const tree = (
     <MemoryRouter initialEntries={[route]}>
       <AppProvider value={contextValue}>
         {withNavigator && <NavigateToGameButton />}
@@ -188,13 +188,19 @@ async function renderSpotifyMiniPlayer(contextValue = createContextValue(), { ro
           <Route path="*" element={<SpotifyMiniPlayer />} />
         </Routes>
       </AppProvider>
-    </MemoryRouter>,
+    </MemoryRouter>
   );
+
+  // The real app mounts the player inside the .app shell (AppShell);
+  // mirror that so effects that hook into the app root are exercised.
+  render(inAppShell ? <div className="app">{tree}</div> : tree);
 }
 
 describe("SpotifyMiniPlayer", () => {
   beforeEach(() => {
     document.querySelectorAll(".app-content").forEach((node) => node.remove());
+    document.querySelectorAll(".app").forEach((node) => node.remove());
+    document.querySelectorAll(".nav").forEach((node) => node.remove());
     localStorage.clear();
     window.history.replaceState({}, "", "/settings");
     vi.unstubAllEnvs();
@@ -217,6 +223,57 @@ describe("SpotifyMiniPlayer", () => {
       expect(screen.getByText(translations.spotifySecureContextRequired)).toBeInTheDocument();
     });
     expect(showToast).toHaveBeenCalledWith(translations.spotifySecureContextRequired);
+  });
+
+  test("adds spotify-mini-active to the app shell root while the player is enabled", async () => {
+    await renderSpotifyMiniPlayer(createContextValue(), { inAppShell: true });
+    expect(document.querySelector(".app")).toHaveClass("spotify-mini-active");
+  });
+
+  test("does not mark the app shell when the player is disabled", async () => {
+    await renderSpotifyMiniPlayer(createContextValue({ spotifyEnabled: false }), { inAppShell: true });
+    expect(document.querySelector(".app")).not.toHaveClass("spotify-mini-active");
+  });
+
+  test("mirrors the nav pill half-width onto the app root for docked positioning", async () => {
+    const nav = document.createElement("nav");
+    nav.className = "nav";
+    Object.defineProperty(nav, "offsetWidth", { configurable: true, value: 320 });
+    document.body.appendChild(nav);
+
+    await renderSpotifyMiniPlayer(createContextValue(), { inAppShell: true });
+
+    expect(document.querySelector(".app").style.getPropertyValue("--spotify-nav-half")).toBe("160px");
+    nav.remove();
+  });
+
+  test("marks the app shell for the connect prompt only while unauthenticated", async () => {
+    await renderSpotifyMiniPlayer(createContextValue(), { inAppShell: true });
+
+    const appRoot = document.querySelector(".app");
+    expect(appRoot).toHaveClass("spotify-mini-active");
+    expect(appRoot).toHaveClass("spotify-mini-prompt-active");
+  });
+
+  test("drops the connect prompt reservation once Spotify is authenticated", async () => {
+    seedTokens();
+    mockSpotifyFetch();
+    vi.stubGlobal("Spotify", {
+      Player: class {
+        addListener() { return true; }
+        connect() { return Promise.resolve(true); }
+        disconnect() {}
+        previousTrack() { return Promise.resolve(); }
+        togglePlay() { return Promise.resolve(); }
+        nextTrack() { return Promise.resolve(); }
+      },
+    });
+
+    await renderSpotifyMiniPlayer(createContextValue(), { inAppShell: true });
+
+    const appRoot = document.querySelector(".app");
+    expect(appRoot).toHaveClass("spotify-mini-active");
+    expect(appRoot).not.toHaveClass("spotify-mini-prompt-active");
   });
 
   test("invites the user to connect before Spotify is authenticated", async () => {

@@ -199,6 +199,11 @@ export default function SpotifyMiniPlayer() {
     return current.accessToken;
   }, [resetSpotifySession, t]);
 
+  // createSpotifyApi only closes over the token getter and invokes it at
+  // request time inside effects/handlers — never during render. The rule is
+  // conservative because getAccessToken transitively references playerRef via
+  // resetSpotifySession (also only touched inside callbacks).
+  // eslint-disable-next-line react-hooks/refs
   const spotifyApi = useMemo(() => createSpotifyApi(getAccessToken), [getAccessToken]);
 
   const playbackTrack = playbackState?.item || null;
@@ -463,7 +468,6 @@ export default function SpotifyMiniPlayer() {
     if (!tokens) return;
 
     const collapse = () => collapsePlayer();
-    const expand = () => setIsCollapsed(false);
 
     // ── Touch swipe (mobile) ─────────────────────────────────────────────────
     // Native scroll events are unreliable when AppShell manually sets scrollTop
@@ -649,6 +653,44 @@ export default function SpotifyMiniPlayer() {
   const dragStart = useRef({ x: 0, y: 0, startX: 0, startY: 0 });
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // #26 — while the mini player is mounted, keep the app shell in sync so
+  // nothing covers content: on phones (<900px) the app reserves bottom scroll
+  // space for the floating button; on wide screens the collapsed button docks
+  // beside the nav pill (mirroring the nav half-width here lets CSS position it
+  // flush against the pill), and only the connect prompt keeps a reserved band.
+  useEffect(() => {
+    if (!spotifyEnabled) return;
+    const appRoot = containerRef.current?.closest<HTMLElement>(".app");
+    if (!appRoot) return;
+    appRoot.classList.add("spotify-mini-active");
+    if (!tokens) {
+      appRoot.classList.add("spotify-mini-prompt-active");
+    }
+
+    const nav = document.querySelector<HTMLElement>(".nav");
+    let navObserver: ResizeObserver | null = null;
+    const syncNavWidth = () => {
+      if (!nav) return;
+      appRoot.style.setProperty("--spotify-nav-half", `${nav.offsetWidth / 2}px`);
+    };
+    if (nav) {
+      syncNavWidth();
+      if (typeof ResizeObserver !== "undefined") {
+        navObserver = new ResizeObserver(syncNavWidth);
+        navObserver.observe(nav);
+      }
+    }
+    window.addEventListener("resize", syncNavWidth);
+
+    return () => {
+      appRoot.classList.remove("spotify-mini-active");
+      appRoot.classList.remove("spotify-mini-prompt-active");
+      appRoot.style.removeProperty("--spotify-nav-half");
+      navObserver?.disconnect();
+      window.removeEventListener("resize", syncNavWidth);
+    };
+  }, [spotifyEnabled, tokens, location.pathname]);
+
   const handlePointerDown = (e: React.PointerEvent) => {
     if (spotifyPosition !== "draggable") return;
     isDragging.current = true;
@@ -803,6 +845,7 @@ export default function SpotifyMiniPlayer() {
                 min="0"
                 max="100"
                 value={volume ?? localVolume}
+                aria-label={t("spotifyVolume")}
                 disabled={!canUseWebApiControls || activeDevice?.supports_volume === false}
                 onInput={(event) => void handleVolume(Number((event.target as HTMLInputElement).value))}
               />

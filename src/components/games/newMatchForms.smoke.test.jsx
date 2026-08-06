@@ -130,4 +130,36 @@ describe("game match forms smoke tests", () => {
     fireEvent.change(inputs[1], { target: { value: "Bob" } });
     expect(screen.getByText((c) => c.startsWith("metaHeader"))).toBeInTheDocument();
   });
+
+  test("GenericNewMatch only shows the delete button on loaded rows above the minimum", () => {
+    render(<GenericNewMatch {...baseProps} />);
+    // 2 empty rows at the minimum → no delete button
+    expect(screen.queryAllByRole("button", { name: /^delete/ }).length).toBe(0);
+
+    // a third row that is still empty gets no delete button either
+    fireEvent.click(screen.getByText("addPlayer"));
+    expect(screen.queryAllByRole("button", { name: /^delete/ }).length).toBe(0);
+
+    const inputs = screen.getAllByTestId("linked-player-input");
+    fireEvent.change(inputs[0], { target: { value: "Alice" } });
+    fireEvent.change(inputs[1], { target: { value: "Bob" } });
+    // two loaded rows above the minimum → exactly 2 delete buttons; the empty row has none
+    expect(screen.queryAllByRole("button", { name: /^delete/ }).length).toBe(2);
+
+    // removing one loaded player drops back to the 2-row minimum → buttons disappear
+    fireEvent.click(screen.getAllByRole("button", { name: /^delete/ })[0]);
+    expect(screen.queryAllByRole("button", { name: /^delete/ }).length).toBe(0);
+  });
+
+  test("SushiDoNewMatch hides the delete button until a row is loaded above the minimum", () => {
+    render(<SushiDoNewMatch {...baseProps} />);
+    // 2 empty rows at the minimum → no delete button
+    expect(screen.queryAllByRole("button", { name: /^delete/ }).length).toBe(0);
+
+    fireEvent.click(screen.getByTestId("add-player"));
+    const inputs = screen.getAllByTestId("linked-player-input");
+    fireEvent.change(inputs[0], { target: { value: "Alice" } });
+    // 3 rows, 1 loaded → exactly 1 delete button (SUSHI_DO_MIN_PLAYERS-based condition)
+    expect(screen.queryAllByRole("button", { name: /^delete/ }).length).toBe(1);
+  });
 });

@@ -178,16 +178,6 @@ function SushiDoNewMatch({
     [selectedFlavors],
   );
 
-  const sortedPlayers = useMemo(
-    () =>
-      [...namedPlayers].sort((left, right) => {
-        const scoreDiff = (scores[right.id] || 0) - (scores[left.id] || 0);
-        if (scoreDiff !== 0) return scoreDiff;
-        return left.name.localeCompare(right.name);
-      }),
-    [namedPlayers, scores],
-  );
-
   useEffect(() => {
     if (phase !== "setup" || !validPlayerCount) return;
     setSelectedFlavors((currentFlavors) => {
@@ -393,8 +383,8 @@ function SushiDoNewMatch({
 
   if (phase === "setup") {
     return (
-      <div data-testid="sushi-do-setup">
-        <div className="sec">
+      <div className="sushi-do sushi-do--setup" data-testid="sushi-do-setup">
+        <div className="sec sushi-do__panel">
           <GroupPicker
             t={t}
             playerGroups={playerGroups}
@@ -405,7 +395,7 @@ function SushiDoNewMatch({
             }}
           />
           <span className="flbl">{t("players")}</span>
-          <div className="rgap">
+          <div className="rgap sushi-do__player-inputs">
             {players.map((player, index) => (
               <div className="irow" key={player.id}>
                 <LinkedPlayerInput
@@ -432,12 +422,12 @@ function SushiDoNewMatch({
                   t={t}
                   allLinkedUids={linkedPlayers.map((linkedPlayer) => linkedPlayer.uid)}
                 />
+                {players.length > SUSHI_DO_MIN_PLAYERS && player.name.trim() && (
                 <Tooltip text={`${t("delete")} ${player.name || `${t("playerN")} ${index + 1}`}`}>
                 <button
                   className="btnrm"
                   aria-label={`${t("delete")} ${player.name || `${t("playerN")} ${index + 1}`}`}
                   onClick={() => {
-                    if (players.length <= SUSHI_DO_MIN_PLAYERS) return;
                     setPlayers((currentPlayers) => currentPlayers.filter((currentPlayer) => currentPlayer.id !== player.id));
                     onLinkedPlayersChange(linkedPlayers.filter((linkedPlayer) => linkedPlayer.playerId !== player.id));
                   }}
@@ -445,6 +435,7 @@ function SushiDoNewMatch({
                   ✕
                 </button>
                 </Tooltip>
+                )}
               </div>
             ))}
           </div>
@@ -468,7 +459,7 @@ function SushiDoNewMatch({
         </div>
 
         {validPlayerCount && (
-          <div className="sec" style={{ marginTop: 12 }}>
+          <div className="sec sushi-do__panel sushi-do__flavors-panel">
             <div className="flbl">{t("sushiDoFlavors")}</div>
             <div style={{ color: "var(--tx2)", fontSize: ".78rem", marginTop: 6 }}>
               {selectedFlavors.length} / {namedPlayers.length} {t("sushiDoFlavorCount")}
@@ -477,7 +468,7 @@ function SushiDoNewMatch({
               {selectedFlavors.map((flavorKey, index) => {
                 const flavor = getSushiDoFlavorByKey(flavorKey) as SushiFlavor | null;
                 return (
-                  <div key={`${index}-${flavorKey}`} className="sec-card" data-testid={`sushi-do-flavor-slot-${index}`}>
+                  <div key={`${index}-${flavorKey}`} className="sec-card sushi-do__flavor-slot" data-testid={`sushi-do-flavor-slot-${index}`}>
                     <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
                       <div style={{ fontWeight: 700 }}>{index + 1}. {flavor?.label}</div>
                       <div style={{ color: "var(--tx2)" }}>{flavor?.points} {t("ptsLabel")}</div>
@@ -498,7 +489,7 @@ function SushiDoNewMatch({
           </div>
         )}
 
-        <button className="btnpri" data-testid="sushi-do-start" disabled={!canStart} onClick={startMatch} style={{ marginTop: 12 }}>
+        <button className="btnpri sushi-do__start" data-testid="sushi-do-start" disabled={!canStart} onClick={startMatch}>
           {t("startGame")}
         </button>
       </div>
@@ -506,16 +497,29 @@ function SushiDoNewMatch({
   }
 
   return (
-    <div>
-      <div className="tscores" style={{ marginBottom: 16, "--gc": game?.color || "#D94841" } as CSSProperties}>
-        {sortedPlayers.map((player, index) => {
+    <div className="sushi-do sushi-do--playing" style={{ "--gc": game?.color || "#D94841" } as CSSProperties}>
+      <section className="sushi-do__round-header" data-testid="sushi-do-round-number">
+        <div>
+          <div className="flbl">{t("roundLabel")}</div>
+          <div className="sushi-do__round-title">{currentRound} <span>· {SUSHI_DO_WIN_SCORE} {t("ptsLabel")}</span></div>
+        </div>
+        {winner && <div className="sushi-do__winner">{t("winner")}: <strong>{winner}</strong></div>}
+        <div className="sushi-do__flavor-chips" data-testid="sushi-do-active-flavors">
+          {activeFlavors.map((flavor) => (
+            <span key={flavor.key} className="sushi-do__flavor-chip">{flavor.label} <b>{flavor.points}</b></span>
+          ))}
+        </div>
+      </section>
+
+      <div className="sushi-do__players">
+        {namedPlayers.map((player, index) => {
           const id = toTestId(player.name);
           const score = scores[player.id] || 0;
           const progress = Math.max(0, Math.min((score / SUSHI_DO_WIN_SCORE) * 100, 100));
           return (
             <button
               key={player.id}
-              className="tcard"
+              className="tcard sushi-do__player"
               data-testid={`sushi-do-caller-${id}`}
               aria-pressed={selectedCallerId === player.id}
               onClick={() => {
@@ -524,81 +528,49 @@ function SushiDoNewMatch({
                 setResolutionMode(null);
                 haptic("light");
               }}
-              style={{
-                cursor: gameOver ? "default" : "pointer",
-                border: selectedCallerId === player.id ? `2px solid ${game?.color || "#D94841"}` : "2px solid var(--content-border)",
-                background:
-                  selectedCallerId === player.id ? "color-mix(in srgb, var(--gc) 12%, var(--content-surface-strong))" : "var(--content-surface-strong)",
-              }}
+              disabled={gameOver}
             >
               <div className="ttname">{index === 0 ? "👑 " : ""}{player.name}</div>
               <div className="ttscore" data-testid={`sushi-do-score-${id}`}>{score}</div>
               <div className="ttlimit">{t("score")}</div>
-              <div style={{ width: "100%", height: 6, borderRadius: 999, background: "var(--bg3)", overflow: "hidden", marginTop: 8 }}>
-                <div style={{ width: `${progress}%`, height: "100%", borderRadius: 999, background: "var(--gc)" }} />
+              <div className="sushi-do__progress">
+                <div style={{ width: `${progress}%` }} />
               </div>
             </button>
           );
         })}
       </div>
 
-      <div className="sec-card" data-testid="sushi-do-active-flavors">
-        <div className="flbl">{t("sushiDoFlavors")}</div>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 10 }}>
-          {activeFlavors.map((flavor) => (
-            <div key={flavor.key} className="pill" style={{ padding: "8px 10px", display: "flex", gap: 6, alignItems: "center" }}>
-              <span>{flavor.label}</span>
-              <span style={{ color: "var(--tx2)", fontSize: ".72rem" }}>{flavor.points}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="sec-card" data-testid="sushi-do-round-number" style={{ marginTop: 12, display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center" }}>
-        <div>
-          <div className="flbl">{t("roundLabel")}</div>
-          <div style={{ fontSize: "1.2rem", fontWeight: 800 }}>{currentRound}</div>
-        </div>
-        {winner && (
-          <div style={{ textAlign: "right", color: "var(--tx2)" }}>
-            <div>{t("winner")}</div>
-            <div style={{ color: "var(--tx)", fontWeight: 700 }}>{winner}</div>
-          </div>
-        )}
-      </div>
-
       {!gameOver && (
-        <div className="sec-card" style={{ marginTop: 12 }}>
+        <section className="sec-card sushi-do__call-panel">
           <div className="flbl">{t("sushiDoCallerPrompt")}</div>
-          <div style={{ color: "var(--tx2)", fontSize: ".82rem", marginTop: 8 }}>
+          <div className="sushi-do__call-status">
             {selectedCallerId ? `${t("sushiDoSelectedCaller")}: ${playerNameMap[selectedCallerId]}` : t("whoWonRoundQ")}
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 12 }}>
-            <button className="btnpri" data-testid="sushi-do-resolve-success" disabled={!selectedCallerId} onClick={() => setResolutionMode("success")} style={{ margin: 0 }}>
+          <div className="sushi-do__resolution-actions">
+            <button className="btnpri" data-testid="sushi-do-resolve-success" disabled={!selectedCallerId} onClick={() => setResolutionMode("success")}>
               {t("sushiDoResolveSuccess")}
             </button>
             <button
-              className="btnsec"
+              className="btnsec sushi-do__penalty"
               data-testid="sushi-do-resolve-penalty"
               disabled={!selectedCallerId}
               onClick={() => setResolutionMode("penalty")}
-              style={{ margin: 0, color: "#E63946", borderColor: "rgba(230,57,70,.4)" }}
             >
               {t("sushiDoResolvePenalty")}
             </button>
           </div>
 
           {resolutionMode === "success" && selectedCallerId && (
-            <div style={{ marginTop: 12 }}>
+            <div className="sushi-do__flavor-resolution">
               <div className="flbl">{playerNameMap[selectedCallerId]}</div>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", gap: 8, marginTop: 10 }}>
+              <div className="sushi-do__flavor-options">
                 {activeFlavors.map((flavor) => (
                   <button
                     key={flavor.key}
-                    className="btnsec"
+                    className="btnsec sushi-do__flavor-option"
                     data-testid={`sushi-do-flavor-option-${flavor.key}`}
                     onClick={() => applySuccess(flavor.key)}
-                    style={{ margin: 0, textAlign: "left" }}
                   >
                     <div style={{ fontWeight: 700 }}>{flavor.label}</div>
                     <div style={{ color: "var(--tx2)", fontSize: ".72rem" }}>{flavor.points} {t("ptsLabel")}</div>
@@ -609,23 +581,22 @@ function SushiDoNewMatch({
           )}
 
           {resolutionMode === "penalty" && selectedCallerId && (
-            <div style={{ marginTop: 12 }}>
+            <div className="sushi-do__penalty-confirm">
               <div className="flbl">{playerNameMap[selectedCallerId]}</div>
               <div style={{ color: "var(--tx2)", fontSize: ".78rem", marginTop: 6 }}>{t("sushiDoPenaltyConfirm")}</div>
               <button
-                className="btnsec"
+                className="btnsec sushi-do__penalty"
                 data-testid="sushi-do-confirm-penalty"
                 onClick={applyPenalty}
-                style={{ marginTop: 10, color: "#E63946", borderColor: "rgba(230,57,70,.4)" }}
               >
                 {t("sushiDoConfirmPenalty")}
               </button>
             </div>
           )}
-        </div>
+        </section>
       )}
 
-      <div className="sec-card" style={{ marginTop: 12 }} data-testid="sushi-do-round-log">
+      <div className="sec-card sushi-do__log" data-testid="sushi-do-round-log">
         <div className="flbl">{t("sushiDoRoundLog")}</div>
         {allVisibleEvents.length === 0 ? (
           <div style={{ color: "var(--tx2)", marginTop: 10, fontSize: ".82rem" }}>{t("noRecordsYet")}</div>
@@ -661,14 +632,14 @@ function SushiDoNewMatch({
         )}
       </div>
 
-      <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
-        <button className="btnsec" data-testid="sushi-do-undo" disabled={undoStack.length === 0} onClick={undoLastEvent} style={{ flex: 1, margin: 0 }}>
+      <div className="sushi-do__utility-actions">
+        <button className="btnsec" data-testid="sushi-do-undo" disabled={undoStack.length === 0} onClick={undoLastEvent}>
           {t("undo")}
         </button>
       </div>
 
       {gameOver && (
-        <div className="sec-card" data-testid="sushi-do-game-over" style={{ marginTop: 12 }}>
+        <div className="sec-card sushi-do__game-over" data-testid="sushi-do-game-over">
           <div className="flbl">{t("sushiDoGameOver")}</div>
           <div style={{ marginTop: 10, fontWeight: 700 }}>
             {winner ? `${winner} · ${SUSHI_DO_WIN_SCORE}+` : `${SUSHI_DO_WIN_SCORE}+`}

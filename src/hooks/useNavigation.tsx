@@ -188,7 +188,7 @@ export function getRouteState(
   return { nav: "home", selected: null, historyView: null, profileUid: null, settingsSubPage: null };
 }
 
-function hasDraftPlayer(draft: unknown): boolean {
+export function hasDraftPlayer(draft: unknown): boolean {
   if (!draft || typeof draft !== "object") return false;
   const d = draft as Record<string, unknown>;
   // players array

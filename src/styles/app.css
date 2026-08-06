@@ -1702,6 +1702,41 @@ html:not(.dark) .btnsec.nav-leave-discard:hover{color:#5A1E35;border-color:rgba(
 .spotify-mini-player.spotify-mini-player--collapsed.spotify-mini-player--draggable{left:0;right:auto;bottom:auto;top:0;transform:none;transition:none;margin:0}
 .spotify-mini-float{width:48px;height:48px;border:0;border-radius:999px;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:0;background:linear-gradient(135deg,#1db954,var(--accent-primary));color:#fff;font-size:1rem;font-weight:900;box-shadow:0 8px 24px rgba(0,0,0,.22);cursor:pointer}
 .spotify-mini-float img{width:100%;height:100%;object-fit:cover;display:block}
+/* #26 — while the mini player is mounted (classes .spotify-mini-active /
+   .spotify-mini-prompt-active on the .app root, see SpotifyMiniPlayer):
+   on phones the collapsed button floats at bottom:112px, so extra bottom
+   scroll space is reserved so it never covers the last content of a page.
+   On wide screens the collapsed button docks beside the nav pill (inside the
+   reserved 110px nav band, vertically centered with the pill which sits at
+   bottom:22px — see .nav), so no extra space is needed there except while the
+   wide connect prompt bar still floats at bottom:112px. */
+@media (max-width:899px){
+  .app.spotify-mini-active .ggrid,
+  .app.spotify-mini-active .tbody,
+  .app.spotify-mini-active .page,
+  .app.spotify-mini-active .admin-page,
+  .app.spotify-mini-active .fb-page{padding-bottom:calc(190px + env(safe-area-inset-bottom, 0px))}
+}
+@media (min-width:900px){
+  .spotify-mini-player.spotify-mini-player--collapsed{
+    bottom:28px;
+    left:calc(50% + var(--spotify-nav-half, 165px) + 14px);
+    right:auto;
+    transform:none;
+  }
+  .spotify-mini-player.spotify-mini-player--collapsed.spotify-mini-player--left{
+    left:calc(50% - var(--spotify-nav-half, 165px) - 72px);
+  }
+  .spotify-mini-player.spotify-mini-player--collapsed.spotify-mini-player--right{
+    right:20px;
+    left:auto;
+  }
+  .app.spotify-mini-prompt-active .ggrid,
+  .app.spotify-mini-prompt-active .tbody,
+  .app.spotify-mini-prompt-active .page,
+  .app.spotify-mini-prompt-active .admin-page,
+  .app.spotify-mini-prompt-active .fb-page{padding-bottom:calc(190px + env(safe-area-inset-bottom, 0px))}
+}
 .spotify-mini-track{min-width:0;display:flex;flex-direction:column;gap:8px;align-self:stretch}
 .spotify-mini-art{width:100%;aspect-ratio:1;border-radius:12px;overflow:hidden;display:flex;align-items:center;justify-content:center;flex:0 0 auto;background:linear-gradient(135deg,#1db954,var(--accent-primary));color:#fff;font-size:1.35rem;font-weight:800}
 .spotify-mini-art img{width:100%;height:100%;object-fit:cover;display:block}
@@ -1797,9 +1832,9 @@ html:not(.dark) .btnsec.nav-leave-discard:hover{color:#5A1E35;border-color:rgba(
 .usearch-root{position:fixed;inset:0;z-index:700;display:flex;align-items:flex-end;justify-content:center;padding:0}
 .usearch-overlay{position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:flex;align-items:flex-end;justify-content:center;padding:0}
 @media (min-width:900px){
-  .usearch-root{position:absolute;inset:auto 0 auto auto;top:calc(100% + 10px);width:min(460px,calc(100vw - 32px));z-index:710;align-items:stretch;padding:0;border-radius:var(--r);box-shadow:0 12px 32px rgba(0,0,0,.28)}
-  .usearch-overlay{position:absolute;inset:0;background:rgba(0,0,0,.5);border-radius:var(--r);align-items:stretch}
-  .usearch-sheet{width:100%;max-width:none;border-radius:var(--r);border:1px solid var(--glass-border);box-shadow:none}
+  .usearch-root{position:fixed;inset:0;width:auto;z-index:700;align-items:center;padding:24px;border-radius:0;box-shadow:none}
+  .usearch-overlay{position:absolute;inset:0;background:rgba(0,0,0,.6);border-radius:0;align-items:center}
+  .usearch-root .usearch-sheet{width:100%;max-width:480px;border-radius:var(--r);border:1px solid var(--glass-border)}
   .detail-wrapper .sec .rgap{padding:0 15px}
 }
 
@@ -2518,3 +2553,14 @@ html:not(.dark) .btnsec.nav-leave-discard:hover{color:#5A1E35;border-color:rgba(
 .onboarding-back:hover{opacity:.85}
 .onboarding-back--ghost{flex:0 0 auto;background:none;border:none;color:var(--tx3);padding:11px 4px}
 .onboarding-back--ghost:hover{color:var(--tx2);opacity:1}
+
+/* Sushi Do: a compact round board keeps the table-facing decisions together. */
+.sushi-do{--sushi-danger:#d94747;--sushi-surface:color-mix(in srgb,var(--gc) 7%,var(--content-surface-strong));color:var(--tx)}
+.sushi-do--setup{display:grid;gap:12px}.sushi-do__panel{margin:0}.sushi-do__player-inputs{gap:9px}.sushi-do__flavors-panel{margin-top:0}.sushi-do__flavor-slot{margin:0;padding:11px 12px}.sushi-do__start{margin:0}
+.sushi-do--playing{display:grid;gap:12px}.sushi-do__round-header{display:grid;grid-template-columns:auto 1fr;gap:10px 16px;align-items:center;padding:14px 15px;background:var(--sushi-surface);border:var(--surface-stroke-width) solid color-mix(in srgb,var(--gc) 30%,var(--content-border));border-radius:var(--r);box-shadow:var(--content-shadow)}
+.sushi-do__round-header .flbl{margin:0}.sushi-do__round-title{font-size:1.35rem;font-weight:800;line-height:1}.sushi-do__round-title span{font-size:.76rem;font-weight:700;color:var(--tx2)}.sushi-do__winner{justify-self:end;color:var(--tx2);font-size:.8rem}.sushi-do__winner strong{color:var(--tx)}
+.sushi-do__flavor-chips{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px}.sushi-do__flavor-chip{display:inline-flex;gap:5px;align-items:baseline;padding:5px 8px;border-radius:var(--rxs);background:color-mix(in srgb,var(--gc) 10%,var(--content-surface));font-size:.74rem;font-weight:700}.sushi-do__flavor-chip b{color:var(--gc);font-variant-numeric:tabular-nums}
+.sushi-do__players{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.sushi-do__player{min-width:0;padding:12px;border:var(--surface-stroke-width) solid var(--content-border);background:var(--content-surface-strong);box-shadow:none}.sushi-do__player:hover:not(:disabled){border-color:color-mix(in srgb,var(--gc) 52%,var(--content-border));transform:translateY(-1px)}.sushi-do__player[aria-pressed="true"]{border-color:var(--gc);background:color-mix(in srgb,var(--gc) 13%,var(--content-surface-strong));box-shadow:0 0 0 2px color-mix(in srgb,var(--gc) 16%,transparent)}.sushi-do__player:disabled{cursor:default}.sushi-do__player .ttname{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sushi-do__player .ttscore{font-size:2rem}.sushi-do__progress{width:100%;height:5px;margin-top:8px;border-radius:999px;overflow:hidden;background:var(--bg3)}.sushi-do__progress>div{height:100%;border-radius:inherit;background:var(--gc);transition:width var(--duration-normal) var(--ease-out)}
+.sushi-do__call-panel,.sushi-do__log,.sushi-do__game-over{margin:0}.sushi-do__call-status{margin-top:5px;color:var(--tx2);font-size:.82rem}.sushi-do__resolution-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.sushi-do__resolution-actions .btnpri,.sushi-do__resolution-actions .btnsec{margin:0;min-height:44px}.sushi-do__penalty{color:var(--sushi-danger);border-color:color-mix(in srgb,var(--sushi-danger) 40%,var(--bo2))}.sushi-do__penalty:hover{color:var(--sushi-danger);border-color:var(--sushi-danger)}.sushi-do__flavor-resolution,.sushi-do__penalty-confirm{margin-top:12px}.sushi-do__flavor-options{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-top:10px}.sushi-do__flavor-option{margin:0;min-height:52px;text-align:left}.sushi-do__utility-actions{display:flex;gap:8px}.sushi-do__utility-actions .btnsec{flex:1;margin:0;min-height:40px}.sushi-do__game-over{background:color-mix(in srgb,var(--gc) 10%,var(--content-surface-strong))}
+@media (min-width:700px){.sushi-do__players{grid-template-columns:repeat(3,minmax(0,1fr))}.sushi-do__round-header{grid-template-columns:auto 1fr auto}.sushi-do__flavor-chips{grid-column:2/3;justify-content:flex-end}.sushi-do__winner{grid-column:3;grid-row:1}.sushi-do__resolution-actions{grid-template-columns:minmax(0,2fr) minmax(180px,1fr)}}
+@media (prefers-reduced-motion:reduce){.sushi-do__player,.sushi-do__progress>div{transition:none}}

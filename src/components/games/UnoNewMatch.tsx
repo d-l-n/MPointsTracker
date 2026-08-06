@@ -457,20 +457,20 @@ function UnoNewMatch({
                   t={t}
                   allLinkedUids={linkedPlayers.map((linkedPlayer) => linkedPlayer.uid)}
                 />
+                {players.length > 2 && player.name.trim() && (
                 <Tooltip text={`${t("delete")} ${player.name || `${t("playerN")} ${index + 1}`}`}>
                 <button
                   className="btnrm"
                   aria-label={`${t("delete")} ${player.name || `${t("playerN")} ${index + 1}`}`}
                   onClick={() => {
-                    if (players.length > 2) {
-                      setPlayers((currentPlayers) => currentPlayers.filter((currentPlayer) => currentPlayer.id !== player.id));
-                      onLinkedPlayersChange(linkedPlayers.filter((linkedPlayer) => linkedPlayer.playerId !== player.id));
-                    }
+                    setPlayers((currentPlayers) => currentPlayers.filter((currentPlayer) => currentPlayer.id !== player.id));
+                    onLinkedPlayersChange(linkedPlayers.filter((linkedPlayer) => linkedPlayer.playerId !== player.id));
                   }}
                 >
                   ✕
                 </button>
                 </Tooltip>
+                )}
               </div>
             ))}
           </div>

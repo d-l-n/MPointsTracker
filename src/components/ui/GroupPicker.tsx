@@ -127,7 +127,7 @@ export default function GroupPicker({
   };
 
   return (
-    <div style={{ marginBottom: 12 }}>
+    <div style={{ marginTop: 12, marginBottom: 12 }}>
       {lastGroup && (
         <button
           onClick={() => handleLoad(lastGroup)}
