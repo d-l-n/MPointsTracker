@@ -124,7 +124,8 @@ function InstallBanner({ dark: _dark, t = ((key: string) => key) as TranslationF
 
   return (
     <div className={`install-popup-overlay${hiding ? " hiding" : ""}`} role="dialog" aria-modal="true" aria-label={t("installTitle")}>
-      <div className="install-popup">
+      <button type="button" onClick={() => close()} aria-label={t("cancel")} style={{ position: "absolute", inset: 0, border: 0, padding: 0, background: "transparent" }} />
+      <div className="install-popup" style={{ zIndex: 1 }}>
         <button className="install-popup-close" onClick={() => close()} aria-label={t("cancel")}>✕</button>
         <div className="install-popup-icon">🃏</div>
         <div className="install-popup-title">{t("installTitle")}</div>

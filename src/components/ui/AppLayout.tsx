@@ -792,6 +792,8 @@ export default function AppLayout({
 
       {showAuthModal && showAuthModal !== "google" && (
         <div className="app-layout-auth-modal-shell" role="dialog" aria-modal="true" aria-label={t("connect")}>
+          <button type="button" data-testid="auth-modal-backdrop" onClick={() => setShowAuthModal(false)} aria-label={t("cancel")} style={{ position: "absolute", inset: 0, border: 0, padding: 0, background: "transparent" }} />
+          <div style={{ position: "relative", zIndex: 1 }}>
           <EmailAuthScreen
             t={t}
             initialMode={showAuthModal}
@@ -816,12 +818,14 @@ export default function AppLayout({
             onClose={() => setShowAuthModal(false)}
             showDebug={false}
           />
+          </div>
         </div>
       )}
 
       {navLeaveTarget && (
         <div className="nav-leave-overlay" role="dialog" aria-modal="true" aria-labelledby="nav-leave-title" style={selectedGame ? ({ "--gc": selectedGame.color } as Record<string, string>) : undefined}>
-          <div className="nav-leave-dialog">
+          <button type="button" data-testid="nav-leave-backdrop" onClick={() => setNavLeaveTarget(null)} aria-label={t("cancel")} style={{ position: "absolute", inset: 0, border: 0, padding: 0, background: "transparent" }} />
+          <div className="nav-leave-dialog" style={{ position: "relative", zIndex: 1 }}>
             <div id="nav-leave-title" className="nav-leave-title">{t("draftTitle")}</div>
             <div className="nav-leave-message">{t("draftMsg")}</div>
             <div className="nav-leave-actions">

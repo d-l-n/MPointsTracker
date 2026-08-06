@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
 import AppLayout from "./AppLayout";
@@ -339,6 +339,24 @@ describe("AppLayout", () => {
     );
 
     expect(await screen.findByTestId("mock-game-detail")).toHaveAttribute("data-has-chrome-hidden-prop", "false");
+  });
+
+  test("closes auth and draft dialogs from their backdrops", () => {
+    const setShowAuthModal = vi.fn();
+    const setNavLeaveTarget = vi.fn();
+    const { rerender } = render(
+      <AppLayout {...createProps({ authChecked: true, guestMode: true, showAuthModal: "main", setShowAuthModal })} />,
+    );
+
+    fireEvent.click(screen.getByTestId("auth-modal-backdrop"));
+    expect(setShowAuthModal).toHaveBeenCalledWith(false);
+
+    rerender(
+      <AppLayout {...createProps({ authChecked: true, guestMode: true, navLeaveTarget: "home", setNavLeaveTarget })} />,
+    );
+
+    fireEvent.click(screen.getByTestId("nav-leave-backdrop"));
+    expect(setNavLeaveTarget).toHaveBeenCalledWith(null);
   });
 
   test("keeps app zones in the eager app bundle", async () => {
