@@ -36,16 +36,6 @@ function InstallBanner({ dark: _dark, t = ((key: string) => key) as TranslationF
   const DISMISS_LATER_KEY = "bgt_install_dismissed_later";
   const DISMISS_TTL_MS = 30 * 24 * 60 * 60 * 1000;
   const DISMISS_LATER_TTL_MS = 1 * 24 * 60 * 60 * 1000;
-  const [isMobile, setIsMobile] = useState(
-    () => window.matchMedia("(max-width: 767px)").matches
-  );
-
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 767px)");
-    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
-    mq.addEventListener("change", handler);
-    return () => mq.removeEventListener("change", handler);
-  }, []);
 
   useEffect(() => {
     const raw = localStorage.getItem(DISMISSED_KEY);
@@ -132,36 +122,18 @@ function InstallBanner({ dark: _dark, t = ((key: string) => key) as TranslationF
     );
   }
 
-  if (isMobile) {
-    return (
-      <div className={`install-popup-overlay${hiding ? " hiding" : ""}`} role="dialog" aria-modal="true" aria-label={t("installTitle")}>
-        <div className="install-popup">
-          <button className="install-popup-close" onClick={() => close()} aria-label={t("cancel")}>✕</button>
-          <div className="install-popup-icon">🃏</div>
-          <div className="install-popup-title">{t("installTitle")}</div>
-          <div className="install-popup-desc">{t("installDesc")}</div>
-          <div className="install-popup-actions">
-            <button className="install-popup-btn" onClick={handleInstall}>{t("installBtn")}</button>
-            <button className="install-popup-later" onClick={() => close(true)}>{t("installLater")}</button>
-          </div>
+  return (
+    <div className={`install-popup-overlay${hiding ? " hiding" : ""}`} role="dialog" aria-modal="true" aria-label={t("installTitle")}>
+      <div className="install-popup">
+        <button className="install-popup-close" onClick={() => close()} aria-label={t("cancel")}>✕</button>
+        <div className="install-popup-icon">🃏</div>
+        <div className="install-popup-title">{t("installTitle")}</div>
+        <div className="install-popup-desc">{t("installDesc")}</div>
+        <div className="install-popup-actions">
+          <button className="install-popup-btn" onClick={handleInstall}>{t("installBtn")}</button>
+          <button className="install-popup-later" onClick={() => close(true)}>{t("installLater")}</button>
         </div>
       </div>
-    );
-  }
-
-  return (
-    <div className={`install-banner${hiding ? " hiding" : ""}`}>
-      <div className="install-banner-icon">🃏</div>
-      <div className="install-banner-text">
-        <div className="install-banner-title">{t("installTitle")}</div>
-        <div className="install-banner-desc">{t("installDesc")}</div>
-      </div>
-      <button className="install-banner-btn" onClick={handleInstall}>
-        {t("installBtn")}
-      </button>
-      <button className="install-banner-close" onClick={() => close()} aria-label={t("cancel")}>
-        ✕
-      </button>
     </div>
   );
 }

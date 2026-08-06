@@ -28,6 +28,7 @@ import BootShell from "./BootShell";
 import InstallBanner from "./InstallBanner";
 import OfflineBanner from "./OfflineBanner";
 import ScrollToTop from "./ScrollToTop";
+import DevPanel from "./DevPanel";
 import { ShareResultButton } from "./ShareResultCard";
 const SpotifyMiniPlayer = lazy(() => import("./SpotifyMiniPlayer"));
 import { type User } from "firebase/auth";
@@ -459,9 +460,22 @@ export default function AppLayout({
           onLogoTap={handleLogoTap}
           showDebug={showDebug}
         />
-      </AppShell>
-    );
-  }
+      {import.meta.env.DEV && (
+        <DevPanel
+          user={user}
+          dark={dark}
+          lang={lang}
+          nav={nav}
+          matchCount={total}
+          themeMode={themeMode}
+          debugLogs={debugLogs}
+          showDebug={showDebug}
+          setShowDebug={setShowDebug}
+        />
+      )}
+    </AppShell>
+  );
+}
 
   return (
     <>
@@ -830,6 +844,19 @@ export default function AppLayout({
       <Suspense fallback={null}><SpotifyMiniPlayer /></Suspense>
       <ScrollToTop />
       <footer className="app-footer" />
+      {import.meta.env.DEV && (
+        <DevPanel
+          user={user}
+          dark={dark}
+          lang={lang}
+          nav={nav}
+          matchCount={total}
+          themeMode={themeMode}
+          debugLogs={debugLogs}
+          showDebug={showDebug}
+          setShowDebug={setShowDebug}
+        />
+      )}
     </AppShell>
     </>
   );

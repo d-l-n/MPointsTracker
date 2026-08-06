@@ -30,6 +30,15 @@ interface HomeCardIdentity {
   accent: string;
 }
 
+export interface HomeCardVariant {
+  id: GameId;
+  name: string;
+  tagline: string;
+  color: string;
+  accent: string;
+  hasDraft: boolean;
+}
+
 export interface HomeCardModel {
   id: GameId;
   game: GameDefinition;
@@ -47,6 +56,8 @@ export interface HomeCardModel {
   playerCount: number;
   actions: HomeCardAction[];
   groupKey?: string;
+  isFamily?: boolean;
+  variants?: HomeCardVariant[];
 }
 
 interface HomeCardGroup {
@@ -60,7 +71,7 @@ interface HomeCardGroup {
   matchCount?: number;
 }
 
-type HomeFilterKey = "all" | "in-progress" | "favorites" | "cards" | "tokens" | "casino" | "random";
+type HomeFilterKey = "all" | "in-progress" | "favorites" | "uno-family" | "cards" | "tokens" | "casino" | "random";
 
 interface HomeFilter {
   key: HomeFilterKey;
@@ -92,11 +103,17 @@ interface HomeViewModel {
 }
 
 export const HOME_GROUPS: HomeGroupDefinition[] = [
-  { key: "cards", icon: "C", labelKey: "cardsGroup", type: "cards", ids: ["truco", "chinchon", "chancho", "chin", "esquinados", "canasta", "sushi_do", "rummy", "burako", "uno", "uno_no_mercy", "uno_flip", "uno_dos"] },
+  { key: "uno-family", icon: "U", labelKey: "unoFamily", type: "cards", ids: ["uno", "uno_no_mercy", "uno_flip", "uno_dos"] },
+  { key: "cards", icon: "C", labelKey: "cardsGroup", type: "cards", ids: ["truco", "chinchon", "chancho", "chin", "esquinados", "canasta", "sushi_do", "rummy", "burako"] },
   { key: "tokens", icon: "B", labelKey: "tokensGroup", type: "tokens", ids: ["ajedrez", "monopoly", "life"] },
   { key: "casino", icon: "S", labelKey: "casinoGroup", type: "classics", ids: ["poker", "blackjack", "generala"] },
   { key: "random", icon: "R", labelKey: "randomGroup", type: "classics", ids: ["racha_perdida", "portion_counter", "basta_dym", "custom"] },
 ];
+
+const UNO_FAMILY_IDS: GameId[] = ["uno", "uno_flip", "uno_dos", "uno_no_mercy"];
+const FAMILY_GROUP_KEYS: Record<string, GameId[]> = {
+  "uno-family": UNO_FAMILY_IDS,
+};
 
 const RECENT_WINDOW_DAYS = 14;
 
@@ -248,12 +265,81 @@ function buildGameCardModel({
   };
 }
 
+function buildFamilyCardModel({
+  groupKey,
+  variantIds,
+  getMatches,
+  getDraft,
+  t,
+  locale,
+  now,
+}: {
+  groupKey: string;
+  variantIds: GameId[];
+  getMatches: (gameId: string) => Match[];
+  getDraft: (gameId: string) => HomeDraftRecord | null | undefined;
+  t: TranslationFn;
+  locale: string;
+  now: Date;
+}): HomeCardModel | null {
+  const variantCards = variantIds
+    .map((gameId) => buildGameCardModel({ gameId, matches: getMatches(gameId), draft: getDraft(gameId), t, locale, now }))
+    .filter((card): card is HomeCardModel => Boolean(card));
+  if (variantCards.length === 0) return null;
+
+  const totalMatches = variantCards.reduce((sum, card) => sum + card.matchCount, 0);
+  const draftVariant = variantCards.find((card) => card.hasDraft);
+  const recentVariant = variantCards.find((card) => card.isRecent) || null;
+  const sortDate = Math.max(
+    0,
+    ...variantCards.map((card) => Number(card.sortDate) || 0),
+  );
+
+  const variants: HomeCardVariant[] = variantCards.map((card) => ({
+    id: card.id,
+    name: card.game.name,
+    tagline: getTagline(card.id, t) || card.game.tagline || "",
+    color: card.game.color,
+    accent: card.identity?.accent || card.game.color,
+    hasDraft: card.hasDraft,
+  }));
+
+  const metadata = draftVariant
+    ? `${t("matchInProgress")} · ${draftVariant.game.name}`
+    : recentVariant
+      ? `${totalMatches} ${t("matches")} · ${t("unoFamily")}`
+      : `${totalMatches} ${t("matchesPlayed")}`;
+
+  return {
+    id: groupKey as unknown as GameId,
+    game: { ...variantCards[0].game, id: groupKey as unknown as GameId, name: t("unoFamily"), tagline: t("unoFamilyTagline") },
+    heroFamily: "uno",
+    identity: { key: groupKey, glyph: "U", label: "UNO", tone: "arcade", accent: "#ff6b6b" },
+    hasDraft: Boolean(draftVariant),
+    isRecent: Boolean(recentVariant),
+    badgeKey: draftVariant ? "matchInProgress" : "",
+    metadata,
+    matchCount: totalMatches,
+    latestMatch: variantCards.map((c) => c.latestMatch).filter(Boolean).sort((a, b) => new Date(b!.date).getTime() - new Date(a!.date).getTime())[0] || null,
+    latestDate: variantCards.map((c) => c.latestDate).filter(Boolean).sort((a, b) => (b!.getTime()) - (a!.getTime()))[0] || null,
+    sortDate,
+    playerCount: draftVariant?.playerCount || 0,
+    actions: [{ key: "new" as const, label: t("homeActionNew"), emphasis: "primary" as const }],
+    groupKey,
+    isFamily: true,
+    variants,
+  };
+}
+
 function matchesFilter(card: HomeCardModel, activeFilter: HomeFilter["key"]): boolean {
   switch (activeFilter) {
     case "in-progress":
+      return card.hasDraft;
+    case "recent":
       return card.hasDraft || card.isRecent;
     case "favorites":
       return card.matchCount > 0;
+    case "uno-family":
     case "cards":
     case "tokens":
     case "casino":
@@ -289,6 +375,27 @@ export function buildHomeViewModel({
   const allCards: HomeCardModel[] = [];
 
   const groups: HomeCardGroup[] = HOME_GROUPS.map((group): HomeCardGroup => {
+    const familyIds = FAMILY_GROUP_KEYS[group.key];
+    if (familyIds) {
+      const familyCard = buildFamilyCardModel({
+        groupKey: group.key,
+        variantIds: familyIds,
+        getMatches,
+        getDraft,
+        t,
+        locale,
+        now,
+      });
+      const cards = familyCard ? [familyCard] : [];
+      cards.forEach((card) => allCards.push(card));
+      return {
+        ...group,
+        name: t(group.labelKey),
+        matchCount: group.ids.reduce((sum, gameId) => sum + getMatches(gameId).length, 0),
+        cards,
+      };
+    }
+
     const cards = group.ids
       .map((gameId) => {
         const card = buildGameCardModel({

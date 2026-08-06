@@ -14,7 +14,7 @@ import { fbAuth, fbDb } from "../../lib/firebase";
 import { updateProfile } from "firebase/auth";
 import { deleteDoc, doc } from "firebase/firestore";
 import { saveUserProfile } from "../../services/userService";
-import { Sliders, Information, Logout, Trash } from "reicon-react";
+import { Settings2, Information, Logout, Trash } from "reicon-react";
 
 export interface AccountSectionProps {
   user: AppUser | null;
@@ -232,31 +232,36 @@ export default function AccountSection({
         </div>
       )}
 
-      <SettingsRow title={t("settingsPrefs")} desc={t("settingsPrefsDesc")} onClick={() => onSubPage("prefs")} testId="settings-row-prefs" icon={<Sliders size={18} />} />
+      <SettingsRow title={t("settingsPrefs")} desc={t("settingsPrefsDesc")} onClick={() => onSubPage("prefs")} testId="settings-row-prefs" icon={<Settings2 size={18} />} />
       <SettingsRow title={t("settingsAbout")} desc={t("settingsAboutDesc")} onClick={() => onSubPage("about")} icon={<Information size={18} />} />
 
       {user && (
         <div className="about-card settings-account-actions" data-testid="settings-account-actions">
           <button
-            className="settings-account-action"
+            className="settings-account-action settings-account-action--signout"
             onClick={() => setConfirmSignOut(true)}
           >
             <span className="settings-account-action-copy">
-              <Logout size={16} style={{ flexShrink: 0 }} />
-              <span className="settings-account-action-title">{t("signOut")}</span>
+              <span style={{ display: "flex", alignItems: "center" }}><Logout size={16} /></span>
+              <span className="settings-account-action-text">
+                <span className="settings-account-action-title">{t("signOut")}</span>
+                <span className="settings-account-action-desc">{t("signOutDesc")}</span>
+              </span>
             </span>
-            <span className="settings-account-action-chevron">›</span>
           </button>
+          <div className="settings-account-action-divider" />
           <button
             className="settings-account-action settings-account-action--danger"
             data-testid="settings-delete-account"
             onClick={() => setConfirmDeleteAccount(true)}
           >
             <span className="settings-account-action-copy">
-              <Trash size={16} style={{ flexShrink: 0 }} />
-              <span className="settings-account-action-title">{t("deleteAccountBtn")}</span>
+              <span style={{ display: "flex", alignItems: "center" }}><Trash size={16} /></span>
+              <span className="settings-account-action-text">
+                <span className="settings-account-action-title">{t("deleteAccountBtn")}</span>
+                <span className="settings-account-action-desc">{t("deleteAccountDesc")}</span>
+              </span>
             </span>
-            <span className="settings-account-action-chevron">›</span>
           </button>
         </div>
       )}
@@ -266,15 +271,17 @@ export default function AccountSection({
           title={t("signOutConfirmTitle")}
           msg={t("signOutDataQuestion")}
           confirmLabel={t("signOutKeepData")}
-          cancelLabel={t("signOutClearData")}
+          secondaryLabel={t("signOutClearData")}
+          cancelLabel={t("cancel")}
           onConfirm={() => {
             setConfirmSignOut(false);
             onSignOut(false);
           }}
-          onCancel={() => {
+          onSecondaryAction={() => {
             setConfirmSignOut(false);
             setConfirmClearData(true);
           }}
+          onCancel={() => setConfirmSignOut(false)}
           onOverlayClick={() => setConfirmSignOut(false)}
         />
       )}

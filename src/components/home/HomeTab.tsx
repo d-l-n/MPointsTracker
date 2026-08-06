@@ -2,6 +2,7 @@ import { memo, useEffect, useMemo, useRef, useState } from "react";
 
 import { buildHomeViewModel } from "./homeModel";
 import HomeActionCard from "./HomeActionCard";
+import FamilyVariantPicker from "./FamilyVariantPicker";
 import ReloadButton from "../ui/ReloadButton";
 import ThemeToggle from "../ui/ThemeToggle";
 import SyncDot from "../ui/SyncDot";
@@ -56,9 +57,10 @@ const HomeTab = memo(function HomeTab({
   onQuickAction,
   sectionHeaderHiddenByScroll,
 }: HomeTabProps) {
+  const [familyPicker, setFamilyPicker] = useState<import("./homeModel").HomeCardModel | null>(null);
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 300);
-  const [activeFilter, setActiveFilter] = useState<"all" | "in-progress" | "favorites" | "cards" | "tokens" | "casino" | "random">("all");
+  const [activeFilter, setActiveFilter] = useState<"all" | "in-progress" | "favorites" | "uno-family" | "cards" | "tokens" | "casino" | "random">("all");
   const railRef = useRef<HTMLDivElement | null>(null);
   const filterRef = useRef<HTMLDivElement | null>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -209,14 +211,15 @@ const HomeTab = memo(function HomeTab({
                   <div className="home-section-kicker">{t("homeContinueLabel")}</div>
                 </div>
               </div>
-              <HomeActionCard
-                card={vm.featured}
-                t={t}
-                featured
-                testIdBase={`game-${vm.featured.id}`}
-                onOpenGame={onOpenGame}
-                onQuickAction={onQuickAction}
-              />
+<HomeActionCard
+                  card={vm.featured}
+                  t={t}
+                  featured
+                  testIdBase={`game-${vm.featured.id}`}
+                  onOpenGame={onOpenGame}
+                  onQuickAction={onQuickAction}
+                  onPickFamily={setFamilyPicker}
+                />
             </section>
           )}
 
@@ -286,6 +289,7 @@ const HomeTab = memo(function HomeTab({
                       testIdBase={`game-${card.id}`}
                       onOpenGame={onOpenGame}
                       onQuickAction={onQuickAction}
+                      onPickFamily={setFamilyPicker}
                     />
                   ))}
                 </div>
@@ -308,6 +312,7 @@ const HomeTab = memo(function HomeTab({
                       testIdBase={`game-${card.id}`}
                       onOpenGame={onOpenGame}
                       onQuickAction={onQuickAction}
+                      onPickFamily={setFamilyPicker}
                     />
                   ))}
                 </div>
@@ -317,6 +322,17 @@ const HomeTab = memo(function HomeTab({
         </div>
       </div>
     </div>
+    {familyPicker ? (
+      <FamilyVariantPicker
+        card={familyPicker}
+        t={t}
+        onSelect={(gameId) => {
+          setFamilyPicker(null);
+          onOpenGame(gameId);
+        }}
+        onClose={() => setFamilyPicker(null)}
+      />
+    ) : null}
   </>);
 });
 

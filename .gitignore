@@ -70,6 +70,11 @@ graphify-out/
 # Windows junk / local scripts
 nul
 crear_zip_chatgpt.cmd
+Backup.cmd
+
+# Local tooling / build artifacts
+.impeccable/
+*.tsbuildinfo
 
 # Share opencode graphify config with the team
 !.opencode/opencode.json

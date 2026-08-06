@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import ConfirmModal from "../components/ui/ConfirmModal";
 import { GAMES, getGame, getGameName } from "../data/games";
+import { Logout } from "reicon-react";
 import { fbDb } from "../lib/firebase";
 import { normalizePublicProfile } from "../services/userService";
 import { buildStats } from "../lib/stats";

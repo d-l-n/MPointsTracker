@@ -1,6 +1,6 @@
 import { useRef } from "react";
 
-import { DarkLight } from "reicon-react";
+import { Moon, Sun } from "reicon-react";
 
 interface ThemeToggleProps {
   dark: boolean;
@@ -49,6 +49,6 @@ export default function ThemeToggle({ dark, onChange, onLongPress, t = (key) => 
         flexShrink: 0, lineHeight: 1,
         WebkitUserSelect: "none", userSelect: "none",
       }}
-      ><DarkLight size={18} /></button>
+      >{dark ? <Moon size={18} /> : <Sun size={18} />}</button>
   );
 }

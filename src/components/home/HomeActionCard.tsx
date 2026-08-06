@@ -21,6 +21,7 @@ interface HomeActionCardProps {
   testIdBase?: string;
   onOpenGame: (gameId: string) => void;
   onQuickAction: (gameId: string, actionKey: string) => void;
+  onPickFamily: (card: HomeCardModel) => void;
 }
 
 export default function HomeActionCard({
@@ -31,12 +32,17 @@ export default function HomeActionCard({
   testIdBase = `game-${card.id}`,
   onOpenGame,
   onQuickAction,
+  onPickFamily,
 }: HomeActionCardProps) {
   const badgeText = getBadgeText(card, t);
   const statusLabel = getStatusLabel(card, t);
   const heroState = card.hasDraft ? "active" : card.isRecent ? "recent" : "idle";
 
   const handleSurface = () => {
+    if (card.isFamily && card.variants?.length) {
+      onPickFamily(card);
+      return;
+    }
     onOpenGame(card.id);
   };
 
@@ -88,6 +94,10 @@ export default function HomeActionCard({
             data-testid={`${testIdBase}-action-${action.key}`}
             onClick={(event) => {
               event.stopPropagation();
+              if (card.isFamily && card.variants?.length) {
+                onPickFamily(card);
+                return;
+              }
               onQuickAction(card.id, action.key);
             }}
           >
