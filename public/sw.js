@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   MPoints Tracker — Service Worker v3.7.2
+   MPoints Tracker — Service Worker v26.07.04
    Phase 1 strategy map:
    - App shell / HTML      → Network-first, fallback a cache
    - Assets JS/CSS/img     → Cache-first
@@ -9,7 +9,7 @@
    - Runtime fallback      → Stale-while-revalidate
 ════════════════════════════════════════════════════════════════════════════ */
 
-const SW_VERSION   = "3.7.2";
+const SW_VERSION   = "26.07.04";
 const CACHE_SHELL  = `mpoints-shell-${SW_VERSION}`;
 const CACHE_ASSETS = `mpoints-assets-${SW_VERSION}`;
 const CACHE_RULES  = `mpoints-rules-${SW_VERSION}`;

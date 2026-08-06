@@ -20,7 +20,7 @@ const browserSuites = [
   "tests/champions.spec.js",
   "tests/reusable-switches.spec.js",
 ];
-const contractSuites = ["tests/reusable-switch-contract.spec.js"];
+const contractSuites = ["tests/reusable-switches.spec.js"];
 
 function ensureExists(filePath, label) {
   if (!existsSync(filePath)) {
