@@ -81,7 +81,7 @@ export interface PlayerStats {
 
 export type ThemeMode = "light" | "dark" | "system";
 
-export type ThemeAccentMode = "default" | "monet";
+export type ThemeAccentMode = "default" | "monet" | "custom";
 
 export type ActiveTheme = "light" | "dark" | "oled";
 
@@ -195,6 +195,8 @@ export interface UserDataDoc {
   playerGroups?: string;
   spotifyEnabled?: string | boolean;
   spotifyPosition?: SpotifyPosition;
+  themeAccent?: ThemeAccentMode;
+  themeCustomAccent?: string;
   updatedAt?: number;
   [key: string]: unknown;
 }

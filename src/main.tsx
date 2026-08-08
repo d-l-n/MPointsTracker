@@ -4,6 +4,12 @@ import { RouterProvider } from "react-router-dom";
 import { router } from "./routes/routes";
 import "./index.css";
 
+// Signal the inline boot watchdog (index.html) that the app mounted,
+// so its error card never shows on normal loads.
+function markAppReady() {
+  document.documentElement.setAttribute("data-mp-ready", "1");
+}
+
 // Register the service worker only in production so Vite HMR keeps working locally.
 if ("serviceWorker" in navigator && import.meta.env.PROD) {
   window.addEventListener("load", () => {
@@ -56,3 +62,13 @@ if (!rootElement) {
 }
 
 createRoot(rootElement).render(<RouterProvider router={router} />);
+
+// The inline boot watchdog (index.html) shows an error card if the app does
+// not signal readiness in time. Mark it via multiple paths so it never fires
+// on normal loads:
+//  - right after render (render commits synchronously for the initial mount),
+//  - on the next frame (first paint),
+//  - via a timeout, which still runs in background tabs where rAF is paused.
+markAppReady();
+requestAnimationFrame(markAppReady);
+window.setTimeout(markAppReady, 0);

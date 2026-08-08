@@ -304,6 +304,45 @@
     --glass-border-color: color-mix(in srgb, var(--accent-primary) 26%, rgba(255, 255, 255, 0.1));
   }
 
+  html[data-theme-accent="custom"] {
+    --accent-primary: var(--theme-custom-accent, #006d77);
+    --accent-on-primary: var(--theme-custom-on-accent, #ffffff);
+    --accent-primary-container: color-mix(in srgb, var(--accent-primary) 14%, white);
+    --accent-on-primary-container: color-mix(in srgb, var(--accent-primary) 62%, var(--accent-on-primary));
+    --accent-secondary: color-mix(in srgb, var(--accent-primary) 74%, white);
+    --accent-on-secondary: var(--accent-on-primary);
+    --accent-secondary-container: color-mix(in srgb, var(--accent-primary) 16%, white);
+    --accent-on-secondary-container: color-mix(in srgb, var(--accent-primary) 62%, var(--accent-on-primary));
+    --accent-tertiary: color-mix(in srgb, var(--accent-primary) 82%, black);
+    --accent-on-tertiary: var(--accent-on-primary);
+    --accent-tertiary-container: color-mix(in srgb, var(--accent-primary) 18%, white);
+    --accent-on-tertiary-container: color-mix(in srgb, var(--accent-primary) 62%, var(--accent-on-primary));
+    --accent-outline: color-mix(in srgb, var(--accent-primary) 24%, transparent);
+    --outline-accent-soft: color-mix(in srgb, var(--accent-primary) 18%, var(--outline-soft));
+    --glass-border-color: color-mix(in srgb, var(--accent-primary) 32%, rgba(255, 255, 255, 0.3));
+    --nav-pill-active-border: color-mix(in srgb, var(--accent-primary) 34%, rgba(255, 255, 255, 0.24));
+    --nav-pill-active-shadow: 0 2px 12px color-mix(in srgb, var(--accent-primary) 20%, transparent), 0 1px 0 rgba(255, 255, 255, 0.16) inset;
+    --theme-control-active-fill: color-mix(in srgb, var(--accent-primary) 16%, transparent);
+    --theme-control-active-fill-strong: color-mix(in srgb, var(--accent-primary) 42%, transparent);
+    --theme-control-active-outline: color-mix(in srgb, var(--accent-primary) 38%, transparent);
+    --theme-control-active-glow: 0 0 0 1px color-mix(in srgb, var(--accent-primary) 18%, transparent), 0 10px 20px color-mix(in srgb, var(--accent-primary) 22%, transparent);
+  }
+
+  html[data-theme="dark"][data-theme-accent="custom"],
+  html[data-theme="oled"][data-theme-accent="custom"] {
+    --accent-primary-container: color-mix(in srgb, var(--accent-primary) 24%, rgba(255, 255, 255, 0.06));
+    --accent-on-primary-container: color-mix(in srgb, var(--accent-primary) 28%, white);
+    --accent-secondary: color-mix(in srgb, var(--accent-primary) 72%, white);
+    --accent-secondary-container: color-mix(in srgb, var(--accent-primary) 22%, rgba(255, 255, 255, 0.06));
+    --accent-on-secondary-container: color-mix(in srgb, var(--accent-primary) 28%, white);
+    --accent-tertiary: color-mix(in srgb, var(--accent-primary) 84%, black);
+    --accent-tertiary-container: color-mix(in srgb, var(--accent-primary) 20%, rgba(255, 255, 255, 0.06));
+    --accent-on-tertiary-container: color-mix(in srgb, var(--accent-primary) 28%, white);
+    --accent-outline: color-mix(in srgb, var(--accent-primary) 22%, transparent);
+    --outline-accent-soft: color-mix(in srgb, var(--accent-primary) 18%, rgba(255, 255, 255, 0.08));
+    --glass-border-color: color-mix(in srgb, var(--accent-primary) 26%, rgba(255, 255, 255, 0.1));
+  }
+
   html[data-theme-accent="monet"][data-theme-source="android-dynamic-color"] {
     --accent-primary: var(--dynamic-primary, var(--monet-primary));
     --accent-on-primary: var(--dynamic-on-primary, var(--monet-on-primary));

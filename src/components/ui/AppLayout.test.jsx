@@ -91,6 +91,8 @@ function createProps(overrides = {}) {
     themeMode: "light",
     themeAccentMode: "default",
     handleThemeAccentMode: vi.fn(),
+    themeCustomAccent: "#006d77",
+    handleThemeCustomAccent: vi.fn(),
     reduceEffectsEnabled: false,
     handleToggleReduceEffects: vi.fn(),
     navOpen: false,

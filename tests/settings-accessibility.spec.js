@@ -82,27 +82,63 @@ function expectNoTransparentSurfaceValues(surfacePolicy) {
 }
 
 test.describe('Settings accessibility preferences', () => {
-  test('theme settings expose Monet and keep OLED available', async ({ page }) => {
+  test('theme accent offers exclusive modes, swatches, a free color picker and keeps OLED available', async ({ page }) => {
     await page.goto('/settings');
     await page.getByTestId('settings-row-prefs').click();
     await page.getByRole('button', { name: /app theme|tema de la app/i }).click();
 
-    const monetToggle = page.getByRole('switch', { name: /monet/i });
+    const defaultMode = page.getByTestId('accent-mode-default');
+    const monetMode = page.getByTestId('accent-mode-monet');
+    const customMode = page.getByTestId('accent-mode-custom');
     const oledToggle = page.getByRole('switch', { name: /oled/i });
 
-    await expect(monetToggle).toBeVisible();
-    await monetToggle.click();
+    await expect(defaultMode).toHaveAttribute('aria-checked', 'true');
+    await expect(monetMode).toBeVisible();
+    await expect(customMode).toBeVisible();
 
-    await expect(monetToggle).toHaveAttribute('aria-checked', 'true');
+    // Monet is exclusive with the other modes
+    await monetMode.click();
+    await expect(monetMode).toHaveAttribute('aria-checked', 'true');
+    await expect(defaultMode).toHaveAttribute('aria-checked', 'false');
     await expect.poll(() => page.evaluate(() => localStorage.getItem('bgt_theme_accent'))).toBe('monet');
 
+    // Custom mode reveals the palette and the free color input
+    await customMode.click();
+    await expect(customMode).toHaveAttribute('aria-checked', 'true');
+    await expect(monetMode).toHaveAttribute('aria-checked', 'false');
+    await expect(page.getByTestId('accent-swatch-row')).toBeVisible();
+    await expect.poll(() => page.evaluate(() => localStorage.getItem('bgt_theme_accent'))).toBe('custom');
+
+    // Picking a swatch stores the hex and applies it instantly
+    await page.getByTestId('accent-swatch-E63946').click();
+    await expect.poll(() => page.evaluate(() => localStorage.getItem('bgt_theme_custom_accent'))).toBe('#E63946');
+    await expect
+      .poll(() => page.evaluate(() => document.documentElement.style.getPropertyValue('--theme-custom-accent')))
+      .toBe('#E63946');
+
+    // The free color input accepts any hex
+    const colorInput = page.getByTestId('custom-accent-input');
+    await expect(colorInput).toBeVisible();
+    await colorInput.evaluate((element) => {
+      element.value = '#7B2FBE';
+      element.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+    // Color inputs normalize the value to lowercase before dispatching input
+    await expect.poll(() => page.evaluate(() => localStorage.getItem('bgt_theme_custom_accent'))).toBe('#7b2fbe');
+
+    // Back to Default hides the palette and keeps persistence
+    await defaultMode.click();
+    await expect(defaultMode).toHaveAttribute('aria-checked', 'true');
+    await expect(customMode).toHaveAttribute('aria-checked', 'false');
+    await expect(page.getByTestId('accent-swatch-row')).toBeHidden();
+    await expect.poll(() => page.evaluate(() => localStorage.getItem('bgt_theme_accent'))).toBe('default');
+
+    // OLED remains available and independent
     await expect(oledToggle).toBeVisible();
     await oledToggle.click();
-
     await expect(oledToggle).toHaveAttribute('aria-checked', 'true');
     await expect.poll(() => page.evaluate(() => localStorage.getItem('bgt_oled'))).toBe('1');
-    await expect(monetToggle).toHaveAttribute('aria-checked', 'true');
-    await expect.poll(() => page.evaluate(() => localStorage.getItem('bgt_theme_accent'))).toBe('monet');
+    await expect.poll(() => page.evaluate(() => localStorage.getItem('bgt_theme_accent'))).toBe('default');
   });
 
   test('spotify preference is off by default, explains Premium, and persists when enabled', async ({ page }) => {

@@ -22,9 +22,11 @@ import {
   savePlayerGroupsToCloud,
   saveSpotifyPreferenceToCloud,
   saveSpotifyPositionToCloud,
+  saveThemeAccentToCloud,
+  saveThemeCustomAccentToCloud,
   saveUserProfile,
 } from "../services/userService";
-import type { Match, PlayerGroup, SpotifyPosition, TranslationFn } from "../types";
+import type { Match, PlayerGroup, SpotifyPosition, ThemeAccentMode, TranslationFn } from "../types";
 
 const isIOS =
   typeof navigator !== "undefined" &&
@@ -37,6 +39,7 @@ interface AuthHookOptions {
   t: TranslationFn;
   mergeCloudData: (cloudData: Record<string, unknown>) => void;
   mergeSharedMatches: (toMerge: Record<string, Match[]>) => void;
+  onCloudTheme?: (accent: ThemeAccentMode, customAccent?: string) => void;
 }
 
 interface UserDataPayload {
@@ -44,11 +47,15 @@ interface UserDataPayload {
   playerGroups?: string;
   spotifyEnabled?: string | boolean;
   spotifyPosition?: SpotifyPosition;
+  themeAccent?: ThemeAccentMode;
+  themeCustomAccent?: string;
   [key: string]: unknown;
 }
 
 const SPOTIFY_ENABLED_KEY = "bgt_spotify_enabled";
 const SPOTIFY_POSITION_KEY = "bgt_spotify_position";
+const THEME_ACCENT_KEY = "bgt_theme_accent";
+const THEME_CUSTOM_ACCENT_KEY = "bgt_theme_custom_accent";
 
 type TestAuthUser = Partial<User> & {
   uid: string;
@@ -85,6 +92,26 @@ function normalizeSpotifyEnabled(value: unknown): boolean | null {
   if (value === true || value === "1") return true;
   if (value === false || value === "0") return false;
   return null;
+}
+
+function readStoredThemeAccent(): ThemeAccentMode {
+  try {
+    const val = localStorage.getItem(THEME_ACCENT_KEY);
+    if (val === "monet" || val === "custom") return val;
+  } catch {
+    // ignore
+  }
+  return "default";
+}
+
+function readStoredCustomAccent(): string {
+  try {
+    const val = localStorage.getItem(THEME_CUSTOM_ACCENT_KEY);
+    if (val && /^#[0-9a-f]{6}$/i.test(val)) return val;
+  } catch {
+    // ignore
+  }
+  return "";
 }
 
 function readStoredSpotifyPosition(): SpotifyPosition {
@@ -131,6 +158,7 @@ export function useAuth({
   t,
   mergeCloudData,
   mergeSharedMatches,
+  onCloudTheme,
 }: AuthHookOptions) {
   const [user, setUser] = useState<User | null | undefined>(undefined);
   const [playerGroups, setPlayerGroups] = useState<PlayerGroup[]>(readStoredPlayerGroups);
@@ -217,6 +245,32 @@ export function useAuth({
           addLog(`spotify position loaded (userdata): ${cloudSpotifyPosition}`);
         }
 
+        // Theme accent: restore from the cloud when present, otherwise upload the
+        // local preference (same pattern as spotify).
+        const cloudThemeAccent = userData?.themeAccent;
+        const cloudThemeCustom = typeof userData?.themeCustomAccent === "string" ? userData.themeCustomAccent : undefined;
+        const hasValidAccent =
+          cloudThemeAccent === "default" || cloudThemeAccent === "monet" || cloudThemeAccent === "custom";
+        if (hasValidAccent || cloudThemeCustom) {
+          if (hasValidAccent && cloudThemeAccent) localStorage.setItem(THEME_ACCENT_KEY, cloudThemeAccent);
+          if (cloudThemeCustom && /^#[0-9a-f]{6}$/i.test(cloudThemeCustom)) {
+            localStorage.setItem(THEME_CUSTOM_ACCENT_KEY, cloudThemeCustom);
+          }
+          onCloudTheme?.(hasValidAccent && cloudThemeAccent ? cloudThemeAccent : "default", cloudThemeCustom);
+          addLog(`theme accent loaded (userdata): ${hasValidAccent && cloudThemeAccent ? cloudThemeAccent : "default"}${cloudThemeCustom ? ` ${cloudThemeCustom}` : ""}`);
+        } else {
+          const localAccent = readStoredThemeAccent();
+          const localCustom = readStoredCustomAccent();
+          if (localAccent !== "default" || localCustom) {
+            await saveThemeAccentToCloud(currentUser.uid, localAccent);
+            addLog(`theme accent uploaded from local storage: ${localAccent}`);
+            if (localCustom) {
+              await saveThemeCustomAccentToCloud(currentUser.uid, localCustom);
+              addLog(`theme custom accent uploaded from local storage: ${localCustom}`);
+            }
+          }
+        }
+
         if (!userData?.data && !userData?.playerGroups && cloudSpotifyEnabled === null) {
           addLog("no userdata found - checking legacy users doc...");
           try {
@@ -260,8 +314,51 @@ export function useAuth({
 
       addLog("handleUser: DONE ✓", "ok");
     },
-    [addLog, mergeCloudData, mergeSharedMatches],
+    [addLog, mergeCloudData, mergeSharedMatches, onCloudTheme],
   );
+
+  // Pull shared matches while signed in: on tab focus / app resume, when the
+  // document becomes visible again, and on a periodic timer. This is what lets
+  // a recipient who already has the app open receive a match shared by the host
+  // without having to sign out and back in. The in-flight ref guards against
+  // overlapping pulls (interval + focus firing together), which would otherwise
+  // both read the same docs and double-toast.
+  const sharePullInFlight = useRef(false);
+  const refreshSharedMatches = useCallback(async () => {
+    if (!user || sharePullInFlight.current) return;
+    sharePullInFlight.current = true;
+    try {
+      const toMerge = (await pullSharedMatches(user.uid)) as Record<string, Match[]>;
+      const count = Object.values(toMerge).flat().length;
+      if (count > 0) {
+        mergeSharedMatches(toMerge);
+        addLog(`refreshSharedMatches: imported ${count} shared matches`, "ok");
+        showToast(t("shareReceived").replace("{n}", String(count)));
+      }
+    } catch (error) {
+      addLog(`refreshSharedMatches ERR: ${error && typeof error === "object" && "code" in error ? String(error.code) : error}`, "warn");
+    } finally {
+      sharePullInFlight.current = false;
+    }
+  }, [addLog, mergeSharedMatches, showToast, t, user]);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const onVisible = () => {
+      if (document.visibilityState === "visible") void refreshSharedMatches();
+    };
+    const onFocus = () => void refreshSharedMatches();
+    const interval = setInterval(() => void refreshSharedMatches(), 60000);
+
+    document.addEventListener("visibilitychange", onVisible);
+    window.addEventListener("focus", onFocus);
+    return () => {
+      document.removeEventListener("visibilitychange", onVisible);
+      window.removeEventListener("focus", onFocus);
+      clearInterval(interval);
+    };
+  }, [refreshSharedMatches, user]);
 
   useEffect(() => {
     let unsubAuth: (() => void) | null = null;
@@ -509,6 +606,30 @@ export function useAuth({
     [user],
   );
 
+  const saveThemeAccent = useCallback(
+    async (accent: ThemeAccentMode) => {
+      if (!user) return;
+      try {
+        await saveThemeAccentToCloud(user.uid, accent);
+      } catch (error) {
+        console.warn("[theme] cloud accent save failed:", error);
+      }
+    },
+    [user],
+  );
+
+  const saveThemeCustomAccent = useCallback(
+    async (hex: string) => {
+      if (!user) return;
+      try {
+        await saveThemeCustomAccentToCloud(user.uid, hex);
+      } catch (error) {
+        console.warn("[theme] cloud custom accent save failed:", error);
+      }
+    },
+    [user],
+  );
+
   return {
     user,
     isAdmin,
@@ -527,5 +648,7 @@ export function useAuth({
     savePlayerGroups,
     saveSpotifyPreference,
     saveSpotifyPosition,
+    saveThemeAccent,
+    saveThemeCustomAccent,
   };
 }

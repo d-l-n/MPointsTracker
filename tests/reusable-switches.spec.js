@@ -52,17 +52,22 @@ test.describe('Reusable switch surfaces', () => {
     await page.getByTestId('settings-row-prefs').click();
     await page.getByRole('button', { name: /app theme|tema de la app/i }).click();
 
-    const monetToggle = page.getByTestId('monet-toggle');
     const oledToggle = page.getByTestId('oled-toggle');
 
-    await expectSharedSwitchContract(monetToggle);
     await expectSharedSwitchContract(oledToggle);
-
-    const { before: monetBefore, after: monetAfter } = await toggleSwitch(monetToggle);
-    expect(monetAfter.backgroundColor).not.toBe(monetBefore.backgroundColor);
-
     const { before: oledBefore, after: oledAfter } = await toggleSwitch(oledToggle);
     expect(oledAfter.backgroundColor).not.toBe(oledBefore.backgroundColor);
+
+    // Accent modes are exclusive radiogroup buttons with their own test ids
+    const monetMode = page.getByTestId('accent-mode-monet');
+    const customMode = page.getByTestId('accent-mode-custom');
+    await expect(monetMode).toHaveAttribute('role', 'radio');
+    await monetMode.click();
+    await expect(monetMode).toHaveAttribute('aria-checked', 'true');
+    await customMode.click();
+    await expect(customMode).toHaveAttribute('aria-checked', 'true');
+    await expect(monetMode).toHaveAttribute('aria-checked', 'false');
+    await expect.poll(() => page.evaluate(() => localStorage.getItem('bgt_theme_accent'))).toBe('custom');
 
     await page.goto('/');
     await openGame(page, 'tokens', 'ajedrez');

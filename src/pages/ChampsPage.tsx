@@ -30,15 +30,17 @@ async function fetchUidsForNames(names: string[]) {
   const result: Record<string, string> = {};
   if (!names.length) return result;
   try {
-    // Query users collection by displayName — batch up to 10 at a time
+    // Query users collection by displayName — batch up to 10 at a time.
+    // Profiles store displayName at the root of users/{uid} (see saveUserProfile),
+    // so the field is queried/read at root level, not under profile.
     const chunks = [];
     for (let i = 0; i < names.length; i += 10) chunks.push(names.slice(i, i + 10));
     for (const chunk of chunks) {
       const snap = await getDocs(
-        query(collection(fbDb, "users"), where("profile.displayName", "in", chunk))
+        query(collection(fbDb, "users"), where("displayName", "in", chunk))
       );
       snap.forEach((doc) => {
-        const name = doc.data()?.profile?.displayName;
+        const name = doc.data()?.displayName;
         if (name) result[name] = doc.id;
       });
     }

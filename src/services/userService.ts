@@ -3,7 +3,10 @@ import {
   doc,
   getDoc,
   getDocs,
+  limit,
+  query,
   setDoc,
+  where,
   writeBatch,
   type DocumentData,
   type DocumentReference,
@@ -18,6 +21,7 @@ import type {
   PlayerGroup,
   PublicProfile,
   PublicStatsSummary,
+  ThemeAccentMode,
   UserDataDoc,
   SpotifyPosition,
 } from "../types";
@@ -42,11 +46,46 @@ export const saveUserProfile = async (uid: string, user: MinimalProfileUser) => 
     userRef(uid),
     {
       displayName: user.displayName || null,
+      // searchName is the lowercased displayName so the search query can match
+      // case-insensitively (Firestore queries can't lowercase on the fly).
+      // Written on every login, so existing users self-heal on their next sign-in.
+      searchName: (user.displayName || "").trim().toLowerCase() || null,
       photoURL: user.photoURL || null,
       lastLogin: Date.now(),
     },
     { merge: true },
   );
+};
+
+export interface SearchUserResult {
+  uid: string;
+  profile: PublicProfile;
+}
+
+export const searchUsersByName = async (
+  q: string,
+  currentUid: string,
+  maxResults = 8,
+): Promise<SearchUserResult[]> => {
+  const term = q.trim().toLowerCase();
+  if (!term) return [];
+
+  // Prefix range on the normalized searchName field, capped server-side so we
+  // never read the whole users collection. Fetch maxResults + 1 so the
+  // self-exclusion filter below can't shrink the returned list.
+  const snap = await getDocs(
+    query(
+      collection(fbDb, "users"),
+      where("searchName", ">=", term),
+      where("searchName", "<=", term + "\uf8ff"),
+      limit(maxResults + 1),
+    ),
+  );
+
+  return snap.docs
+    .filter((entry) => entry.id !== currentUid)
+    .slice(0, maxResults)
+    .map((entry) => ({ uid: entry.id, profile: normalizePublicProfile(entry.data()) }));
 };
 
 export const savePublicStats = async (uid: string, stats: PublicStatsSummary) => {
@@ -122,6 +161,26 @@ export const saveSpotifyPositionToCloud = async (uid: string, position: SpotifyP
     userdataRef(uid),
     {
       spotifyPosition: position,
+    },
+    { merge: true },
+  );
+};
+
+export const saveThemeAccentToCloud = async (uid: string, accent: ThemeAccentMode) => {
+  await setDoc(
+    userdataRef(uid),
+    {
+      themeAccent: accent,
+    },
+    { merge: true },
+  );
+};
+
+export const saveThemeCustomAccentToCloud = async (uid: string, hex: string) => {
+  await setDoc(
+    userdataRef(uid),
+    {
+      themeCustomAccent: hex,
     },
     { merge: true },
   );

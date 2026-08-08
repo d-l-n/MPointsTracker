@@ -54,6 +54,7 @@ vite-dev.pid
 # Markdown files (except README)
 *.md
 !/README.md
+!/README.??.md
 
 # AI agent configuration
 .agents/

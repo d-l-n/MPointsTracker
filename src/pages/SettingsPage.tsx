@@ -40,6 +40,8 @@ interface SettingsPageProps {
   onThemeMode: (mode: ThemeMode) => void;
   themeAccentMode: ThemeAccentMode;
   onThemeAccentMode: (mode: ThemeAccentMode) => void;
+  themeCustomAccent: string;
+  onThemeCustomAccent: (hex: string) => void;
   reduceEffects: boolean;
   onToggleReduceEffects: (value: boolean) => void;
   subPage?: SettingsSubPage | null;
@@ -90,6 +92,8 @@ function SettingsPage({
   onThemeMode,
   themeAccentMode,
   onThemeAccentMode,
+  themeCustomAccent,
+  onThemeCustomAccent,
   reduceEffects,
   onToggleReduceEffects,
   subPage,
@@ -143,6 +147,8 @@ function SettingsPage({
           onThemeMode={onThemeMode}
           themeAccentMode={themeAccentMode}
           onThemeAccentMode={onThemeAccentMode}
+          themeCustomAccent={themeCustomAccent}
+          onThemeCustomAccent={onThemeCustomAccent}
           oledEnabled={oledEnabled}
           onToggleOled={onToggleOled}
           t={t}

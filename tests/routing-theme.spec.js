@@ -9,6 +9,7 @@ async function createColdPage(browser, path) {
   await context.addInitScript(() => {
     localStorage.setItem('bgt_splash_seen', '1');
     localStorage.setItem('bgt_install_dismissed', '1');
+    localStorage.setItem('bgt_onboarding_seen', '1');
     localStorage.removeItem('bgt_guest_mode');
     localStorage.removeItem('bgt_last_uid');
 
@@ -69,6 +70,12 @@ async function createColdPage(browser, path) {
       .first();
     await guestBtn.waitFor({ state: 'visible', timeout: 8000 });
     await guestBtn.click();
+    // The guest flow asks for confirmation in a modal (commit 780c375).
+    const confirmBtn = page.locator('.modal-confirm').or(page.locator('[data-testid^="confirm-"]')).first();
+    try {
+      await confirmBtn.waitFor({ state: 'visible', timeout: 3000 });
+      await confirmBtn.click();
+    } catch { /* no confirmation required */ }
   } catch { /* already past auth */ }
 
   await page.locator('[data-testid^="nav-pill-"]').first().waitFor({ state: 'visible', timeout: 10000 });
@@ -234,6 +241,37 @@ test.describe('Phase 1 routing and theme foundations', () => {
     await expect
       .poll(async () => page.evaluate(() => localStorage.getItem('bgt_oled')))
       .toBe('1');
+  });
+
+  test('custom accent mode exposes the picked hex and derives a readable on-accent', async ({ page }) => {
+    await page.evaluate(() => {
+      localStorage.setItem('bgt_theme_mode', 'dark');
+      localStorage.setItem('bgt_theme_accent', 'custom');
+      localStorage.setItem('bgt_theme_custom_accent', '#E91E8C');
+    });
+    await page.reload();
+
+    await expect(page.locator('html')).toHaveAttribute('data-theme-accent', 'custom');
+    await expect
+      .poll(() => page.evaluate(() => document.documentElement.style.getPropertyValue('--theme-custom-accent')))
+      .toBe('#E91E8C');
+    // The picked hex is bright, so the on-accent text role resolves to a dark tone.
+    await expect
+      .poll(() => page.evaluate(() => document.documentElement.style.getPropertyValue('--theme-custom-on-accent')))
+      .toBe('#0a0a0a');
+    // A dark hex derives a light on-accent instead.
+    await page.evaluate(() => {
+      localStorage.setItem('bgt_theme_custom_accent', '#003C43');
+    });
+    await page.reload();
+    await expect
+      .poll(() => page.evaluate(() => document.documentElement.style.getPropertyValue('--theme-custom-on-accent')))
+      .toBe('#ffffff');
+
+    // The nav chrome resolves --accent-primary to the custom hex (not the game color).
+    await expect
+      .poll(() => page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--accent-primary').trim()))
+      .not.toBe('#006d77');
   });
 
   test('share result helpers derive the share surface from the active theme', async ({ page }) => {

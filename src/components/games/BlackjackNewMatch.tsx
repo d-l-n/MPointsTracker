@@ -164,11 +164,12 @@ function BlackjackNewMatch({
     <div>
       {!inProgress && (
         <div className="sec">
-          <span className="flbl">{t("players")}</span>
-          <GroupPicker
-            t={t}
-            playerGroups={playerGroups}
-            maxPlayers={8}
+          <div style={{ display: "flex", alignItems: "center", gap: 12, rowGap: 6, flexWrap: "wrap", marginBottom: 2 }}>
+            <span className="flbl" style={{ margin: 0, flexShrink: 0 }}>{t("players")}</span>
+            <GroupPicker
+              t={t}
+              playerGroups={playerGroups}
+              maxPlayers={8}
             onLoad={(groupPlayers, groupLinked) => {
               setPlayers(groupPlayers as PlayerInputState[]);
               onLinkedPlayersChange(groupLinked as LinkedPlayer[]);
@@ -184,8 +185,10 @@ function BlackjackNewMatch({
               setBankerIndex(0);
               onLinkedPlayersChange([]);
             }}
-            hasPlayers={inProgress || rounds > 0 || players.some((player) => player.name.trim())}
-          />
+              hasPlayers={inProgress || rounds > 0 || players.some((player) => player.name.trim())}
+              style={{ flex: 1, minWidth: 0, marginTop: 0, marginBottom: 0 }}
+            />
+          </div>
           <div className="rgap">
             {players.map((player, index) => (
               <div className="irow" key={player.id}>

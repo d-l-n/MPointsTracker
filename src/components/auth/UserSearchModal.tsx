@@ -1,8 +1,8 @@
 import React, { useState, type KeyboardEvent } from "react";
-import { doc, getDoc, collection, getDocs } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 
 import { fbDb, fbAuth } from "../../lib/firebase";
-import { normalizePublicProfile } from "../../services/userService";
+import { normalizePublicProfile, searchUsersByName } from "../../services/userService";
 import QRScanner from "./QRScanner";
 import type { PublicProfile, TranslationFn } from "../../types";
 
@@ -24,7 +24,7 @@ interface UserSearchModalProps {
 }
 
 function UserSearchModal({ onLink, onClose, t, knownNames = [] }: UserSearchModalProps) {
-  const [method, setMethod] = useState<"email" | "name" | "qr">("name");
+  const [method, setMethod] = useState<"name" | "qr">("name");
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[] | null>(null);
   const [loading, setLoading] = useState(false);
@@ -42,30 +42,20 @@ function UserSearchModal({ onLink, onClose, t, knownNames = [] }: UserSearchModa
       const currentUser = fbAuth.currentUser;
       if (!currentUser) throw new Error("not-authenticated");
 
-      const snap = await getDocs(collection(fbDb, "users"));
-      const found: SearchResult[] = [];
-      snap.docs.forEach((entry) => {
-        const profile = normalizePublicProfile(entry.data());
-        const uid = entry.id;
-        if (uid === currentUser.uid) return;
-        if (method === "email") {
-          if (profile.email?.toLowerCase().includes(q.toLowerCase())) found.push({ uid, ...profile });
-        } else if ((profile.displayName || "").toLowerCase().includes(q.toLowerCase())) {
-          found.push({ uid, ...profile });
-        }
-      });
-      setResults(found.slice(0, 8));
+      // Server-side prefix query on the normalized searchName field — capped with
+      // limit() so we never read the whole users collection.
+      const matches = await searchUsersByName(q, currentUser.uid, 8);
+      setResults(matches.map(({ uid, profile }) => ({ uid, ...profile })));
     } catch {
-      if (method === "name" && knownNames.length > 0) {
+      if (knownNames.length > 0) {
+        // Same prefix criterion as the cloud query (searchName) for consistency.
+        const term = q.trim().toLowerCase();
         const localMatches: SearchResult[] = knownNames
-          .filter((name) => name.toLowerCase().includes(q.toLowerCase()))
+          .filter((name) => name.trim().toLowerCase().startsWith(term))
           .slice(0, 8)
           .map((name) => ({ uid: null, displayName: name, photoURL: null, lastLogin: null, email: null, _local: true }));
         setResults(localMatches);
         if (localMatches.length === 0) setError(t("searchErrLocal"));
-      } else if (method === "email") {
-        setResults([]);
-        setError(t("searchErrEmail"));
       } else {
         setResults([]);
         setError(t("searchErrConnect"));
@@ -119,13 +109,12 @@ function UserSearchModal({ onLink, onClose, t, knownNames = [] }: UserSearchModa
           {[
             { id: "name", icon: "👤", label: t("searchByName") },
             { id: "qr", icon: "📷", label: t("searchByQR") },
-            { id: "email", icon: "✉️", label: t("searchByEmail") },
           ].map((methodOption) => (
             <button
               key={methodOption.id}
               className={`usearch-method-btn${method === methodOption.id ? " active" : ""}`}
               onClick={() => {
-                setMethod(methodOption.id as "email" | "name" | "qr");
+                setMethod(methodOption.id as "name" | "qr");
                 setResults(null);
                 setError("");
                 setQuery("");
@@ -144,7 +133,7 @@ function UserSearchModal({ onLink, onClose, t, knownNames = [] }: UserSearchModa
                 className="usearch-inp"
                 id="user-search"
                 name="user-search"
-                placeholder={method === "email" ? t("emailPlaceholderSearch") : t("playerN")}
+                placeholder={t("playerN")}
                 value={query}
                 onChange={(event) => {
                   setQuery(event.target.value);

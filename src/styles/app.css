@@ -681,72 +681,78 @@ html:not(.dark) .btnsec.nav-leave-keep:hover{color:#3A7BCA;border-color:rgba(58,
 html:not(.dark) .btnsec.nav-leave-discard:hover{color:#5A1E35;border-color:rgba(90,30,53,.5)}
 .dark .btnsec.nav-leave-discard{color:#C27A9A;border-color:rgba(194,122,154,.3)}
 .dark .btnsec.nav-leave-discard:hover{color:#D9A0B8;border-color:rgba(217,160,184,.5)}
-.detail-wrapper[data-game-accent="default"],
+/* Issue #34: the global chrome (.nav) follows the theme accent, while the
+   game detail keeps its own per-game color. */
+.detail-wrapper[data-game-accent="default"]{--gc:var(--accent-primary)}
 .nav[data-game-accent="default"]{--gc:var(--accent-primary)}
-.detail-wrapper[data-game-accent="uno"],
-.nav[data-game-accent="uno"]{--gc:#E63946}
-.detail-wrapper[data-game-accent="uno_no_mercy"],
-.nav[data-game-accent="uno_no_mercy"]{--gc:var(--nomercy)}
-.detail-wrapper[data-game-accent="uno_flip"],
-.nav[data-game-accent="uno_flip"]{--gc:#7B2FBE}
-.detail-wrapper[data-game-accent="uno_dos"],
-.nav[data-game-accent="uno_dos"]{--gc:#2980B9}
-.detail-wrapper[data-game-accent="truco"],
-.nav[data-game-accent="truco"]{--gc:#8B5E3C}
-.detail-wrapper[data-game-accent="chancho"],
-.nav[data-game-accent="chancho"]{--gc:#E91E8C}
-.detail-wrapper[data-game-accent="esquinados"],
-.nav[data-game-accent="esquinados"]{--gc:#2E7D32}
-.detail-wrapper[data-game-accent="chin"],
-.nav[data-game-accent="chin"]{--gc:#8B1A1A}
-.detail-wrapper[data-game-accent="chinchon"],
-.nav[data-game-accent="chinchon"]{--gc:#E67E22}
-.detail-wrapper[data-game-accent="rummy"],
-.nav[data-game-accent="rummy"]{--gc:#2980B9}
-.detail-wrapper[data-game-accent="poker"],
-.nav[data-game-accent="poker"]{--gc:#E63946}
-.detail-wrapper[data-game-accent="blackjack"],
-.nav[data-game-accent="blackjack"]{--gc:var(--nomercy)}
-.detail-wrapper[data-game-accent="burako"],
-.nav[data-game-accent="burako"]{--gc:#8E44AD}
-.detail-wrapper[data-game-accent="generala"],
-.nav[data-game-accent="generala"]{--gc:#D4A017}
-.detail-wrapper[data-game-accent="ajedrez"],
-.nav[data-game-accent="ajedrez"]{--gc:#4A4A6A}
-.detail-wrapper[data-game-accent="racha_perdida"],
-.nav[data-game-accent="racha_perdida"]{--gc:#6C3483}
-.detail-wrapper[data-game-accent="sushi_do"],
-.nav[data-game-accent="sushi_do"]{--gc:#D94841}
-.detail-wrapper[data-game-accent="portion_counter"],
-.nav[data-game-accent="portion_counter"]{--gc:#1ABC9C}
-.detail-wrapper[data-game-accent="basta_dym"],
-.nav[data-game-accent="basta_dym"]{--gc:#2F7DE1}
-.detail-wrapper[data-game-accent="sushi"],
-.nav[data-game-accent="sushi"]{--gc:#1ABC9C}
-.detail-wrapper[data-game-accent="pizza"],
-.nav[data-game-accent="pizza"]{--gc:#1ABC9C}
-.detail-wrapper[data-game-accent="hamburguesa"],
-.nav[data-game-accent="hamburguesa"]{--gc:#1ABC9C}
-.detail-wrapper[data-game-accent="pancho"],
-.nav[data-game-accent="pancho"]{--gc:#1ABC9C}
-.detail-wrapper[data-game-accent="empanadas"],
-.nav[data-game-accent="empanadas"]{--gc:#1ABC9C}
-.detail-wrapper[data-game-accent="facturas"],
-.nav[data-game-accent="facturas"]{--gc:#1ABC9C}
-.detail-wrapper[data-game-accent="sanguchitos"],
-.nav[data-game-accent="sanguchitos"]{--gc:#1ABC9C}
-.detail-wrapper[data-game-accent="cookies"],
-.nav[data-game-accent="cookies"]{--gc:#1ABC9C}
-.detail-wrapper[data-game-accent="otros_porciones"],
-.nav[data-game-accent="otros_porciones"]{--gc:#1ABC9C}
-.detail-wrapper[data-game-accent="monopoly"],
-.nav[data-game-accent="monopoly"]{--gc:#E63946}
-.detail-wrapper[data-game-accent="life"],
-.nav[data-game-accent="life"]{--gc:#27AE60}
-.detail-wrapper[data-game-accent="custom"],
+.detail-wrapper[data-game-accent="uno"]{--gc:#E63946}
+.nav[data-game-accent="uno"]{--gc:var(--accent-primary)}
+.detail-wrapper[data-game-accent="uno_no_mercy"]{--gc:var(--nomercy)}
+.nav[data-game-accent="uno_no_mercy"]{--gc:var(--accent-primary)}
+.detail-wrapper[data-game-accent="uno_flip"]{--gc:#7B2FBE}
+.nav[data-game-accent="uno_flip"]{--gc:var(--accent-primary)}
+.detail-wrapper[data-game-accent="uno_dos"]{--gc:#2980B9}
+.nav[data-game-accent="uno_dos"]{--gc:var(--accent-primary)}
+.detail-wrapper[data-game-accent="truco"]{--gc:#8B5E3C}
+.nav[data-game-accent="truco"]{--gc:var(--accent-primary)}
+.detail-wrapper[data-game-accent="chancho"]{--gc:#E91E8C}
+.nav[data-game-accent="chancho"]{--gc:var(--accent-primary)}
+.detail-wrapper[data-game-accent="esquinados"]{--gc:#2E7D32}
+.nav[data-game-accent="esquinados"]{--gc:var(--accent-primary)}
+.detail-wrapper[data-game-accent="chin"]{--gc:#8B1A1A}
+.nav[data-game-accent="chin"]{--gc:var(--accent-primary)}
+.detail-wrapper[data-game-accent="chinchon"]{--gc:#E67E22}
+.nav[data-game-accent="chinchon"]{--gc:var(--accent-primary)}
+.detail-wrapper[data-game-accent="rummy"]{--gc:#2980B9}
+.nav[data-game-accent="rummy"]{--gc:var(--accent-primary)}
+.detail-wrapper[data-game-accent="poker"]{--gc:#E63946}
+.nav[data-game-accent="poker"]{--gc:var(--accent-primary)}
+.detail-wrapper[data-game-accent="blackjack"]{--gc:var(--nomercy)}
+.nav[data-game-accent="blackjack"]{--gc:var(--accent-primary)}
+.detail-wrapper[data-game-accent="burako"]{--gc:#8E44AD}
+.nav[data-game-accent="burako"]{--gc:var(--accent-primary)}
+.detail-wrapper[data-game-accent="generala"]{--gc:#D4A017}
+.nav[data-game-accent="generala"]{--gc:var(--accent-primary)}
+.detail-wrapper[data-game-accent="ajedrez"]{--gc:#4A4A6A}
+.nav[data-game-accent="ajedrez"]{--gc:var(--accent-primary)}
+.detail-wrapper[data-game-accent="racha_perdida"]{--gc:#6C3483}
+.nav[data-game-accent="racha_perdida"]{--gc:var(--accent-primary)}
+.detail-wrapper[data-game-accent="sushi_do"]{--gc:#D94841}
+.nav[data-game-accent="sushi_do"]{--gc:var(--accent-primary)}
+.detail-wrapper[data-game-accent="portion_counter"]{--gc:#1ABC9C}
+.nav[data-game-accent="portion_counter"]{--gc:var(--accent-primary)}
+.detail-wrapper[data-game-accent="basta_dym"]{--gc:#2F7DE1}
+.nav[data-game-accent="basta_dym"]{--gc:var(--accent-primary)}
+.detail-wrapper[data-game-accent="sushi"]{--gc:#1ABC9C}
+.nav[data-game-accent="sushi"]{--gc:var(--accent-primary)}
+.detail-wrapper[data-game-accent="pizza"]{--gc:#1ABC9C}
+.nav[data-game-accent="pizza"]{--gc:var(--accent-primary)}
+.detail-wrapper[data-game-accent="hamburguesa"]{--gc:#1ABC9C}
+.nav[data-game-accent="hamburguesa"]{--gc:var(--accent-primary)}
+.detail-wrapper[data-game-accent="pancho"]{--gc:#1ABC9C}
+.nav[data-game-accent="pancho"]{--gc:var(--accent-primary)}
+.detail-wrapper[data-game-accent="empanadas"]{--gc:#1ABC9C}
+.nav[data-game-accent="empanadas"]{--gc:var(--accent-primary)}
+.detail-wrapper[data-game-accent="facturas"]{--gc:#1ABC9C}
+.nav[data-game-accent="facturas"]{--gc:var(--accent-primary)}
+.detail-wrapper[data-game-accent="sanguchitos"]{--gc:#1ABC9C}
+.nav[data-game-accent="sanguchitos"]{--gc:var(--accent-primary)}
+.detail-wrapper[data-game-accent="cookies"]{--gc:#1ABC9C}
+.nav[data-game-accent="cookies"]{--gc:var(--accent-primary)}
+.detail-wrapper[data-game-accent="otros_porciones"]{--gc:#1ABC9C}
+.nav[data-game-accent="otros_porciones"]{--gc:var(--accent-primary)}
+.detail-wrapper[data-game-accent="monopoly"]{--gc:#E63946}
+.nav[data-game-accent="monopoly"]{--gc:var(--accent-primary)}
+.detail-wrapper[data-game-accent="life"]{--gc:#27AE60}
+.nav[data-game-accent="life"]{--gc:var(--accent-primary)}
+.detail-wrapper[data-game-accent="custom"]{--gc:var(--accent-primary)}
 .nav[data-game-accent="custom"]{--gc:var(--accent-primary)}
-.detail-wrapper[data-game-accent="canasta"],
-.nav[data-game-accent="canasta"]{--gc:#C0392B}
+.detail-wrapper[data-game-accent="canasta"]{--gc:#C0392B}
+.nav[data-game-accent="canasta"]{--gc:var(--accent-primary)}
+/* The stats view is global chrome: it follows the theme accent while the
+   rest of the game detail keeps its per-game color. */
+#tab-stats.active{border-color:color-mix(in srgb,var(--accent-primary) 42%,transparent);background:color-mix(in srgb,var(--accent-primary) 16%,transparent);box-shadow:none}
+#tabpanel-stats{--gc:var(--accent-primary)}
 .detail-stats-stack{display:flex;flex-direction:column;gap:12px}
 .detail-inline-action-card{display:flex;align-items:center;justify-content:space-between;gap:12px}
 .detail-inline-action-title{font-size:.86rem;color:var(--tx);font-weight:700}
@@ -2258,6 +2264,42 @@ html:not(.dark) .btnsec.nav-leave-discard:hover{color:#5A1E35;border-color:rgba(
   border-color: var(--outline-primary); background: var(--theme-control-fill-strong);
 }
 .theme-mode-icon { font-size: 1.1rem; line-height: 1; }
+
+/* ── ACCENT SWATCHES (custom accent picker, issue #34) ────────────────────── */
+.accent-swatches {
+  display: flex; flex-wrap: wrap; gap: 10px;
+  margin-top: 14px; justify-content: center;
+}
+.accent-swatch {
+  width: 40px; height: 40px; min-width: 40px; min-height: 40px;
+  border-radius: 999px; border: 2px solid transparent; cursor: pointer;
+  padding: 0; position: relative; flex: 0 0 auto;
+  transition: transform .15s var(--ease), box-shadow .15s var(--ease), border-color .15s var(--ease);
+  box-shadow: 0 2px 8px rgba(0,0,0,.18), 0 0 0 1px rgba(255,255,255,.14) inset;
+}
+.accent-swatch:hover { transform: translateY(-2px) scale(1.05); }
+.accent-swatch:active { transform: scale(.92); }
+.accent-swatch--active {
+  border-color: var(--accent-on-primary);
+  box-shadow: 0 0 0 2px var(--accent-primary), 0 0 0 4px color-mix(in srgb, var(--accent-primary) 30%, transparent), 0 4px 12px color-mix(in srgb, var(--accent-primary) 28%, transparent);
+}
+.accent-swatch-check {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  font-size: .85rem; font-weight: 900; line-height: 1;
+}
+.accent-custom-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--bo);
+  min-height: 44px;
+}
+.accent-custom-label { font-size: .74rem; font-weight: 600; color: var(--tx2); }
+.accent-color-input {
+  width: 52px; height: 40px; min-height: 40px; padding: 2px; cursor: pointer;
+  border: 1.5px solid color-mix(in srgb,var(--theme-control-outline) 88%, transparent);
+  border-radius: var(--rxs); background: var(--theme-control-fill);
+}
+.accent-color-input::-webkit-color-swatch-wrapper { padding: 2px; }
+.accent-color-input::-webkit-color-swatch { border: none; border-radius: 6px; }
 
 /* ── SETTINGS SUB-ROW (for oled, haptic, etc) ──────────────────────────────── */
 .settings-sub-row {

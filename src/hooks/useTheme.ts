@@ -12,6 +12,8 @@ import type {
 
 const THEME_MODE_KEY = "bgt_theme_mode";
 const THEME_ACCENT_KEY = "bgt_theme_accent";
+const THEME_CUSTOM_ACCENT_KEY = "bgt_theme_custom_accent";
+const DEFAULT_CUSTOM_ACCENT = "#006d77";
 const REDUCE_EFFECTS_KEY = "bgt_reduce_effects";
 const OLED_KEY = "bgt_oled";
 const THEME_MODE_CHANGE_EVENT = "bgt:theme-mode-change";
@@ -58,11 +60,40 @@ function readThemeMode(): ThemeMode {
 
 function readThemeAccent(): ThemeAccentMode {
   try {
-    return localStorage.getItem(THEME_ACCENT_KEY) === "monet" ? "monet" : "default";
+    const saved = localStorage.getItem(THEME_ACCENT_KEY);
+    if (saved === "monet" || saved === "custom") return saved;
   } catch {
-    return "default";
+    // Ignore storage failures and fall back to the default accent.
   }
+  return "default";
 }
+
+function readCustomAccent(): string {
+  try {
+    const saved = localStorage.getItem(THEME_CUSTOM_ACCENT_KEY);
+    if (saved && /^#[0-9a-f]{6}$/i.test(saved)) return saved;
+  } catch {
+    // Ignore storage failures and fall back to the default accent.
+  }
+  return DEFAULT_CUSTOM_ACCENT;
+}
+
+/**
+ * Returns the most readable text color (white or black) for a given hex background
+ * using the WCAG relative-luminance threshold (0.179), the same split point used
+ * by Material for `onPrimary`-style roles.
+ */
+export function readableOnColor(hex: string): string {
+  const normalized = /^#[0-9a-f]{6}$/i.test(hex) ? hex : DEFAULT_CUSTOM_ACCENT;
+  const channel = (index: number) => parseInt(normalized.slice(1 + index * 2, 3 + index * 2), 16) / 255;
+  const linearize = (value: number) => (value <= 0.03928 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4);
+  const luminance =
+    0.2126 * linearize(channel(0)) +
+    0.7152 * linearize(channel(1)) +
+    0.0722 * linearize(channel(2));
+  return luminance > 0.179 ? "#0a0a0a" : "#ffffff";
+}
+
 
 function readReduceEffects(): boolean | null {
   try {
@@ -119,6 +150,7 @@ function readDynamicThemeContract(): DynamicThemeContract | null {
 export function useTheme() {
   const [themeMode, setThemeMode] = useState<ThemeMode>(readThemeMode);
   const [themeAccentMode, setThemeAccentMode] = useState<ThemeAccentMode>(readThemeAccent);
+  const [themeCustomAccent, setThemeCustomAccent] = useState<string>(readCustomAccent);
   const [reduceEffects, setReduceEffects] = useState<boolean | null>(readReduceEffects);
   const [oledEnabled, setOledEnabled] = useState<boolean>(readOledEnabled);
   const [dynamicThemeContract, setDynamicThemeContract] = useState<DynamicThemeContract | null>(readDynamicThemeContract);
@@ -203,6 +235,16 @@ export function useTheme() {
     }
   }, []);
 
+  const handleThemeCustomAccent = useCallback((hex: string) => {
+    const normalized = /^#[0-9a-f]{6}$/i.test(hex) ? hex : DEFAULT_CUSTOM_ACCENT;
+    setThemeCustomAccent(normalized);
+    try {
+      localStorage.setItem(THEME_CUSTOM_ACCENT_KEY, normalized);
+    } catch {
+      // Ignore write failures when storage is unavailable.
+    }
+  }, []);
+
   const handleToggleReduceEffects = useCallback((value: boolean) => {
     setReduceEffects(value);
     try {
@@ -229,12 +271,22 @@ export function useTheme() {
     root.dataset.themeAccent = themeAccentMode;
     if (dynamicThemeRoles && dynamicThemeContract) root.dataset.themeSource = dynamicThemeContract.source;
     else delete root.dataset.themeSource;
+    // Expose the user-picked hex as inline custom properties so the CSS
+    // `html[data-theme-accent="custom"]` block can derive every accent role
+    // (containers via color-mix, on-primary via luminance).
+    if (themeAccentMode === "custom") {
+      root.style.setProperty("--theme-custom-accent", themeCustomAccent);
+      root.style.setProperty("--theme-custom-on-accent", readableOnColor(themeCustomAccent));
+    } else {
+      root.style.removeProperty("--theme-custom-accent");
+      root.style.removeProperty("--theme-custom-on-accent");
+    }
     root.classList.toggle("dark", dark);
     root.classList.toggle("light", !dark);
     root.classList.toggle("oled", activeTheme === "oled");
     root.classList.toggle("reduced-effects", reduceEffectsEnabled);
     root.classList.toggle("full-effects", reduceEffects === false);
-  }, [activeTheme, dark, dynamicThemeContract, dynamicThemeRoles, reduceEffects, reduceEffectsEnabled, themeAccentMode]);
+  }, [activeTheme, dark, dynamicThemeContract, dynamicThemeRoles, reduceEffects, reduceEffectsEnabled, themeAccentMode, themeCustomAccent]);
 
   return {
     activeTheme,
@@ -243,9 +295,11 @@ export function useTheme() {
     reduceEffectsEnabled,
     themeMode,
     themeAccentMode,
+    themeCustomAccent,
     dynamicThemeRoles,
     handleThemeMode,
     handleThemeAccentMode,
+    handleThemeCustomAccent,
     handleToggleOled,
     handleToggleReduceEffects,
   };

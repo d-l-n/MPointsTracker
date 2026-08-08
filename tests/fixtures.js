@@ -21,10 +21,11 @@ export const test = base.extend({
       if (msg.type() === 'error') errors.push(`[console.error] ${msg.text()}`);
     });
 
-    // ── Skip splash + install banner ──────────────────────────────────────
+    // ── Skip splash + install banner + onboarding ─────────────────────────
     await page.context().addInitScript(() => {
       localStorage.setItem('bgt_splash_seen', '1');
       localStorage.setItem('bgt_install_dismissed', '1');
+      localStorage.setItem('bgt_onboarding_seen', '1');
     });
 
     await page.goto('/');
@@ -38,6 +39,16 @@ export const test = base.extend({
 
       await guestBtn.waitFor({ state: 'visible', timeout: 8000 });
       await guestBtn.click();
+
+      // The guest flow asks for confirmation in a modal (commit 780c375).
+      // Confirm it when present so the shell can render.
+      const confirmBtn = page.locator('.modal-confirm').or(page.locator('[data-testid^="confirm-"]')).first();
+      try {
+        await confirmBtn.waitFor({ state: 'visible', timeout: 3000 });
+        await confirmBtn.click();
+      } catch {
+        // No confirmation required
+      }
     } catch {
       // Already past auth screen (e.g. cached guest session)
     }

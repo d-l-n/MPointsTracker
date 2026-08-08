@@ -27,7 +27,7 @@ import { useHaptic } from "./hooks/useHaptic";
 // Context
 import { AppProvider } from "./context/AppContext";
 import AppLayout from "./components/ui/AppLayout";
-import type { AppContextValue, DebugLogEntry, Match, PendingInvite } from "./types";
+import type { AppContextValue, DebugLogEntry, Match, PendingInvite, ThemeAccentMode } from "./types";
 import type { RematchState } from "./pages/GameDetail";
 
 // ── App ────────────────────────────────────────────────────────────────────────
@@ -43,8 +43,10 @@ export default function App() {
     reduceEffectsEnabled,
     themeMode,
     themeAccentMode,
+    themeCustomAccent,
     handleThemeMode,
     handleThemeAccentMode,
+    handleThemeCustomAccent,
     handleToggleOled,
     handleToggleReduceEffects,
   } = useTheme();
@@ -88,16 +90,31 @@ export default function App() {
   } = useMatches({ userRef, dark, showToast, t });
 
   // ── Auth ───────────────────────────────────────────────────────────────────
+  // Stable callback: useAuth memoizes handleUser on it, so an inline arrow here
+  // would re-create handleUser on every render and re-run the auth init effect.
+  const handleCloudTheme = useCallback((accent: ThemeAccentMode, customAccent?: string) => {
+    handleThemeAccentMode(accent);
+    if (customAccent) handleThemeCustomAccent(customAccent);
+  }, [handleThemeAccentMode, handleThemeCustomAccent]);
+
   const {
     user, isAdmin, authChecked, hadPreviousSession, guestMode,
     playerGroups, savePlayerGroups,
     spotifyEnabled, spotifyPosition, saveSpotifyPreference, saveSpotifyPosition,
+    saveThemeAccent, saveThemeCustomAccent,
     signInGoogle, signInWithEmail, signUpWithEmail, sendPasswordReset, signOut,
     enterGuestMode,
-  } = useAuth({ addLog, showToast, t, mergeCloudData, mergeSharedMatches });
+  } = useAuth({
+    addLog, showToast, t, mergeCloudData, mergeSharedMatches,
+    onCloudTheme: handleCloudTheme,
+  });
 
   // Keep userRef in sync so useMatches cloud-save uses latest user
   useEffect(() => { userRef.current = user; }, [user]);
+
+  // Persist theme accent preferences to the cloud (no-op while signed out)
+  useEffect(() => { void saveThemeAccent(themeAccentMode); }, [saveThemeAccent, themeAccentMode]);
+  useEffect(() => { void saveThemeCustomAccent(themeCustomAccent); }, [saveThemeCustomAccent, themeCustomAccent]);
 
   const {
     selected,
@@ -225,7 +242,18 @@ export default function App() {
     const keepPortionDraft = selected === "portion_counter";
     addMatch(selected, match as Match & Record<string, unknown>);
     triggerConfetti(getGame(selected)?.color);
-    await shareMatchWithPlayers(selected, match as Match & Record<string, unknown>, linkedPlayers[selected] || [], user);
+
+    const linked = linkedPlayers[selected] || [];
+    if (linked.length > 0) {
+      const shareResult = await shareMatchWithPlayers(selected, match as Match & Record<string, unknown>, linked, user);
+      if (!user) {
+        showToast(t("shareNeedLogin"));
+      } else if (shareResult.failed > 0) {
+        showToast(t("shareFail").replace("{n}", String(shareResult.failed)));
+      } else if (shareResult.attempted === 0 || shareResult.skipped > 0) {
+        showToast(t("shareNoAccount"));
+      }
+    }
 
     if (keepPortionDraft) {
       setActiveGame(null);
@@ -242,7 +270,7 @@ export default function App() {
     setGameTab("stats");
     setActiveGame(selected);
     navigate(buildHomePath(selected));
-  }, [addMatch, clearDraft, linkedPlayers, navigate, selected, setActiveGame, setGameMatchKey, setGameTab, setLinkedPlayers, setSelected, user]);
+  }, [addMatch, clearDraft, linkedPlayers, navigate, selected, setActiveGame, setGameMatchKey, setGameTab, setLinkedPlayers, setSelected, showToast, t, user]);
 
   // When "google" mode set, fire directly — deferred to avoid setState-in-effect warning
   useEffect(() => {
@@ -336,6 +364,8 @@ export default function App() {
         themeMode={themeMode}
         themeAccentMode={themeAccentMode}
         handleThemeAccentMode={handleThemeAccentMode}
+        themeCustomAccent={themeCustomAccent}
+        handleThemeCustomAccent={handleThemeCustomAccent}
         reduceEffectsEnabled={reduceEffectsEnabled}
         handleToggleReduceEffects={handleToggleReduceEffects}
         navOpen={navOpen}

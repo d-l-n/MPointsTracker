@@ -16,14 +16,16 @@ service cloud.firestore {
     }
 
     // ── users/{uid} — perfil publico ────────────────────────────────────────
-    // Solo contiene: displayName, photoURL, lastLogin, publicStats, statsUpdatedAt
+    // Solo contiene: displayName, searchName, photoURL, lastLogin, publicStats, statsUpdatedAt
     // NO contiene: email, data (partidas), playerGroups
+    // Cualquier usuario logueado puede leer perfiles publicos (búsqueda por
+    // nombre, QR, perfiles compartidos). La escritura queda limitada al dueño.
     match /users/{userId} {
-      allow read: if isOwner(userId) || isAdmin();
+      allow read: if isAuth();
 
       allow create, update: if (isOwner(userId) || isAdmin())
         && request.resource.data.keys().hasOnly([
-          "displayName", "photoURL", "lastLogin", "publicStats", "statsUpdatedAt"
+          "displayName", "searchName", "photoURL", "lastLogin", "publicStats", "statsUpdatedAt"
         ]);
 
       allow delete: if isOwner(userId) || isAdmin();

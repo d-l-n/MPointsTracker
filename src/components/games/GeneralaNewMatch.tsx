@@ -356,11 +356,12 @@ function GeneralaNewMatch({
     <div>
       {!inProgress && (
         <div className="sec">
-          <span className="flbl">{t("players")}</span>
-          <GroupPicker
-            t={t}
-            playerGroups={playerGroups}
-            maxPlayers={6}
+          <div style={{ display: "flex", alignItems: "center", gap: 12, rowGap: 6, flexWrap: "wrap", marginBottom: 2 }}>
+            <span className="flbl" style={{ margin: 0, flexShrink: 0 }}>{t("players")}</span>
+            <GroupPicker
+              t={t}
+              playerGroups={playerGroups}
+              maxPlayers={6}
             onLoad={(loadedPlayers, loadedLinked) => {
               setPlayers(loadedPlayers as PlayerInputState[]);
               onLinkedPlayersChange(loadedLinked as LinkedPlayer[]);
@@ -373,8 +374,10 @@ function GeneralaNewMatch({
               setGameOver(false);
               onLinkedPlayersChange([]);
             }}
-            hasPlayers={inProgress || gameOver || players.some((player) => player.name.trim())}
-          />
+              hasPlayers={inProgress || gameOver || players.some((player) => player.name.trim())}
+              style={{ flex: 1, minWidth: 0, marginTop: 0, marginBottom: 0 }}
+            />
+          </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 8 }}>
             {players.map((player, index) => (
               <div className="irow" key={player.id}>

@@ -10,7 +10,7 @@ test.describe("firestore rules", () => {
   });
 
   test("users writes are limited to public profile fields", () => {
-    expect(rules).toMatch(/match \/users\/\{userId\}[\s\S]*request\.resource\.data\.keys\(\)\.hasOnly\(\[\s*"displayName",\s*"photoURL",\s*"lastLogin",\s*"publicStats",\s*"statsUpdatedAt"\s*\]\)/);
+    expect(rules).toMatch(/match \/users\/\{userId\}[\s\S]*request\.resource\.data\.keys\(\)\.hasOnly\(\[\s*"displayName",\s*"searchName",\s*"photoURL",\s*"lastLogin",\s*"publicStats",\s*"statsUpdatedAt"\s*\]\)/);
   });
 
   test("invites support owner replacement without opening deletes globally", () => {

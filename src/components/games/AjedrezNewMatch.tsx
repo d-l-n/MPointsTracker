@@ -295,9 +295,21 @@ function AjedrezNewMatch({
     <div>
       {!gameActive && (
         <div className="sec">
-          <span className="flbl">{t("players")} (1v1)</span>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, rowGap: 6, flexWrap: "wrap", marginBottom: 2 }}>
+            <span className="flbl" style={{ margin: 0, flexShrink: 0 }}>{t("players")} (1v1)</span>
 
-          {validGroups.length > 0 && <GroupPicker t={t} playerGroups={validGroups} maxPlayers={2} gameId="ajedrez" maxGroupSize={2} onLoad={handleGroupLoad} />}
+            {validGroups.length > 0 && (
+              <GroupPicker
+                t={t}
+                playerGroups={validGroups}
+                maxPlayers={2}
+                gameId="ajedrez"
+                maxGroupSize={2}
+                onLoad={handleGroupLoad}
+                style={{ flex: 1, minWidth: 0, marginTop: 0, marginBottom: 0 }}
+              />
+            )}
+          </div>
 
           <div className="rgap">
             <LinkedPlayerInput

@@ -128,6 +128,8 @@ interface AppLayoutProps {
   themeMode: ThemeMode;
   themeAccentMode: ThemeAccentMode;
   handleThemeAccentMode: (mode: ThemeAccentMode) => void;
+  themeCustomAccent: string;
+  handleThemeCustomAccent: (hex: string) => void;
   reduceEffectsEnabled: boolean;
   handleToggleReduceEffects: (value: boolean) => void;
   navOpen: boolean;
@@ -275,6 +277,8 @@ export default function AppLayout({
   themeMode,
   themeAccentMode,
   handleThemeAccentMode,
+  themeCustomAccent,
+  handleThemeCustomAccent,
   reduceEffectsEnabled,
   handleToggleReduceEffects,
   navOpen,
@@ -733,6 +737,8 @@ export default function AppLayout({
                   onThemeMode={handleThemeMode}
                   themeAccentMode={themeAccentMode}
                   onThemeAccentMode={handleThemeAccentMode}
+                  themeCustomAccent={themeCustomAccent}
+                  onThemeCustomAccent={handleThemeCustomAccent}
                   reduceEffects={reduceEffectsEnabled}
                   onToggleReduceEffects={handleToggleReduceEffects}
                   subPage={settingsSubPage as SettingsSubPage | null}
