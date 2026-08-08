@@ -1,6 +1,6 @@
 # MPOINTS TRACKER
 
-> **26.08.06** · React + Vite + Firebase PWA · 适用于桌面游戏和卡牌游戏的多设备记分工具
+> **26.08.09** · React + Vite + Firebase PWA · 适用于桌面游戏和卡牌游戏的多设备记分工具
 
 **阅读语言：** [English](README.md) · [Español](README.es.md) · [Deutsch](README.de.md) · [Français](README.fr.md) · [日本語](README.ja.md)
 
@@ -12,7 +12,7 @@ MPoints Tracker 是一款**渐进式 Web 应用**，用于和朋友玩桌面游�
 
 **部署：** Cloudflare Pages
 **生产地址：** `mpoints-tracker.pages.dev`
-**当前版本：** `26.08.06`
+**当前版本：** `26.08.09`
 
 ### 亮点
 
