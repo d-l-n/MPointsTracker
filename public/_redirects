@@ -1,7 +1,1 @@
-# /index.html se sirve a sí mismo (self-mapping explícito antes del catch-all).
-# Forma recomendada en la documentación de Cloudflare para evitar el warning
-# de "infinite loop" del catch-all `/* /index.html`.
-/index.html    /index.html    200
-
-# Fallback SPA: rutas limpias de React Router → index.html
-/*             /index.html    200
+/*    /index.html   200
