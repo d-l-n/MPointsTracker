@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   MPoints Tracker — Service Worker v26.08.09
+   MPoints Tracker — Service Worker v26.08.10
    Phase 1 strategy map:
    - App shell / HTML      → Network-first, fallback a cache
    - Assets JS/CSS/img     → Cache-first
@@ -9,7 +9,7 @@
    - Runtime fallback      → Stale-while-revalidate
 ════════════════════════════════════════════════════════════════════════════ */
 
-const SW_VERSION   = "26.08.09";
+const SW_VERSION   = "26.08.10";
 const CACHE_SHELL  = `mpoints-shell-${SW_VERSION}`;
 const CACHE_ASSETS = `mpoints-assets-${SW_VERSION}`;
 const CACHE_RULES  = `mpoints-rules-${SW_VERSION}`;
@@ -126,13 +126,51 @@ function isRulesNavigation(url, request) {
   return request.mode === "navigate" && url.pathname === "/rules";
 }
 
+// ── Guardas de content-type ────────────────────────────────────────────────
+// El catch-all SPA (`/* /index.html 200`) responde con HTML 200 ante cualquier
+// archivo que no exista. Si cacheamos esa respuesta como si fuera el asset
+// JS/CSS pedido, la app queda rota para siempre (cache-first + immutable).
+// Estos guards impiden cachear (y servir) HTML donde va un asset real.
+function responseType(response) {
+  return ((response && response.headers.get("content-type")) || "").toLowerCase();
+}
+
+function assetKind(url) {
+  if (/\.css(\?|$)/.test(url.pathname)) return "css";
+  if (/\.woff2?(\?|$)/.test(url.pathname)) return "font";
+  return "js";
+}
+
+function isCacheableAsset(response, kind) {
+  if (!response || !response.ok) return false;
+  const type = responseType(response);
+  if (type.includes("text/html")) return false; // catch-all SPA → HTML
+  if (kind === "js") return type.includes("javascript");
+  if (kind === "css") return type.includes("text/css");
+  if (kind === "font") return type.includes("font") || type.includes("octet-stream");
+  return true;
+}
+
+// true si la respuesta es HTML (navegaciones reales); nunca debería cachearse
+// como asset ni como recurso de runtime.
+function isHtmlResponse(response) {
+  return responseType(response).includes("text/html");
+}
+
 // Cache-first para assets con hash (inmutables)
 async function cacheFirstAssets(request) {
+  const kind = assetKind(new URL(request.url));
   const cached = await caches.match(request);
-  if (cached) return cached;
+  if (cached) {
+    // Nunca servir una entrada envenenada (HTML cacheado como asset):
+    // descartarla y buscar en red. El delete es fire-and-forget a propósito
+    // (no queremos sumar latencia al camino raro; si falla, se re-descarta sola).
+    if (!isHtmlResponse(cached)) return cached;
+    caches.open(CACHE_ASSETS).then((cache) => cache.delete(request)).catch(() => {});
+  }
   try {
     const response = await fetch(request);
-    if (response.ok) {
+    if (isCacheableAsset(response, kind)) {
       const cache = await caches.open(CACHE_ASSETS);
       cache.put(request, response.clone());
     }
@@ -148,7 +186,9 @@ async function cacheFirstFonts(request) {
   if (cached) return cached;
   try {
     const response = await fetch(request);
-    if (response.ok) {
+    // El CSS de fonts.googleapis.com es text/css y los woff2 son font/*:
+    // cacheamos cualquier respuesta ok que no sea HTML de relleno.
+    if (response.ok && !isHtmlResponse(response)) {
       const cache = await caches.open(CACHE_FONTS);
       cache.put(request, response.clone());
     }
@@ -197,11 +237,18 @@ async function staleWhileRevalidateRules(request) {
 // Stale-while-revalidate: sirve cache inmediatamente y actualiza en background
 async function staleWhileRevalidateRuntime(request) {
   const cache = await caches.open(CACHE_ASSETS);
-  const cached = await cache.match(request);
+  let cached = await cache.match(request);
+  if (cached && isHtmlResponse(cached)) {
+    // Entrada envenenada cacheada por una versión vieja del SW:
+    // no servirla; descartarla y revalidar desde red.
+    cache.delete(request).catch(() => {});
+    cached = null;
+  }
 
   const networkPromise = fetch(request)
     .then((response) => {
-      if (response.ok) cache.put(request, response.clone());
+      // No cachear HTML de relleno del catch-all donde va un recurso real.
+      if (response.ok && !isHtmlResponse(response)) cache.put(request, response.clone());
       return response;
     })
     .catch(() => null);

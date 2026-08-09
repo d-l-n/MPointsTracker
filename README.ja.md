@@ -1,6 +1,6 @@
 # MPOINTS TRACKER
 
-> **26.08.09** · React + Vite + Firebase PWA · ボードゲーム・カードゲーム用のマルチデバイス得点トラッカー
+> **26.08.10** · React + Vite + Firebase PWA · ボードゲーム・カードゲーム用のマルチデバイス得点トラッカー
 
 **このドキュメントの言語:** [English](README.md) · [Español](README.es.md) · [Deutsch](README.de.md) · [Français](README.fr.md) · [中文](README.zh.md)
 
@@ -12,7 +12,7 @@ MPoints Tracker は、友人とのボードゲーム・カードゲームの得�
 
 **デプロイ:** Cloudflare Pages
 **本番 URL:** `mpoints-tracker.pages.dev`
-**現在のリリース:** `26.08.09`
+**現在のリリース:** `26.08.10`
 
 ### 主な特長
 
