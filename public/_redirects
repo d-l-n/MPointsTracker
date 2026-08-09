@@ -1,1 +1,7 @@
-/*    /index.html   200
+# Sirve el index.html real directamente. Sin esta regla, el catch-all `/*` de
+# abajo también matchea `/index.html` (su propio target) y Cloudflare lo
+# detecta como loop infinito, mostrando el warning en cada build.
+/index.html  200
+
+# Fallback SPA: rutas limpias de React Router → index.html
+/*           /index.html  200
