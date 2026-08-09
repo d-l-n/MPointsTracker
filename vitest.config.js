@@ -17,6 +17,7 @@ export default mergeConfig(
         "src/**/*.test.jsx",
         "src/**/*.spec.js",
         "src/**/*.spec.jsx",
+        "scripts/**/*.test.js",
       ],
       passWithNoTests: true,
       setupFiles: "src/test-setup.js",

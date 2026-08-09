@@ -1,0 +1,28 @@
+name: Verify deploy
+
+# Post-deploy sanity check: tras cada push a main, Cloudflare Pages redespliega
+# vía Git integration. Este workflow espera a que el build termine y verifica
+# que el index.html servido referencia el bundle compilado (/assets/*) y no el
+# source (/src/main.tsx). Si el deploy quedó roto, el commit se marca en rojo.
+on:
+  push:
+    branches: [main]
+
+jobs:
+  verify-deploy:
+    name: Check production serves the built app
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run post-deploy verification
+        env:
+          DEPLOY_URL: https://mpoints-tracker.pages.dev/
+          # Opcional: si están configurados, el check espera específicamente a que
+          # el deployment de ESTE commit termine (más preciso que sondear la URL).
+          # Sin ellos, igual verifica la URL con reintentos hasta el timeout.
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: node scripts/verify-deploy.mjs --commit "${{ github.sha }}" --wait 420
