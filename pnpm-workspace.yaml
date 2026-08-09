@@ -1,3 +1,9 @@
-allowBuilds:
-  '@firebase/util': set this to true or false
-  protobufjs: set this to true or false
+# Scripts de build (postinstall) que sí permitimos correr en la instalación.
+# Ambos son inofensivos y necesarios para que pnpm no avise "Ignored build scripts":
+#   - @firebase/util  → escribe dist/postinstall.js (solo reacciona si hay FIREBASE_WEBAPP_CONFIG)
+#   - protobufjs      → genera los descriptors de google/protobuf dentro del paquete
+# Nota: pnpm 10 (build de Cloudflare Pages) solo entiende `onlyBuiltDependencies`;
+# pnpm 11 lo soporta como alias de `allowBuilds`.
+onlyBuiltDependencies:
+  - '@firebase/util'
+  - protobufjs
