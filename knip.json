@@ -1,0 +1,5 @@
+{
+  "$schema": "https://unpkg.com/knip@latest/schema.json",
+  "ignore": ["public/sw.js", "src/components/games/TrucoScoreBoard.tsx", "src/components/games/TrucoSettingsModal.tsx", "src/components/settings/TrucoSettingsSection.tsx", "src/lib/trucoSettings.ts", "tests/**"],
+  "exclude": ["exports", "types", "nsExports", "nsTypes", "duplicates"]
+}

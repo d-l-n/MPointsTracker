@@ -1,0 +1,9 @@
+pre-commit:
+  parallel: true
+  commands:
+    security:
+      run: pwsh -NoProfile -File ../core/scripts/check-code.ps1
+pre-push:
+  commands:
+    vulnerabilities:
+      run: pwsh -NoProfile -File ../core/scripts/scan-vulns.ps1
