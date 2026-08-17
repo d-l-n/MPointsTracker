@@ -247,6 +247,7 @@ const HomeTab = memo(function HomeTab({
                       testIdBase={`game-${card.id}${vm.featured?.id === card.id ? "-recent" : ""}`}
                       onOpenGame={onOpenGame}
                       onQuickAction={onQuickAction}
+                      onPickFamily={setFamilyPicker}
                     />
                   ))}
                 </div>

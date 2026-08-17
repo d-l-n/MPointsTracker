@@ -45,7 +45,8 @@ service cloud.firestore {
 
       allow create, update: if (isOwner(userId) || isAdmin())
         && request.resource.data.keys().hasOnly([
-          "data", "playerGroups", "spotifyEnabled", "updatedAt"
+          "data", "playerGroups", "spotifyEnabled", "updatedAt",
+          "themeAccent", "themeCustomAccent"
         ]);
 
       allow delete: if isOwner(userId) || isAdmin();
