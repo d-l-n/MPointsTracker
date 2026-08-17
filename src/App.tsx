@@ -246,6 +246,7 @@ export default function App() {
     const linked = linkedPlayers[selected] || [];
     if (linked.length > 0) {
       const shareResult = await shareMatchWithPlayers(selected, match as Match & Record<string, unknown>, linked, user);
+      addLog(`share match ${selected}: attempted=${shareResult.attempted} shared=${shareResult.shared} failed=${shareResult.failed} skipped=${shareResult.skipped}`);
       if (!user) {
         showToast(t("shareNeedLogin"));
       } else if (shareResult.failed > 0) {
@@ -253,6 +254,11 @@ export default function App() {
       } else if (shareResult.attempted === 0 || shareResult.skipped > 0) {
         showToast(t("shareNoAccount"));
       }
+    } else {
+      // Silent no-op today: no linked players at save time (e.g. links were
+      // lost on an app reload before persistence was added). Log so the debug
+      // panel surfaces why a save did not reach the other player.
+      addLog(`save match ${selected}: no linked players — share skipped`);
     }
 
     if (keepPortionDraft) {
@@ -270,7 +276,7 @@ export default function App() {
     setGameTab("stats");
     setActiveGame(selected);
     navigate(buildHomePath(selected));
-  }, [addMatch, clearDraft, linkedPlayers, navigate, selected, setActiveGame, setGameMatchKey, setGameTab, setLinkedPlayers, setSelected, showToast, t, user]);
+  }, [addLog, addMatch, clearDraft, linkedPlayers, navigate, selected, setActiveGame, setGameMatchKey, setGameTab, setLinkedPlayers, setSelected, showToast, t, user]);
 
   // When "google" mode set, fire directly — deferred to avoid setState-in-effect warning
   useEffect(() => {

@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState, type SetStateAction } from "react";
 
 import { GAMES } from "../data/games";
 import { mkId } from "../lib/storage";
@@ -21,14 +21,43 @@ interface UseGameSessionOptions {
   navigate: (path: string) => void;
 }
 
+const LINKS_KEY = "bgt_linked_players";
+
+function loadLinkedPlayers(): Record<string, LinkedPlayer[]> {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(LINKS_KEY) || "null");
+    return parsed && typeof parsed === "object" ? (parsed as Record<string, LinkedPlayer[]>) : {};
+  } catch {
+    return {};
+  }
+}
+
+function persistLinkedPlayers(state: Record<string, LinkedPlayer[]>) {
+  try {
+    localStorage.setItem(LINKS_KEY, JSON.stringify(state));
+  } catch {
+    // non-fatal: degrade to in-memory links
+  }
+}
+
 export function useGameSession({ navigate }: UseGameSessionOptions) {
   const [selected, setSelected] = useState<string | null>(null);
   const [activeGame, setActiveGame] = useState<string | null>(null);
   const [gameTab, setGameTab] = useState<"stats" | "new">("new");
   const [gameMatchKey, setGameMatchKey] = useState(0);
   const [postSaveRematch, setPostSaveRematch] = useState<RematchState | null>(null);
-  const [linkedPlayers, setLinkedPlayers] = useState<Record<string, LinkedPlayer[]>>({});
+  // Persisted so links survive app reloads: drafts survive in localStorage, but
+  // in-memory links alone would silently drop sharing after a reload/PWA update.
+  const [linkedPlayersState, setLinkedPlayersState] = useState<Record<string, LinkedPlayer[]>>(loadLinkedPlayers);
   const { saveDraft, clearDraft, getDraft } = useDraft();
+
+  const setLinkedPlayers = useCallback((updater: SetStateAction<Record<string, LinkedPlayer[]>>) => {
+    setLinkedPlayersState((current) => {
+      const next = typeof updater === "function" ? updater(current) : updater;
+      persistLinkedPlayers(next);
+      return next;
+    });
+  }, []);
 
   const resetGameSession = useCallback(() => {
     setActiveGame(null);
@@ -120,7 +149,7 @@ export function useGameSession({ navigate }: UseGameSessionOptions) {
     setGameTab("new");
     setPostSaveRematch(null);
     closeHistoryView?.();
-  }, [saveDraft, selected]);
+  }, [saveDraft, selected, setLinkedPlayers]);
 
   return {
     selected,
@@ -128,7 +157,7 @@ export function useGameSession({ navigate }: UseGameSessionOptions) {
     gameTab,
     gameMatchKey,
     postSaveRematch,
-    linkedPlayers,
+    linkedPlayers: linkedPlayersState,
     saveDraft,
     clearDraft,
     getDraft,

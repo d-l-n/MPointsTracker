@@ -102,4 +102,36 @@ describe("useGameSession", () => {
     expect(result.current.selected).toBeNull();
     expect(navigate).not.toHaveBeenCalled();
   });
+
+  test("linkedPlayers survive a full app reload (persisted to localStorage)", () => {
+    const { result } = renderSession();
+    act(() => {
+      result.current.setLinkedPlayers((current) => ({
+        ...current,
+        uno: [{ uid: "me", name: "Ana", playerId: "p1" }],
+      }));
+    });
+
+    // Simulate reload: a fresh hook instance must hydrate from storage.
+    const { result: reloaded } = renderSession();
+    expect(reloaded.current.linkedPlayers.uno).toEqual([{ uid: "me", name: "Ana", playerId: "p1" }]);
+  });
+
+  test("clearing linked players persists the cleared state", async () => {
+    const { result } = renderSession();
+    act(() => {
+      result.current.setLinkedPlayers((current) => ({
+        ...current,
+        uno: [{ uid: "me", name: "Ana", playerId: "p1" }],
+      }));
+    });
+
+    await act(async () => {
+      await result.current.openGame("uno", { tab: "new", resetDraft: true });
+    });
+
+    const { result: reloaded } = renderSession();
+    expect(reloaded.current.linkedPlayers.uno).toEqual([]);
+    expect(reloaded.current.linkedPlayers.truco).toBeUndefined();
+  });
 });
