@@ -1,7 +1,7 @@
 {
   "name": "mpoints-tracker",
   "private": true,
-  "version": "26.08.10",
+  "version": "26.08.11",
   "type": "module",
   "scripts": {
     "dev": "vite",

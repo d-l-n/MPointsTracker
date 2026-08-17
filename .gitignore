@@ -82,3 +82,6 @@ Backup.cmd
 lint-output.txt
 analyze_lint.py
 scripts/memanto.ps1
+
+# Playwright MCP scratch
+.playwright-mcp/
