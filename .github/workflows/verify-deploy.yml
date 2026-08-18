@@ -9,6 +9,41 @@ on:
     branches: [main]
 
 jobs:
+  share-emulator-e2e:
+    name: Share E2E against local emulators
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      # The Firestore emulator is a Java process; ubuntu runners don't ship a JDK.
+      - name: Setup Java (Firestore emulator)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run share-emulator E2E suite
+        run: npm run test:share
+
   verify-deploy:
     name: Check production serves the built app
     runs-on: ubuntu-latest
