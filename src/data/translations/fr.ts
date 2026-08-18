@@ -187,6 +187,7 @@ const fr = {
   "shareFail": "⚠️ Impossible de partager avec {n} joueur(s). Vérifie ta connexion.",
   "shareNoAccount": "⚠️ Partage impossible : les joueurs liés n'ont pas de compte. Lie-les par QR ou recherche.",
   "shareReceived": "📥 Tu as reçu {n} partie(s) partagée(s)",
+  "sharePending": "📤 {n} partage(s) en attente : nouvel essai à la reconnexion.",
   "qrNotSupported": "Votre appareil ne supporte pas le scanner. Saisissez le nom manuellement.",
   "searchPlayer": "Rechercher par joueur...",
   "noResults": "Aucun résultat pour",

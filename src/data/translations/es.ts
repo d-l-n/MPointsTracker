@@ -187,6 +187,7 @@ const es = {
   "shareFail": "⚠️ No se pudo compartir con {n} jugador(es). Verificá tu conexión.",
   "shareNoAccount": "⚠️ No se pudo compartir: los jugadores vinculados no tienen cuenta. Vinculalos por QR o búsqueda.",
   "shareReceived": "📥 Recibiste {n} partida(s) compartida(s)", 
+  "sharePending": "📤 {n} compartición(es) pendiente(s): se reintentará al reconectar.", 
   "qrNotSupported": "Tu dispositivo no soporta el escáner. Ingresá el nombre manualmente.",
   "searchPlayer": "Buscar por jugador...",
   "noResults": "Sin resultados para",

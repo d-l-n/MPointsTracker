@@ -192,6 +192,7 @@ const zh = {
   "shareFail": "⚠️ 无法与{n}位玩家共享。请检查网络连接。",
   "shareNoAccount": "⚠️ 无法共享：关联玩家没有账号。请通过QR或搜索关联。",
   "shareReceived": "📥 你收到了{n}个共享比赛",
+  "sharePending": "📤 {n} 个待分享：重新连接后将重试。",
   "qrNotSupported": "您的设备不支持扫描器。请手动输入名字。",
   "searchPlayer": "按玩家搜索...",
   "noResults": "无结果：",

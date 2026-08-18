@@ -187,6 +187,7 @@ const en = {
   "shareFail": "⚠️ Couldn't share with {n} player(s). Check your connection.",
   "shareNoAccount": "⚠️ Couldn't share: linked players have no account. Link them via QR or search.",
   "shareReceived": "📥 You received {n} shared match(es)",
+  "sharePending": "📤 {n} pending share(s): will retry when back online.",
   "qrNotSupported": "Your device doesn't support the scanner. Enter the name manually.",
   "searchPlayer": "Search by player...",
   "noResults": "No results for",

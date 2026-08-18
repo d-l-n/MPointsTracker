@@ -8,7 +8,13 @@ vi.mock("firebase/firestore", () => ({
 vi.mock("../lib/firebase", () => ({ fbDb: {} }));
 
 import { addDoc, collection } from "firebase/firestore";
-import { shareMatchWithPlayers } from "./matchService.ts";
+import {
+  enqueuePendingShare,
+  flushPendingShares,
+  getPendingShares,
+  isRetryableShareError,
+  shareMatchWithPlayers,
+} from "./matchService.ts";
 
 const BASE_MATCH = {
   id: "m1",
@@ -26,7 +32,7 @@ describe("shareMatchWithPlayers", () => {
 
   test("returns empty result when there are no linked players", async () => {
     const result = await shareMatchWithPlayers("uno", BASE_MATCH, [], HOST);
-    expect(result).toEqual({ attempted: 0, shared: 0, failed: 0, skipped: 0 });
+    expect(result).toEqual({ attempted: 0, shared: 0, failed: 0, skipped: 0, retryable: 0 });
     expect(addDoc).not.toHaveBeenCalled();
   });
 
@@ -42,7 +48,7 @@ describe("shareMatchWithPlayers", () => {
       ],
       HOST,
     );
-    expect(result).toEqual({ attempted: 1, shared: 1, failed: 0, skipped: 2 });
+    expect(result).toEqual({ attempted: 1, shared: 1, failed: 0, skipped: 2, retryable: 0 });
     expect(addDoc).toHaveBeenCalledTimes(1);
     expect(collection).toHaveBeenCalledWith(expect.anything(), "users", "guest-1", "shared_matches");
   });
@@ -54,7 +60,7 @@ describe("shareMatchWithPlayers", () => {
       [{ name: "Sin cuenta" }, { name: "Otro local" }],
       HOST,
     );
-    expect(result).toEqual({ attempted: 0, shared: 0, failed: 0, skipped: 2 });
+    expect(result).toEqual({ attempted: 0, shared: 0, failed: 0, skipped: 2, retryable: 0 });
     expect(addDoc).not.toHaveBeenCalled();
   });
 
@@ -66,7 +72,22 @@ describe("shareMatchWithPlayers", () => {
       [{ uid: "u1" }, { uid: "u2" }],
       HOST,
     );
-    expect(result).toEqual({ attempted: 2, shared: 1, failed: 1, skipped: 0 });
+    expect(result).toEqual({ attempted: 2, shared: 1, failed: 1, skipped: 0, retryable: 0 });
+  });
+
+  test("flags network errors as retryable, others not", async () => {
+    addDoc.mockRejectedValueOnce({ code: "unavailable" }).mockRejectedValueOnce({ code: "permission-denied" });
+    const result = await shareMatchWithPlayers(
+      "uno",
+      BASE_MATCH,
+      [{ uid: "u1" }, { uid: "u2" }],
+      HOST,
+    );
+    expect(result).toEqual({ attempted: 2, shared: 0, failed: 2, skipped: 0, retryable: 1 });
+    expect(isRetryableShareError({ code: "network-request-failed" })).toBe(true);
+    expect(isRetryableShareError({ code: "deadline-exceeded" })).toBe(true);
+    expect(isRetryableShareError({ code: "permission-denied" })).toBe(false);
+    expect(isRetryableShareError(new Error("boom"))).toBe(false);
   });
 
   test("adds share metadata and strips internal fields from the stored doc", async () => {
@@ -98,5 +119,58 @@ describe("shareMatchWithPlayers", () => {
     addDoc.mockResolvedValue({});
     await shareMatchWithPlayers("uno", BASE_MATCH, [{ uid: "u1" }], { uid: "host-1" });
     expect(addDoc.mock.calls[0][1]._sharedBy).toBe("Alguien");
+  });
+});
+
+describe("pending share queue", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    window.localStorage.clear();
+  });
+
+  test("enqueue persists and getPendingShares returns it", () => {
+    enqueuePendingShare({ gameId: "uno", match: BASE_MATCH, recipients: [{ uid: "u1" }], sharedBy: HOST });
+    const queue = getPendingShares();
+    expect(queue).toHaveLength(1);
+    expect(queue[0].gameId).toBe("uno");
+    expect(queue[0].recipients).toEqual([{ uid: "u1" }]);
+    expect(typeof queue[0].createdAt).toBe("number");
+  });
+
+  test("flush sends every queued share and empties the queue", async () => {
+    addDoc.mockResolvedValue({});
+    enqueuePendingShare({ gameId: "uno", match: BASE_MATCH, recipients: [{ uid: "u1" }, { uid: "u2" }], sharedBy: HOST });
+    enqueuePendingShare({ gameId: "canasta", match: BASE_MATCH, recipients: [{ uid: "u3" }], sharedBy: HOST });
+
+    const result = await flushPendingShares();
+
+    expect(result).toEqual({ flushed: 2, stillPending: 0 });
+    expect(addDoc).toHaveBeenCalledTimes(3);
+    expect(getPendingShares()).toEqual([]);
+  });
+
+  test("keeps entries that failed with a network error", async () => {
+    addDoc.mockRejectedValue({ code: "unavailable" });
+    enqueuePendingShare({ gameId: "uno", match: BASE_MATCH, recipients: [{ uid: "u1" }], sharedBy: HOST });
+
+    const result = await flushPendingShares();
+
+    expect(result).toEqual({ flushed: 0, stillPending: 1 });
+    expect(getPendingShares()).toHaveLength(1);
+  });
+
+  test("drops entries that failed with a non-retryable error", async () => {
+    addDoc.mockRejectedValue({ code: "permission-denied" });
+    enqueuePendingShare({ gameId: "uno", match: BASE_MATCH, recipients: [{ uid: "u1" }], sharedBy: HOST });
+
+    const result = await flushPendingShares();
+
+    expect(result).toEqual({ flushed: 1, stillPending: 0 });
+    expect(getPendingShares()).toEqual([]);
+  });
+
+  test("flush is a no-op with an empty queue", async () => {
+    expect(await flushPendingShares()).toEqual({ flushed: 0, stillPending: 0 });
+    expect(addDoc).not.toHaveBeenCalled();
   });
 });

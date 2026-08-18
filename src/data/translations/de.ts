@@ -187,6 +187,7 @@ const de = {
   "shareFail": "⚠️ Konnte nicht mit {n} Spieler(n) geteilt werden. Prüfe deine Verbindung.",
   "shareNoAccount": "⚠️ Teilen nicht möglich: verknüpfte Spieler haben kein Konto. Verknüpfe sie per QR oder Suche.",
   "shareReceived": "📥 Du hast {n} geteilte(s) Spiel(e) erhalten",
+  "sharePending": "📤 {n} ausstehende(s) Teilen: wird bei erneuter Verbindung erneut versucht.",
   "qrNotSupported": "Dein Gerät unterstützt den Scanner nicht. Name manuell eingeben.",
   "searchPlayer": "Nach Spieler suchen...",
   "noResults": "Keine Ergebnisse für",
