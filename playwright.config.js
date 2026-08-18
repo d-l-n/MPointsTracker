@@ -28,6 +28,19 @@ export default defineConfig({
   workers: WORKERS,
   reporter: [['list'], ['html', { open: 'never' }]],
 
+  // Dev server with emulator env for the share-emulator project. Runs in the
+  // background for every suite; other projects use their own baseURL
+  // (PLAYWRIGHT_BASE_URL or localhost:5173) so this is ignored by them.
+  webServer: {
+    command: 'node node_modules/vite/bin/vite.js --port 5199 --strictPort',
+    url: 'http://localhost:5199',
+    reuseExistingServer: !process.env.CI,
+    timeout: 120000,
+    env: {
+      VITE_FIREBASE_EMULATOR: 'true',
+    },
+  },
+
   use: {
     baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:5173',
     channel: process.env.PLAYWRIGHT_CHROMIUM_CHANNEL || undefined,
@@ -79,10 +92,23 @@ export default defineConfig({
     // ── TIER 2: Logic/E2E tests — desktop only, chromium ─────────────────
     {
       name: 'logic',
-      testIgnore: ['**/layout-mobile.spec.js', '**/layout.spec.js'],
+      testIgnore: ['**/layout-mobile.spec.js', '**/layout.spec.js', '**/shared-matches-emulator.spec.js'],
       use: {
         browserName: 'chromium',
         viewport: { width: 1280, height: 800 },
+      },
+    },
+
+    // ── TIER 3: Share E2E against local emulators (Firestore + Auth) ─────
+    // Run via `npm run test:share` → firebase emulators:exec wraps this.
+    // Excluded from `logic` so test:logic / verify:local stay emulator-free.
+    {
+      name: 'share-emulator',
+      testMatch: '**/shared-matches-emulator.spec.js',
+      use: {
+        browserName: 'chromium',
+        viewport: { width: 1280, height: 800 },
+        baseURL: 'http://localhost:5199',
       },
     },
   ],

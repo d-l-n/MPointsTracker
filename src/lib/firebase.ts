@@ -1,6 +1,7 @@
 import { initializeApp, type FirebaseApp } from "firebase/app";
-import { getAuth, type Auth } from "firebase/auth";
+import { connectAuthEmulator, getAuth, type Auth } from "firebase/auth";
 import {
+  connectFirestoreEmulator,
   initializeFirestore,
   persistentLocalCache,
   persistentMultipleTabManager,
@@ -24,5 +25,16 @@ const fbDb: Firestore = initializeFirestore(fbApp, {
     tabManager: persistentMultipleTabManager(),
   }),
 });
+
+// Emulator support for E2E tests (tests/shared-matches-emulator.spec.js).
+// Enabled by the dev server env var (webServer in playwright.config.js) or by
+// the bgt_use_emulator localStorage flag. Production builds never set either,
+// so this stays a no-op outside tests.
+const useEmulator = import.meta.env.VITE_FIREBASE_EMULATOR === "true"
+  || (typeof window !== "undefined" && window.localStorage.getItem("bgt_use_emulator") === "1");
+if (useEmulator) {
+  connectFirestoreEmulator(fbDb, "127.0.0.1", 8080);
+  connectAuthEmulator(fbAuth, "http://127.0.0.1:9099", { disableWarnings: true });
+}
 
 export { fbApp, fbAuth, fbDb };
