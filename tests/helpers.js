@@ -51,27 +51,45 @@ export async function openGame(page, groupKey, gameId) {
   await ensureHomeCatalog();
   await header.waitFor({ state: 'visible', timeout: 10000 });
 
-  const gameCard = page.locator(`[data-testid="game-${gameId}"]`);
-  const isVisible = await gameCard.isVisible({ timeout: 500 }).catch(() => false);
-  if (!isVisible) {
-    await header.scrollIntoViewIfNeeded();
-    await gameCard.waitFor({ state: 'visible', timeout: 10000 });
-  }
-
-  await gameCard.scrollIntoViewIfNeeded();
-  await gameCard.evaluate((el) => el.click());
-
   const waitForGamePanel = () => Promise.any([
     page.locator('[data-testid="tab-new"]').waitFor({ state: 'visible', timeout: 10000 }),
     page.locator('[data-testid="player-input"]').first().waitFor({ state: 'visible', timeout: 10000 }),
   ]);
 
-  try {
-    await waitForGamePanel();
-  } catch {
-    await gameCard.evaluate((el) => el.click());
-    await waitForGamePanel();
+  const individualCard = page.locator(`[data-testid="game-${gameId}"]`);
+  const hasIndividualCard = await individualCard.count().then((count) => count > 0).catch(() => false);
+
+  if (hasIndividualCard) {
+    // Regular game: the catalog renders one card per game (e.g. game-truco).
+    const isVisible = await individualCard.isVisible({ timeout: 500 }).catch(() => false);
+    if (!isVisible) {
+      await header.scrollIntoViewIfNeeded();
+      await individualCard.waitFor({ state: 'visible', timeout: 10000 });
+    }
+    await individualCard.scrollIntoViewIfNeeded();
+    await individualCard.evaluate((el) => el.click());
+
+    try {
+      await waitForGamePanel();
+    } catch {
+      await individualCard.evaluate((el) => el.click());
+      await waitForGamePanel();
+    }
+    return;
   }
+
+  // Family group (e.g. uno-family): the catalog renders a single family card
+  // (game-uno-family) that opens a variant picker; select the requested variant.
+  const familyCard = page.locator(`[data-testid="game-${groupKey}"]`);
+  await familyCard.scrollIntoViewIfNeeded();
+  await familyCard.waitFor({ state: 'visible', timeout: 10000 });
+  await familyCard.evaluate((el) => el.click());
+
+  const variant = page.locator(`[data-testid="${groupKey}-variant-${gameId}"]`);
+  await variant.waitFor({ state: 'visible', timeout: 5000 });
+  await variant.click();
+
+  await waitForGamePanel();
 }
 
 /**
@@ -172,6 +190,8 @@ export async function waitForShell(page) {
 export async function reloadWithSeed(page, seed) {
   await page.context().addInitScript((value) => {
     localStorage.setItem('bgt_v6', value);
+    localStorage.setItem('bgt_splash_seen', '1');
+    localStorage.setItem('bgt_install_dismissed', '1');
   }, seed);
 
   await page.reload();
