@@ -20,7 +20,7 @@
  */
 
 import { test, expect } from './fixtures.js';
-import { hasHorizontalOverflow, getOverflowingElement } from './helpers.js';
+import { hasHorizontalOverflow, getOverflowingElement, openGame } from './helpers.js';
 
 // ── Translation reference (extracted from translations.js) ────────────────
 const LOCALES = [
@@ -118,14 +118,7 @@ async function bootWithLocale(page, localeCode) {
 
 // ── Open UNO game detail ──────────────────────────────────────────────────
 async function openUno(page) {
-  const unoGroup = page.locator('[data-testid="group-uno-family"]');
-  const unoCard  = page.locator('[data-testid="game-uno"]');
-  const isOpen   = await unoCard.isVisible({ timeout: 500 }).catch(() => false);
-  if (!isOpen) await unoGroup.click();
-  await unoCard.waitFor({ state: 'visible', timeout: 5000 });
-  await unoCard.scrollIntoViewIfNeeded();
-  await unoCard.evaluate((el) => el.click());
-  await page.locator('[data-testid="tab-new"]').waitFor({ state: 'visible', timeout: 5000 });
+  await openGame(page, 'uno-family', 'uno');
 }
 
 // ── Parametrised test suite ───────────────────────────────────────────────

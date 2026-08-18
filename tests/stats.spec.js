@@ -25,6 +25,8 @@ const SEED_MATCHES = JSON.stringify({
 async function loadWithSeed(page, seed) {
   await page.context().addInitScript((s) => {
     localStorage.setItem('bgt_v6', s);
+    localStorage.setItem('bgt_splash_seen', '1');
+    localStorage.setItem('bgt_install_dismissed', '1');
   }, seed);
   await page.reload();
   try {

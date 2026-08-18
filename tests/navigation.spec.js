@@ -172,7 +172,10 @@ test.describe('Navigation', () => {
 
   test('opening a game for the first time settles the loader fallback', async ({ page }) => {
     await expectNoResidualLoader(page, async () => {
-      await page.click('[data-testid="game-uno"]');
+      // UNO is a family card — click the family, then pick a variant
+      await page.click('[data-testid="game-uno-family"]');
+      await page.locator('[data-testid="uno-family-variant-uno"]').waitFor({ state: 'visible', timeout: 5000 });
+      await page.locator('[data-testid="uno-family-variant-uno"]').click();
       await expect(page.locator('[data-testid="tab-new"]')).toBeVisible();
       await expect(page.locator('[data-testid="tab-stats"]')).toBeVisible();
       await expect(page.locator('[data-testid="tab-history"]')).toHaveCount(0);

@@ -40,6 +40,8 @@ async function seedHomeState(page) {
   await page.evaluate(({ data, drafts }) => {
     localStorage.setItem('bgt_v6', JSON.stringify(data));
     localStorage.setItem('bgt_drafts', JSON.stringify(drafts));
+    localStorage.setItem('bgt_splash_seen', '1');
+    localStorage.setItem('bgt_install_dismissed', '1');
   }, { data: HOME_DATA, drafts: HOME_DRAFTS });
   await page.reload();
 }
@@ -50,9 +52,9 @@ test.describe('Home action cards', () => {
   });
 
   test('keeps compact shared chrome and preserves quick action order', async ({ page }) => {
-    const featuredCard = page.locator('[data-testid="game-uno"]').locator('xpath=ancestor::article[1]');
+    const featuredCard = page.locator('[data-testid="game-uno-family"]').locator('xpath=ancestor::article[1]');
     const recentCard = page.locator('[data-testid="game-truco"]').locator('xpath=ancestor::article[1]');
-    const featuredActions = page.locator('[data-testid^="game-uno-action-"]');
+    const featuredActions = page.locator('[data-testid^="game-uno-family-action-"]');
     const recentActions = page.locator('[data-testid^="game-truco-action-"]');
 
     await expect(featuredCard).toHaveClass(/surface-card/);
@@ -60,13 +62,12 @@ test.describe('Home action cards', () => {
     await expect(featuredCard.locator('.home-card-emoji')).toHaveCount(0);
     await expect(recentCard.locator('.home-card-emoji')).toHaveCount(0);
     await expect(recentCard.locator('.home-card-badge')).toHaveCount(0);
-    await expect(recentCard.locator('.home-card-status-icon')).toContainText('🕒');
+    await expect(recentCard.locator('.home-card-status-icon')).toHaveAttribute('title', /recent|reciente/i);
 
-    await expect(featuredActions).toHaveCount(3);
+    // UNO is a family card — only has the "new" action (no continue/stats)
+    await expect(featuredActions).toHaveCount(1);
     await expect(featuredActions).toHaveText([
-      /continuar|continue/i,
       /nueva|new/i,
-      /estad[íi]sticas|stats|statistics/i,
     ]);
     await expect(page.locator('[data-testid="home-filter-row"]').getByRole('button', { name: /recientes|recent/i })).toHaveCount(0);
     await expect(page.locator('[data-testid="game-uno-catalog"]')).toHaveCount(0);
@@ -121,7 +122,7 @@ test.describe('Home action cards', () => {
         isScrollable: true,
       });
 
-    await filterRow.getByRole('button', { name: /cartas|cards/i }).click();
+    await filterRow.getByRole('button', { name: /cartas|card.?games/i }).click();
     await page.getByLabel(/buscar juego o partida|search game or match/i).fill('zzz');
 
     await expect(page.locator('[data-testid="home-empty-state"]')).toBeVisible();
@@ -276,14 +277,14 @@ test.describe('Home action cards', () => {
   });
 
   test('keeps differentiated hero metadata without rendering identity chips on game cards', async ({ page }) => {
-    const unoHero = page.locator('[data-testid="game-uno"]').locator('.home-card-hero');
+    const unoHero = page.locator('[data-testid="game-uno-family"]').locator('.home-card-hero');
     const bastaHero = page.locator('[data-testid="game-basta_dym"]').locator('.home-card-hero');
     const unoIdentity = page.locator('[data-testid="game-uno-identity"]');
     const bastaIdentity = page.locator('[data-testid="game-basta_dym-identity"]');
     const ajedrezIdentity = page.locator('[data-testid="game-ajedrez-identity"]');
 
     await expect(unoHero).toHaveAttribute('data-hero-family', 'uno');
-    await expect(unoHero).toHaveAttribute('data-hero-game', 'uno');
+    await expect(unoHero).toHaveAttribute('data-hero-game', 'uno-family');
     await expect(unoHero).toHaveAttribute('data-hero-tone', 'arcade');
     await expect(bastaHero).toHaveAttribute('data-hero-family', 'playful');
     await expect(bastaHero).toHaveAttribute('data-hero-game', 'basta_dym');
@@ -315,6 +316,9 @@ test.describe('Home action cards', () => {
 
     const nav = page.locator('.nav');
     const appContent = page.locator('.app-content');
+
+    // Wait for app shell to mount (scroll listener is in a React useEffect)
+    await page.locator('[data-testid^="nav-pill-"]').first().waitFor({ state: 'visible', timeout: 15000 });
 
     await expect(nav).not.toHaveClass(/nav--hidden/);
 
