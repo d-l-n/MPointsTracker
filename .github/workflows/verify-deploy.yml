@@ -28,12 +28,13 @@ jobs:
           node-version: 22
           cache: pnpm
 
-      # The Firestore emulator is a Java process; ubuntu runners don't ship a JDK.
+      # The Firestore emulator is a Java process; ubuntu runners don't ship a
+      # JDK, and firebase-tools 15 refuses anything below Java 21.
       - name: Setup Java (Firestore emulator)
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: '21'
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
