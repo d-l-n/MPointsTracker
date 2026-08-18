@@ -63,7 +63,7 @@ export default function App() {
   const [debugLogs, setDebugLogs] = useState<DebugLogEntry[]>([]);
   const addLog = useCallback((msg: string, type = "ok") => {
     setDebugLogs((prev) => [...prev.slice(-30), { msg: `[${new Date().toLocaleTimeString()}] ${msg}`, type, id: Date.now() + Math.random() }]);
-    if (import.meta.env.DEV) console.log(`[Debug] ${msg}`);
+    if (import.meta.env.DEV) console.debug(`[Debug] ${msg}`);
   }, []);
   const [showDebug, setShowDebug] = useState(false);
   const tapCount = useRef(0);
