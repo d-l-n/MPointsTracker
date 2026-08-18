@@ -54,6 +54,10 @@ jobs:
           exit 1
 
       - name: Run share-emulator E2E suite
+        # Vite refuses to boot without VITE_SPOTIFY_CLIENT_ID; a dummy value is
+        # fine here — the spotify mini-player isn't exercised by these tests.
+        env:
+          VITE_SPOTIFY_CLIENT_ID: ci-dummy
         run: npm run test:share
 
   verify-deploy:
