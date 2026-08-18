@@ -1,11 +1,11 @@
 import { memo, useEffect, useRef, useState } from "react";
 
 import { haptic, mkId } from "../../lib/storage";
-import { readDiscardGoesHome } from "../../lib/discardPreference";
 import type { GameDefinition, LinkedPlayer, Match, PlayerGroup, TranslationFn, UnoRosterEvent } from "../../types";
 import GroupPicker from "../ui/GroupPicker";
 import SaveGroupButton from "../ui/SaveGroupButton";
 import ConfirmModal from "../ui/ConfirmModal";
+import DiscardMatchButton from "../ui/DiscardMatchButton";
 import EarlyFinishSaveAction from "../ui/EarlyFinishSaveAction";
 import LinkedPlayerInput from "../auth/LinkedPlayerInput";
 import MercyEliminator from "./MercyEliminator";
@@ -127,7 +127,7 @@ function UnoNewMatch({
   const [roundFeedback, setRoundFeedback] = useState<RoundFeedback | null>(null);
   const [floats, setFloats] = useState<FloatingScore[]>([]);
   const [showRoundLog, setShowRoundLog] = useState(false);
-  const [showAbandonConfirm, setShowAbandonConfirm] = useState(false);
+
   const [showRosterEditor, setShowRosterEditor] = useState(false);
   const [pendingJoinPlayers, setPendingJoinPlayers] = useState<PlayerInputState[]>([]);
   const [pendingLeavePlayerId, setPendingLeavePlayerId] = useState<string | null>(null);
@@ -363,34 +363,6 @@ function UnoNewMatch({
 
   return (
     <div>
-      {showAbandonConfirm && (
-        <ConfirmModal
-          title={t("draftTitle")}
-          msg={t("draftMsg")}
-          confirmLabel={t("draftDiscard")}
-          cancelLabel={t("draftKeep")}
-          onConfirm={() => {
-            setShowAbandonConfirm(false);
-            setInProgress(false);
-            setScores({});
-            setEliminated([]);
-            setInactivePlayers([]);
-            setRounds(0);
-            setHistory([]);
-            setRoundLog([]);
-            setRosterEvents([]);
-            setPendingJoinPlayers([]);
-            setShowRosterEditor(false);
-            setGameOver(false);
-            setWinner(null);
-            setRoundInput({});
-            onDraftChange?.(null);
-            if (readDiscardGoesHome()) onBack?.();
-          }}
-          onCancel={() => setShowAbandonConfirm(false)}
-        />
-      )}
-
       {pendingLeavePlayer && (
         <ConfirmModal
           title={t("removePlayer")}
@@ -686,9 +658,26 @@ function UnoNewMatch({
       />
 
       {inProgress && !gameOver && (
-        <button className="btnsec nav-leave-discard" style={{ width: "100%", marginTop: 8, textAlign: "center" }} onClick={() => setShowAbandonConfirm(true)}>
-          {t("abandonMatchBtn")}
-        </button>
+        <DiscardMatchButton
+          t={t}
+          onDiscard={() => {
+            setInProgress(false);
+            setScores({});
+            setEliminated([]);
+            setInactivePlayers([]);
+            setRounds(0);
+            setHistory([]);
+            setRoundLog([]);
+            setRosterEvents([]);
+            setPendingJoinPlayers([]);
+            setShowRosterEditor(false);
+            setGameOver(false);
+            setWinner(null);
+            setRoundInput({});
+            onDraftChange?.(null);
+          }}
+          onBack={onBack}
+        />
       )}
     </div>
   );
