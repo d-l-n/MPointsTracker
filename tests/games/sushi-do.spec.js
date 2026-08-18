@@ -42,9 +42,14 @@ test.describe("Sushi Do! Game", () => {
     await page.locator('[data-testid="add-player"]').click();
     await fillPlayers(page, ["Ana", "Beto", "Carla"]);
 
-    await page.locator('[data-testid="sushi-do-flavor-select-2"]').selectOption("temaki");
+    // The flavor picker is a custom dropdown: open it and pick "Temaki"
+    await page.locator('[data-testid="sushi-do-flavor-select-2"] .dropdown-trigger').click();
+    await page.locator(".dropdown-menu .dropdown-option", { hasText: /Temaki/i }).click();
     await expect(page.locator('[data-testid="sushi-do-flavor-slot-2"]')).toContainText(/Temaki/i);
-    await expect(page.locator('[data-testid="sushi-do-flavor-select-1"] option[value="temaki"]')).toHaveCount(0);
+
+    // Temaki is now taken: slot 1 must no longer offer it
+    await page.locator('[data-testid="sushi-do-flavor-select-1"] .dropdown-trigger').click();
+    await expect(page.locator(".dropdown-menu .dropdown-option", { hasText: /Temaki/i })).toHaveCount(0);
   });
 
   test("successful Sushi Do! only offers flavors in play and adds the fixed value once", async ({ page }) => {

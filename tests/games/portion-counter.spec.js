@@ -57,8 +57,8 @@ test.describe("Unified portion counter", () => {
 
     await openGame(page, "random", "portion_counter");
     await page.locator('[data-testid="portion-player-ana"]').click();
-    await page.locator('[data-testid="portion-reset"]').click();
-    await page.locator('[data-testid="portion-reset-confirm"]').click();
+    await page.locator('[data-testid="discard-match-btn"]').click();
+    await page.locator('[data-testid="discard-match-confirm"]').click();
     await expect(page.locator('[data-testid="portion-setup"]')).toBeVisible();
     await expect(page.locator('[data-testid="portion-start-match"]')).toBeDisabled();
   });

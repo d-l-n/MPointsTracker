@@ -76,12 +76,13 @@ test.describe("Back button flows", () => {
     await page.locator('[data-testid="portion-start-match"]').click();
     await expect(page.locator('[data-testid="portion-center-emoji"]')).toBeVisible();
 
-    const navLeaveTitle = page.locator(".nav-leave-title").filter({ hasText: /qué hacemos con la partida|what about the match/i });
-    const navLeaveKeep = page.locator(".nav-leave-keep");
-    const navLeaveDiscard = page.locator(".nav-leave-discard");
+    const navLeaveOverlay = page.locator(".nav-leave-overlay");
+    const navLeaveTitle = navLeaveOverlay.locator(".nav-leave-title").filter({ hasText: /qué hacemos con la partida|what about the match/i });
+    const navLeaveKeep = navLeaveOverlay.locator(".nav-leave-keep");
+    const navLeaveDiscard = navLeaveOverlay.locator(".nav-leave-discard");
     const draftTitle = navLeaveTitle;
     const draftKeep = navLeaveKeep;
-    const draftSave = page.locator(".nav-leave-save");
+    const draftSave = navLeaveOverlay.locator(".nav-leave-save");
     const draftDiscard = navLeaveDiscard;
 
     await page.locator('[data-testid="nav-pill-rules"]').click();
