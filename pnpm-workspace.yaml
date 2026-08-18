@@ -1,9 +1,11 @@
-# Scripts de build (postinstall) que sí permitimos correr en la instalación.
-# Ambos son inofensivos y necesarios para que pnpm no avise "Ignored build scripts":
+# Scripts de build (postinstall) que permitimos correr en la instalación.
 #   - @firebase/util  → escribe dist/postinstall.js (solo reacciona si hay FIREBASE_WEBAPP_CONFIG)
 #   - protobufjs      → genera los descriptors de google/protobuf dentro del paquete
-# Nota: pnpm 10 (build de Cloudflare Pages) solo entiende `onlyBuiltDependencies`;
-# pnpm 11 lo soporta como alias de `allowBuilds`.
-onlyBuiltDependencies:
-  - '@firebase/util'
-  - protobufjs
+#   - re2             → binario nativo opcional de firebase-tools (prebuilt vía install-artifact-from-github)
+# Nota: pnpm 11 renombró `onlyBuiltDependencies` (pnpm 10) a `allowBuilds` con
+# valores true/false. Sin este bloque, `pnpm install --frozen-lockfile` en CI
+# falla con ERR_PNPM_IGNORED_BUILDS aunque los scripts sean inofensivos.
+allowBuilds:
+  '@firebase/util': true
+  protobufjs: true
+  re2: true
