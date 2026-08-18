@@ -3,6 +3,7 @@ import { memo, useEffect, useState, type CSSProperties } from "react";
 import { haptic, mkId } from "../../lib/storage";
 import type { LinkedPlayer, Match, PlayerGroup, TranslationFn } from "../../types";
 import LinkedPlayerInput from "../auth/LinkedPlayerInput";
+import DiscardMatchButton from "../ui/DiscardMatchButton";
 import GroupPicker from "../ui/GroupPicker";
 import SaveGroupButton from "../ui/SaveGroupButton";
 import Tooltip from "../ui/Tooltip";
@@ -42,6 +43,7 @@ interface ChanchoNewMatchProps {
   knownNames: string[];
   linkedPlayers?: LinkedPlayer[];
   onLinkedPlayersChange: (players: LinkedPlayer[]) => void;
+  onBack?: () => void;
   t?: TranslationFn;
   draft?: ChanchoDraft | null;
   onDraftChange?: (draft: ChanchoDraft | null) => void;
@@ -56,6 +58,7 @@ function ChanchoNewMatch({
   knownNames,
   linkedPlayers = [],
   onLinkedPlayersChange,
+  onBack,
   t = ((key: string) => key) as TranslationFn,
   draft = null,
   onDraftChange,
@@ -121,6 +124,17 @@ function ChanchoNewMatch({
     if (history.length <= 1) setInProgress(false);
   };
 
+  const discardMatch = () => {
+    setLetters({});
+    setEliminated([]);
+    setRounds(0);
+    setHistory([]);
+    setGameOver(false);
+    setWinner(null);
+    setInProgress(false);
+    onDraftChange?.(null);
+  };
+
   const handleSave = () => {
     haptic("strong");
     const sorted = [...named].sort((left, right) => (letters[left.id] || 0) - (letters[right.id] || 0));
@@ -165,14 +179,8 @@ function ChanchoNewMatch({
             }}
             onDiscard={() => {
               setPlayers([{ id: mkId(), name: "" }, { id: mkId(), name: "" }, { id: mkId(), name: "" }, { id: mkId(), name: "" }]);
-              setLetters({});
-              setEliminated([]);
-              setRounds(0);
-              setHistory([]);
-              setGameOver(false);
-              setWinner(null);
-              setInProgress(false);
               onLinkedPlayersChange([]);
+              discardMatch();
             }}
             hasPlayers={inProgress || rounds > 0 || named.length > 0}
           />
@@ -294,6 +302,10 @@ function ChanchoNewMatch({
         <button data-testid="save-match" className="btnpri" style={{ marginTop: "8px", "--gc": "#E91E8C" } as AccentButtonStyle} onClick={handleSave}>
           {t("saveMatch")}
         </button>
+      )}
+
+      {(inProgress || rounds > 0 || gameOver) && (
+        <DiscardMatchButton t={t} onDiscard={discardMatch} onBack={onBack} />
       )}
     </div>
   );

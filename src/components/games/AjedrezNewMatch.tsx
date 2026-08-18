@@ -3,6 +3,7 @@ import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { haptic, mkId } from "../../lib/storage";
 import type { LinkedPlayer, Match, PlayerGroup, TranslationFn } from "../../types";
 import LinkedPlayerInput from "../auth/LinkedPlayerInput";
+import DiscardMatchButton from "../ui/DiscardMatchButton";
 import SaveGroupButton from "../ui/SaveGroupButton";
 import GroupPicker from "../ui/GroupPicker";
 import PillSwitch from "../ui/PillSwitch";
@@ -44,6 +45,7 @@ interface AjedrezNewMatchProps {
   onDraftChange?: (draft: AjedrezDraft | null) => void;
   linkedPlayers?: LinkedPlayer[];
   onLinkedPlayersChange: (players: LinkedPlayer[]) => void;
+  onBack?: () => void;
   t?: TranslationFn;
   playerGroups?: PlayerGroup[];
   onSavePlayerGroups?: (groups: PlayerGroup[]) => void;
@@ -88,6 +90,7 @@ function AjedrezNewMatch({
   onDraftChange,
   linkedPlayers = [],
   onLinkedPlayersChange,
+  onBack,
   t = ((key: string) => key) as TranslationFn,
   playerGroups = [],
   onSavePlayerGroups,
@@ -267,6 +270,22 @@ function AjedrezNewMatch({
     setClocks([timePreset, timePreset]);
     setTurn(0);
     haptic("medium");
+  };
+
+  const discardMatch = () => {
+    setGameActive(false);
+    setGameOver(false);
+    setEndCond(null);
+    setEndWinner(null);
+    setPaused(true);
+    setWins([0, 0]);
+    setDraws(0);
+    setRounds(0);
+    setHistory([]);
+    setClocks([timePreset, timePreset]);
+    setTurn(0);
+    onLinkedPlayersChange([]);
+    onDraftChange?.(null);
   };
 
   const condLabel = (id: EndConditionId) => t(END_CONDITIONS.find((condition) => condition.id === id)?.label_key || id) || id;
@@ -590,6 +609,10 @@ function AjedrezNewMatch({
         <button className="btnpri" style={{ marginTop: 8 }} onClick={handleSave}>
           {t("saveMatch")}
         </button>
+      )}
+
+      {(gameActive || rounds > 0 || gameOver) && (
+        <DiscardMatchButton t={t} onDiscard={discardMatch} onBack={onBack} />
       )}
 
       <style>{`

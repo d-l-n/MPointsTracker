@@ -3,6 +3,7 @@ import { memo, useEffect, useMemo, useState, type CSSProperties } from "react";
 import { haptic, mkId } from "../../lib/storage";
 import type { LinkedPlayer, Match, PlayerGroup, TranslationFn } from "../../types";
 import LinkedPlayerInput from "../auth/LinkedPlayerInput";
+import DiscardMatchButton from "../ui/DiscardMatchButton";
 import GroupPicker from "../ui/GroupPicker";
 import SaveGroupButton from "../ui/SaveGroupButton";
 
@@ -35,6 +36,7 @@ interface ChinNewMatchProps {
   onLinkedPlayersChange: (players: LinkedPlayer[]) => void;
   playerGroups?: PlayerGroup[];
   onSavePlayerGroups?: (groups: PlayerGroup[]) => void;
+  onBack?: () => void;
   t?: TranslationFn;
 }
 
@@ -49,6 +51,7 @@ function ChinNewMatch({
   onLinkedPlayersChange,
   playerGroups = [],
   onSavePlayerGroups,
+  onBack,
   t = ((key: string) => key) as TranslationFn,
 }: ChinNewMatchProps) {
   const [p1, setP1] = useState(draft?.p1 || "");
@@ -105,6 +108,14 @@ function ChinNewMatch({
       winner,
       rounds,
     });
+  };
+
+  const discardMatch = () => {
+    setWins([0, 0]);
+    setRounds(0);
+    setHistory([]);
+    setInProgress(false);
+    onDraftChange?.(null);
   };
 
   const handleGroupLoad = (players: Array<{ name: string }>, linked: LinkedPlayer[]) => {
@@ -226,6 +237,10 @@ function ChinNewMatch({
         <button data-testid="save-match" className="btnpri" style={{ marginTop: 8, "--gc": "#8B1A1A" } as AccentButtonStyle} onClick={handleSave}>
           {t("saveMatch")}
         </button>
+      )}
+
+      {(inProgress || rounds > 0) && (
+        <DiscardMatchButton t={t} onDiscard={discardMatch} onBack={onBack} />
       )}
     </div>
   );

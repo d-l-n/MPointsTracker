@@ -26,6 +26,7 @@ interface BurakoNewMatchProps {
   onDraftChange?: (draft: BurakoDraft | null) => void;
   playerGroups?: PlayerGroup[];
   onSavePlayerGroups?: (groups: PlayerGroup[]) => void;
+  onBack?: () => void;
 }
 
 const config = {

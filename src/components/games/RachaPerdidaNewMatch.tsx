@@ -5,6 +5,7 @@ import { fmtDate } from "../../lib/stats";
 import type { LinkedPlayer, Match, PlayerGroup, TranslationFn } from "../../types";
 import LinkedPlayerInput from "../auth/LinkedPlayerInput";
 import ConfirmModal from "../ui/ConfirmModal";
+import DiscardMatchButton from "../ui/DiscardMatchButton";
 import AutocompleteInput from "../ui/AutocompleteInput";
 
 interface RachaPerdidaDraft {
@@ -34,6 +35,7 @@ interface RachaPerdidaNewMatchProps {
   knownNames: string[];
   linkedPlayers?: LinkedPlayer[];
   onLinkedPlayersChange: (players: LinkedPlayer[]) => void;
+  onBack?: () => void;
   t?: TranslationFn;
   matches?: RachaPerdidaMatch[];
   draft?: RachaPerdidaDraft | null;
@@ -49,6 +51,7 @@ function RachaPerdidaNewMatch({
   knownNames,
   linkedPlayers = [],
   onLinkedPlayersChange,
+  onBack,
   t = ((key: string) => key) as TranslationFn,
   matches = [],
   draft = null,
@@ -77,6 +80,14 @@ function RachaPerdidaNewMatch({
   }, [loser, onDraftChange, penalty, streakType]);
 
   const canSave = Boolean((loser.trim() || linkedLoser) && penalty.trim() && streakType.trim());
+
+  const discardMatch = () => {
+    setLoser("");
+    setStreakType("");
+    setPenalty("");
+    onLinkedPlayersChange([]);
+    onDraftChange?.(null);
+  };
 
   const doSave = () => {
     const name = linkedLoser?.name || loser.trim();
@@ -228,6 +239,10 @@ function RachaPerdidaNewMatch({
           }}
           onCancel={() => setConfirmOpen(false)}
         />
+      )}
+
+      {Boolean(loser.trim() || linkedLoser) && (
+        <DiscardMatchButton t={t} onDiscard={discardMatch} onBack={onBack} />
       )}
     </div>
   );

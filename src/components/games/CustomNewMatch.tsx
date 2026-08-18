@@ -4,6 +4,7 @@ import { mkId, haptic } from "../../lib/storage";
 import { getGameName } from "../../data/games";
 import type { GameDefinition, LinkedPlayer, Match, PlayerGroup, TranslationFn } from "../../types";
 import LinkedPlayerInput from "../auth/LinkedPlayerInput";
+import DiscardMatchButton from "../ui/DiscardMatchButton";
 import SaveGroupButton from "../ui/SaveGroupButton";
 import Tooltip from "../ui/Tooltip";
 import { Edit } from "reicon-react";
@@ -47,6 +48,7 @@ interface CustomNewMatchProps {
   onSavePlayerGroups?: (groups: PlayerGroup[]) => void;
   draft?: CustomDraft | null;
   onDraftChange?: (draft: CustomDraft | null) => void;
+  onBack?: () => void;
   t?: TranslationFn;
 }
 
@@ -62,6 +64,7 @@ function CustomNewMatch({
   onSavePlayerGroups,
   draft = null,
   onDraftChange,
+  onBack,
   t = ((key: string) => key) as TranslationFn,
 }: CustomNewMatchProps) {
   const [customName, setCustomName] = useState(draft?.customName || "");
@@ -115,6 +118,15 @@ function CustomNewMatch({
     setRounds((currentRounds) => currentRounds - 1);
     setHistory((currentHistory) => currentHistory.slice(0, -1));
     if (history.length <= 1) setInProgress(false);
+  };
+
+  const discardMatch = () => {
+    setScores({});
+    setRoundScores({});
+    setRounds(0);
+    setHistory([]);
+    setInProgress(false);
+    onDraftChange?.(null);
   };
 
   const handleSave = () => {
@@ -375,6 +387,10 @@ function CustomNewMatch({
         >
           {t("saveMatch")}
         </button>
+      )}
+
+      {(inProgress || rounds > 0) && (
+        <DiscardMatchButton t={t} onDiscard={discardMatch} onBack={onBack} />
       )}
     </div>
   );

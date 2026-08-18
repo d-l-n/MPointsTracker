@@ -28,6 +28,7 @@ interface TrucoNewMatchProps {
   onDraftChange?: (draft: TrucoDraft | null) => void;
   playerGroups?: PlayerGroup[];
   onSavePlayerGroups?: (groups: PlayerGroup[]) => void;
+  onBack?: () => void;
 }
 
 function TrucoNewMatch(props: TrucoNewMatchProps) {

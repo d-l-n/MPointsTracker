@@ -3,6 +3,7 @@ import { memo, useCallback, useEffect, useState } from "react";
 import { haptic, mkId } from "../../lib/storage";
 import type { LinkedPlayer, Match, PlayerGroup, TranslationFn } from "../../types";
 import LinkedPlayerInput from "../auth/LinkedPlayerInput";
+import DiscardMatchButton from "../ui/DiscardMatchButton";
 import GroupPicker from "../ui/GroupPicker";
 import SaveGroupButton from "../ui/SaveGroupButton";
 import PillSwitch from "../ui/PillSwitch";
@@ -49,6 +50,7 @@ interface PokerNewMatchProps {
   onDraftChange?: (draft: PokerDraft | null) => void;
   linkedPlayers?: LinkedPlayer[];
   onLinkedPlayersChange: (players: LinkedPlayer[]) => void;
+  onBack?: () => void;
   t?: TranslationFn;
   playerGroups?: PlayerGroup[];
   onSavePlayerGroups?: (groups: PlayerGroup[]) => void;
@@ -61,6 +63,7 @@ function PokerNewMatch({
   onDraftChange,
   linkedPlayers = [],
   onLinkedPlayersChange,
+  onBack,
   t = ((key: string) => key) as TranslationFn,
   playerGroups = [],
   onSavePlayerGroups,
@@ -173,6 +176,18 @@ function PokerNewMatch({
     if (history.length <= 1) setInProgress(false);
   };
 
+  const discardMatch = () => {
+    setBets({});
+    setWinners([]);
+    setNetHistory({});
+    setStacks({});
+    setRounds(0);
+    setHistory([]);
+    setInProgress(false);
+    setSetupDone(false);
+    onDraftChange?.(null);
+  };
+
   const handleSave = () => {
     const sorted = [...named].sort((left, right) => (netHistory[right.id] || 0) - (netHistory[left.id] || 0));
     onSave({
@@ -212,16 +227,9 @@ function PokerNewMatch({
             }}
             onDiscard={() => {
               setPlayers([{ id: mkId(), name: "" }, { id: mkId(), name: "" }]);
-              setBets({});
-              setWinners([]);
-              setNetHistory({});
-              setStacks({});
-              setRounds(0);
-              setHistory([]);
-              setInProgress(false);
-              setSetupDone(false);
               setDealerIndex(0);
               onLinkedPlayersChange([]);
+              discardMatch();
             }}
               hasPlayers={setupDone || inProgress || rounds > 0 || players.some((player) => player.name.trim())}
               style={{ flex: 1, minWidth: 0, marginTop: 0, marginBottom: 0 }}
@@ -664,6 +672,10 @@ function PokerNewMatch({
         <button className="btnpri" style={{ marginTop: 8 }} onClick={handleSave} data-testid="save-match">
           {t("saveMatch")}
         </button>
+      )}
+
+      {(setupDone || inProgress || rounds > 0) && (
+        <DiscardMatchButton t={t} onDiscard={discardMatch} onBack={onBack} />
       )}
     </div>
   );

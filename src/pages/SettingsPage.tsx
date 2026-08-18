@@ -5,6 +5,7 @@ import FeedbackPage from "./FeedbackPage";
 import { scrollCurrentSectionToTop } from "../hooks/useNavigation";
 import AccountSection from "../components/settings/AccountSection";
 import AdvancedSection from "../components/settings/AdvancedSection";
+import DiscardPreferenceSection from "../components/settings/DiscardPreferenceSection";
 import EffectsSection from "../components/settings/EffectsSection";
 import LanguageSection from "../components/settings/LanguageSection";
 import PlayerGroupsSection from "../components/settings/PlayerGroupsSection";
@@ -187,6 +188,7 @@ function SettingsPage({
           onSpotifyPositionChange={(position) => void saveSpotifyPosition(position)}
           t={t}
         />
+        <DiscardPreferenceSection t={t} />
         <LanguageSection lang={lang} onLangChange={onLangChange} t={t} />
         <PlayerGroupsSection
           playerGroups={playerGroups}

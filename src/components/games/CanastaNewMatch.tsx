@@ -26,6 +26,7 @@ interface CanastaNewMatchProps {
   onDraftChange?: (draft: CanastaDraft | null) => void;
   playerGroups?: PlayerGroup[];
   onSavePlayerGroups?: (groups: PlayerGroup[]) => void;
+  onBack?: () => void;
 }
 
 const GOAL = 5000;

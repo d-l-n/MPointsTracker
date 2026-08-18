@@ -3,6 +3,7 @@ import { memo, useCallback, useEffect, useMemo, useState, type CSSProperties } f
 import { haptic, mkId } from "../../lib/storage";
 import type { GameDefinition, LinkedPlayer, Match, PlayerGroup, TranslationFn } from "../../types";
 import Dropdown from "../ui/Dropdown";
+import DiscardMatchButton from "../ui/DiscardMatchButton";
 import GroupPicker from "../ui/GroupPicker";
 import SaveGroupButton from "../ui/SaveGroupButton";
 import LinkedPlayerInput from "../auth/LinkedPlayerInput";
@@ -97,6 +98,7 @@ interface SushiDoNewMatchProps {
   onLinkedPlayersChange: (players: LinkedPlayer[]) => void;
   playerGroups?: PlayerGroup[];
   onSavePlayerGroups?: (groups: PlayerGroup[]) => void;
+  onBack?: () => void;
   t?: TranslationFn;
 }
 
@@ -129,6 +131,7 @@ function SushiDoNewMatch({
   onLinkedPlayersChange,
   playerGroups = [],
   onSavePlayerGroups,
+  onBack,
   t = ((key: string) => key) as TranslationFn,
 }: SushiDoNewMatchProps) {
   const [players, setPlayers] = useState<PlayerInputState[]>(
@@ -372,6 +375,21 @@ function SushiDoNewMatch({
     },
     [completedRounds, namedPlayers, onSave, scores, selectedFlavors, winner],
   );
+
+  const discardMatch = () => {
+    setScores({});
+    setCurrentRound(1);
+    setRoundEvents([]);
+    setCompletedRounds([]);
+    setUndoStack([]);
+    setSelectedCallerId(null);
+    setResolutionMode(null);
+    setGameOver(false);
+    setWinner(null);
+    setPhase("setup");
+    onLinkedPlayersChange([]);
+    onDraftChange?.(null);
+  };
 
   const allVisibleEvents = useMemo(
     () => [
@@ -648,6 +666,8 @@ function SushiDoNewMatch({
       )}
 
       <EarlyFinishSaveAction canSave={canSaveProgress} isNaturalFinish={gameOver} eligiblePlayers={namedPlayers.map((player) => player.name)} onSave={handleSave} t={t} style={{ marginTop: 12 }} />
+
+      <DiscardMatchButton t={t} onDiscard={discardMatch} onBack={onBack} />
     </div>
   );
 }

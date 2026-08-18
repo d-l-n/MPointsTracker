@@ -3,6 +3,7 @@ import { memo, useEffect, useState } from "react";
 import { haptic, mkId } from "../../lib/storage";
 import { User } from "reicon-react";
 import type { GameDefinition, LinkedPlayer, Match, PlayerGroup, TranslationFn } from "../../types";
+import DiscardMatchButton from "../ui/DiscardMatchButton";
 import GroupPicker from "../ui/GroupPicker";
 import SaveGroupButton from "../ui/SaveGroupButton";
 import EarlyFinishSaveAction from "../ui/EarlyFinishSaveAction";
@@ -72,6 +73,7 @@ interface GenericNewMatchProps {
   onLinkedPlayersChange: (players: LinkedPlayer[]) => void;
   playerGroups?: PlayerGroup[];
   onSavePlayerGroups?: (groups: PlayerGroup[]) => void;
+  onBack?: () => void;
   t?: TranslationFn;
 }
 
@@ -88,6 +90,7 @@ function GenericNewMatch({
   onLinkedPlayersChange,
   playerGroups = [],
   onSavePlayerGroups,
+  onBack,
   t = ((key: string) => key) as TranslationFn,
 }: GenericNewMatchProps) {
   const isBasta = game.type === "basta_dym";
@@ -291,6 +294,23 @@ function GenericNewMatch({
     });
   };
 
+  const discardMatch = () => {
+    setScores({});
+    setRoundScores({});
+    setRoundLetter("");
+    setBastaTheme("");
+    setUsedLetters([]);
+    setEliminated([]);
+    setRounds(0);
+    setHistory([]);
+    setGameOver(false);
+    setWinner(null);
+    setInProgress(false);
+    setBetHistory({});
+    setBets({});
+    onDraftChange?.(null);
+  };
+
   const sorted = [...named].sort((left, right) => {
     if (cfg.loseOnLimit) return (scores[left.id] || 0) - (scores[right.id] || 0);
     return (scores[right.id] || 0) - (scores[left.id] || 0);
@@ -314,20 +334,8 @@ function GenericNewMatch({
             }}
             onDiscard={() => {
               setPlayers([{ id: mkId(), name: "" }, { id: mkId(), name: "" }]);
-              setScores({});
-              setRoundScores({});
-              setRoundLetter("");
-              setBastaTheme("");
-              setUsedLetters([]);
-              setEliminated([]);
-              setRounds(0);
-              setHistory([]);
-              setGameOver(false);
-              setWinner(null);
-              setInProgress(false);
-              setBetHistory({});
-              setBets({});
               onLinkedPlayersChange([]);
+              discardMatch();
             }}
             hasPlayers={inProgress || rounds > 0 || named.length > 0}
             gameId={game.id}
@@ -741,6 +749,10 @@ function GenericNewMatch({
         t={t}
         style={{ marginTop: "8px" }}
       />
+
+      {(inProgress || rounds > 0 || gameOver) && (
+        <DiscardMatchButton t={t} onDiscard={discardMatch} onBack={onBack} />
+      )}
     </div>
   );
 }

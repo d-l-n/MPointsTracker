@@ -100,7 +100,7 @@ interface AppLayoutProps {
   postSaveRematch: RematchState | null;
   setPostSaveRematch: (value: RematchState | null) => void;
   getDraft: (gameId: string) => GameDetailDraft | null;
-  saveDraft: (gameId: string, draft: DraftRecord) => void;
+  saveDraft: (gameId: string, draft: DraftRecord | null) => void;
   linkedPlayers: Record<string, LinkedPlayer[]>;
   setLinkedPlayers: (
     value: Record<string, LinkedPlayer[]> | ((current: Record<string, LinkedPlayer[]>) => Record<string, LinkedPlayer[]>),
@@ -548,7 +548,8 @@ export default function AppLayout({
             onRematchStateChange={setPostSaveRematch}
             matchKey={gameMatchKey}
             draft={getDraft(selected)}
-            onDraftChange={(draft) => draft && saveDraft(selected, draft)}
+            // null clears the stored draft (e.g. discarding an in-progress match)
+            onDraftChange={(draft) => saveDraft(selected, draft)}
             linkedPlayers={linkedPlayers[selected] || []}
             onLinkedPlayersChange={(nextLinkedPlayers) =>
               setLinkedPlayers((current) => ({ ...current, [selected]: nextLinkedPlayers }))

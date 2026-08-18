@@ -4,7 +4,7 @@ import { PORTION_FOODS, getPortionFoodByKey } from "../../data/portionFoods";
 import { haptic, mkId } from "../../lib/storage";
 import type { DraftRecord, GameDefinition, LinkedPlayer, PlayerGroup, TranslationFn } from "../../types";
 import LinkedPlayerInput from "../auth/LinkedPlayerInput";
-import ConfirmModal from "../ui/ConfirmModal";
+import DiscardMatchButton from "../ui/DiscardMatchButton";
 import GroupPicker from "../ui/GroupPicker";
 import SaveGroupButton from "../ui/SaveGroupButton";
 import Tooltip from "../ui/Tooltip";
@@ -62,6 +62,7 @@ interface PorcionNewMatchProps {
   onLinkedPlayersChange?: (players: LinkedPlayer[]) => void;
   playerGroups?: PlayerGroup[];
   onSavePlayerGroups?: (groups: PlayerGroup[]) => void;
+  onBack?: () => void;
   t?: TranslationFn;
 }
 
@@ -89,6 +90,7 @@ function PorcionNewMatch({
   onLinkedPlayersChange,
   playerGroups = [],
   onSavePlayerGroups,
+  onBack,
   t = ((key: string) => key) as TranslationFn,
 }: PorcionNewMatchProps) {
   const [players, setPlayers] = useState<PortionPlayer[]>(
@@ -101,7 +103,6 @@ function PorcionNewMatch({
   const [scores, setScores] = useState<Record<string, number>>(draft?.scores || {});
   const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(draft?.selectedPlayerId || null);
   const [animating, setAnimating] = useState(false);
-  const [showConfirmReset, setShowConfirmReset] = useState(false);
   const [streak, setStreak] = useState(0);
   const [showMultiplier, setShowMultiplier] = useState(false);
   const lastTapRef = useRef(0);
@@ -551,19 +552,15 @@ function PorcionNewMatch({
       )}
 
       <div style={{ display: "flex", gap: 8, marginTop: 16, width: "100%", maxWidth: 340 }}>
-        <button
-          className="btnpri"
-          data-testid="portion-reset"
-          style={{ flex: 1, background: "var(--bg3)", color: "var(--tx)", border: "1.5px solid var(--bo2)" }}
-          onClick={() => setShowConfirmReset(true)}
-        >
-          {t("resetBtn")}
-        </button>
         {currentPlayerScore > 0 && (
           <button className="btnpri" data-testid="save-match" style={{ flex: 1 }} onClick={handleSave}>
             {t("saveMatch")}
           </button>
         )}
+      </div>
+
+      <div style={{ width: "100%", maxWidth: 340 }}>
+        <DiscardMatchButton t={t} onDiscard={handleReset} onBack={onBack} msg={t("confirmReset")} />
       </div>
 
       <style>{`
@@ -574,20 +571,6 @@ function PorcionNewMatch({
         }
       `}</style>
 
-      {showConfirmReset && (
-        <ConfirmModal
-          title={t("resetBtn")}
-          msg={t("confirmReset")}
-          confirmLabel={t("resetBtn")}
-          cancelLabel={t("cancel")}
-          confirmTestId="portion-reset-confirm"
-          onConfirm={() => {
-            handleReset();
-            setShowConfirmReset(false);
-          }}
-          onCancel={() => setShowConfirmReset(false)}
-        />
-      )}
     </div>
   );
 }

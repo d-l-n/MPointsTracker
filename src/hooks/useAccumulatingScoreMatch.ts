@@ -59,6 +59,7 @@ export interface AccumulatingScoreProps {
   knownNames: string[];
   linkedPlayers?: LinkedPlayer[];
   onLinkedPlayersChange: (players: LinkedPlayer[]) => void;
+  onBack?: () => void;
   t?: TranslationFn;
   draft?: AccumulatingScoreDraft | null;
   onDraftChange?: (draft: AccumulatingScoreDraft | null) => void;

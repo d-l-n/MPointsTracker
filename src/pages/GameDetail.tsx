@@ -45,6 +45,7 @@ interface GameTabContentProps {
   linkedPlayers: LinkedPlayer[];
   onLinkedPlayersChange: (linkedPlayers: LinkedPlayer[]) => void;
   matches: GameDetailMatch[];
+  onBack: () => void;
 }
 
 interface GameDetailProps {
@@ -72,6 +73,7 @@ const GameTabContent = memo(function GameTabContent({
   draft, onDraftChange,
   linkedPlayers, onLinkedPlayersChange,
   matches,
+  onBack,
 }: GameTabContentProps) {
   const { knownNames, t, playerGroups, savePlayerGroups } = useAppContext() as AppContextValue;
   const commonProps = {
@@ -79,6 +81,7 @@ const GameTabContent = memo(function GameTabContent({
     knownNames, t, draft, onDraftChange,
     linkedPlayers, onLinkedPlayersChange,
     playerGroups, onSavePlayerGroups: savePlayerGroups,
+    onBack,
   };
   const GameComponent = getGameComponent(game.type);
 
@@ -250,6 +253,7 @@ function GameDetail({
               draft={draft} onDraftChange={onDraftChange}
               linkedPlayers={linkedPlayers} onLinkedPlayersChange={onLinkedPlayersChange}
               matches={matches}
+              onBack={handleBack}
             />
           </div>
         )}

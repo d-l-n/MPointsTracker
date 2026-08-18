@@ -16,6 +16,7 @@ import type {
 } from "../../hooks/useAccumulatingScoreMatch";
 import { mkId } from "../../lib/storage";
 import { haptic } from "../../lib/storage";
+import { readDiscardGoesHome } from "../../lib/discardPreference";
 
 export interface RenderInputOptions {
   labels: string[];
@@ -88,6 +89,8 @@ export default function AccumulatingScoreUI({
   const {
     linkedPlayers = [],
     onLinkedPlayersChange,
+    onBack,
+    onDraftChange,
     t = ((key: string) => key) as TranslationFn,
     playerGroups = [],
     onSavePlayerGroups,
@@ -349,6 +352,10 @@ export default function AccumulatingScoreUI({
           onConfirm={() => {
             reset();
             setConfirmBack(false);
+            if (readDiscardGoesHome()) {
+              onDraftChange?.(null);
+              onBack?.();
+            }
           }}
           onCancel={() => setConfirmBack(false)}
         />

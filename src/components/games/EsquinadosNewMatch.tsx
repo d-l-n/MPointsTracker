@@ -3,6 +3,7 @@ import { memo, useEffect, useState, type CSSProperties } from "react";
 import { haptic, mkId } from "../../lib/storage";
 import type { LinkedPlayer, Match, PlayerGroup, TranslationFn } from "../../types";
 import LinkedPlayerInput from "../auth/LinkedPlayerInput";
+import DiscardMatchButton from "../ui/DiscardMatchButton";
 import GroupPicker from "../ui/GroupPicker";
 import SaveGroupButton from "../ui/SaveGroupButton";
 import Tooltip from "../ui/Tooltip";
@@ -40,6 +41,7 @@ interface EsquinadosNewMatchProps {
   onLinkedPlayersChange: (players: LinkedPlayer[]) => void;
   playerGroups?: PlayerGroup[];
   onSavePlayerGroups?: (groups: PlayerGroup[]) => void;
+  onBack?: () => void;
   t?: TranslationFn;
 }
 
@@ -54,6 +56,7 @@ function EsquinadosNewMatch({
   onLinkedPlayersChange,
   playerGroups = [],
   onSavePlayerGroups,
+  onBack,
   t = ((key: string) => key) as TranslationFn,
 }: EsquinadosNewMatchProps) {
   const [players, setPlayers] = useState<PlayerInputState[]>(draft?.players || [{ id: mkId(), name: "" }, { id: mkId(), name: "" }]);
@@ -95,6 +98,14 @@ function EsquinadosNewMatch({
     setRounds((currentRounds) => currentRounds - 1);
     setHistory((currentHistory) => currentHistory.slice(0, -1));
     if (history.length <= 1) setInProgress(false);
+  };
+
+  const discardMatch = () => {
+    setWins({});
+    setRounds(0);
+    setHistory([]);
+    setInProgress(false);
+    onDraftChange?.(null);
   };
 
   const handleSave = () => {
@@ -229,6 +240,10 @@ function EsquinadosNewMatch({
         <button data-testid="save-match" className="btnpri" style={{ marginTop: 8, "--gc": "#2E7D32" } as AccentButtonStyle} onClick={handleSave}>
           {t("saveMatch")}
         </button>
+      )}
+
+      {(inProgress || rounds > 0) && (
+        <DiscardMatchButton t={t} onDiscard={discardMatch} onBack={onBack} />
       )}
     </div>
   );

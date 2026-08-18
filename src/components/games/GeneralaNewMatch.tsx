@@ -3,6 +3,7 @@ import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { haptic, mkId } from "../../lib/storage";
 import type { LinkedPlayer, Match, PlayerGroup, TranslationFn } from "../../types";
 import LinkedPlayerInput from "../auth/LinkedPlayerInput";
+import DiscardMatchButton from "../ui/DiscardMatchButton";
 import GroupPicker from "../ui/GroupPicker";
 import SaveGroupButton from "../ui/SaveGroupButton";
 import Tooltip from "../ui/Tooltip";
@@ -50,6 +51,7 @@ interface GeneralaNewMatchProps {
   onLinkedPlayersChange: (players: LinkedPlayer[]) => void;
   playerGroups?: PlayerGroup[];
   onSavePlayerGroups?: (groups: PlayerGroup[]) => void;
+  onBack?: () => void;
   t?: TranslationFn;
 }
 
@@ -260,6 +262,7 @@ function GeneralaNewMatch({
   onLinkedPlayersChange,
   playerGroups = [],
   onSavePlayerGroups,
+  onBack,
   t = ((key: string) => key) as TranslationFn,
 }: GeneralaNewMatchProps) {
   const [players, setPlayers] = useState<PlayerInputState[]>(draft?.players || [{ id: mkId(), name: "" }, { id: mkId(), name: "" }]);
@@ -338,6 +341,14 @@ function GeneralaNewMatch({
 
   const winner = gameOver ? ranking[0] : null;
 
+  const discardMatch = () => {
+    setSheets({});
+    setHistory([]);
+    setInProgress(false);
+    setGameOver(false);
+    onDraftChange?.(null);
+  };
+
   const handleSave = () => {
     haptic("strong");
     const sorted = [...named].sort((left, right) => (totals[right.id] || 0) - (totals[left.id] || 0));
@@ -368,11 +379,8 @@ function GeneralaNewMatch({
             }}
             onDiscard={() => {
               setPlayers([{ id: mkId(), name: "" }, { id: mkId(), name: "" }]);
-              setSheets({});
-              setHistory([]);
-              setInProgress(false);
-              setGameOver(false);
               onLinkedPlayersChange([]);
+              discardMatch();
             }}
               hasPlayers={inProgress || gameOver || players.some((player) => player.name.trim())}
               style={{ flex: 1, minWidth: 0, marginTop: 0, marginBottom: 0 }}
@@ -611,6 +619,10 @@ function GeneralaNewMatch({
         >
           {t("saveMatch")}
         </button>
+      )}
+
+      {(inProgress || gameOver) && (
+        <DiscardMatchButton t={t} onDiscard={discardMatch} onBack={onBack} />
       )}
     </div>
   );

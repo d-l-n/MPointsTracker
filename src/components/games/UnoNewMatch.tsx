@@ -1,6 +1,7 @@
 import { memo, useEffect, useRef, useState } from "react";
 
 import { haptic, mkId } from "../../lib/storage";
+import { readDiscardGoesHome } from "../../lib/discardPreference";
 import type { GameDefinition, LinkedPlayer, Match, PlayerGroup, TranslationFn, UnoRosterEvent } from "../../types";
 import GroupPicker from "../ui/GroupPicker";
 import SaveGroupButton from "../ui/SaveGroupButton";
@@ -68,6 +69,7 @@ interface UnoNewMatchProps {
   onLinkedPlayersChange: (players: LinkedPlayer[]) => void;
   playerGroups?: PlayerGroup[];
   onSavePlayerGroups?: (groups: PlayerGroup[]) => void;
+  onBack?: () => void;
   t?: TranslationFn;
   draft?: UnoDraft | null;
   onDraftChange?: (draft: UnoDraft | null) => void;
@@ -99,6 +101,7 @@ function UnoNewMatch({
   onLinkedPlayersChange,
   playerGroups = [],
   onSavePlayerGroups,
+  onBack,
   t = ((key: string) => key) as TranslationFn,
   draft = null,
   onDraftChange,
@@ -382,6 +385,7 @@ function UnoNewMatch({
             setWinner(null);
             setRoundInput({});
             onDraftChange?.(null);
+            if (readDiscardGoesHome()) onBack?.();
           }}
           onCancel={() => setShowAbandonConfirm(false)}
         />
