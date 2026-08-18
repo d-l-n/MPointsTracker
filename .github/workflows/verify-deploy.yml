@@ -12,7 +12,7 @@ jobs:
   share-emulator-e2e:
     name: Share E2E against local emulators
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 45
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -38,8 +38,19 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # `apt-get update` inside `--with-deps` can hang for 20+ min when the
+      # runner's azure.archive.ubuntu.com mirror is flaky. Retry the whole step
+      # with backoff so a transient mirror outage doesn't fail the job.
       - name: Install Playwright chromium
-        run: npx playwright install --with-deps chromium
+        run: |
+          for i in 1 2 3 4; do
+            echo "=== playwright install attempt $i ==="
+            if npx playwright install --with-deps chromium; then
+              exit 0
+            fi
+            sleep 20
+          done
+          exit 1
 
       - name: Run share-emulator E2E suite
         run: npm run test:share
