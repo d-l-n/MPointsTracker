@@ -1,6 +1,6 @@
 # MPOINTS TRACKER
 
-> **26.08.11** · React + Vite + Firebase PWA · Multi-device score tracker for board and card games
+> **26.08.12** · React + Vite + Firebase PWA · Multi-device score tracker for board and card games
 
 **Read this in:** [Español](README.es.md) · [Deutsch](README.de.md) · [Français](README.fr.md) · [日本語](README.ja.md) · [中文](README.zh.md)
 
@@ -12,7 +12,7 @@ MPoints Tracker is a **progressive web app** for keeping score during board and 
 
 **Deploy:** Cloudflare Pages
 **Production URL:** `mpoints-tracker.pages.dev`
-**Current release:** `26.08.11`
+**Current release:** `26.08.12`
 
 ### Highlights
 

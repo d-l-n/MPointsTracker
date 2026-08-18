@@ -1,6 +1,6 @@
 # MPOINTS TRACKER
 
-> **26.08.11** · PWA React + Vite + Firebase · Registro de puntajes multidispositivo para juegos de mesa y cartas
+> **26.08.12** · PWA React + Vite + Firebase · Registro de puntajes multidispositivo para juegos de mesa y cartas
 
 **Leer en:** [English](README.md) · [Deutsch](README.de.md) · [Français](README.fr.md) · [日本語](README.ja.md) · [中文](README.zh.md)
 
@@ -12,7 +12,7 @@ MPoints Tracker es una **aplicación web progresiva** para registrar puntajes du
 
 **Deploy:** Cloudflare Pages
 **URL de producción:** `mpoints-tracker.pages.dev`
-**Release actual:** `26.08.11`
+**Release actual:** `26.08.12`
 
 ### Destacados
 
