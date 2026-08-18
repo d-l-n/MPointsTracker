@@ -16,6 +16,7 @@ import {
 } from "firebase/auth";
 
 import { fbAuth } from "../lib/firebase";
+import { saveUserProfile } from "./userService";
 
 let persistencePromise: Promise<void> | null = null;
 
@@ -56,6 +57,12 @@ export const signUpEmail = async (email: string, password: string, name?: string
     await updateProfile(cred.user, { displayName: name.trim() });
     await cred.user.reload();
   }
+  // The auth state listener fires on createUserWithEmailAndPassword, i.e.
+  // BEFORE updateProfile sets the displayName — so handleUser's saveUserProfile
+  // can persist displayName: null and the user becomes invisible to name search
+  // (searchName) until their next sign-in. Re-save now that the name is set so
+  // the public profile is searchable right away.
+  await saveUserProfile(cred.user.uid, cred.user);
   return cred;
 };
 
