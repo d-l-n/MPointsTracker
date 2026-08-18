@@ -2,39 +2,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { load, persist } from "../lib/storage";
 import { getAllPastPlayerNames } from "../lib/stats";
+import { computePublicStats } from "../lib/publicData";
 import { saveDataToCloud, savePublicStats } from "../services/userService";
-import type { AppStorageData, Match, MatchStore, PublicStatsSummary, TranslationFn } from "../types";
-
-function computePublicStats(
-  data: Record<string, unknown> | null | undefined,
-  playerName: string,
-): PublicStatsSummary | null {
-  if (!playerName) return null;
-  let totalMatches = 0;
-  let totalWins = 0;
-  const byGame: PublicStatsSummary["byGame"] = {};
-  Object.entries(data || {}).forEach(([gameId, matches]) => {
-    if (gameId.startsWith("__") || !Array.isArray(matches)) return;
-    const playerMatches = (matches as Match[]).filter((m) =>
-      (m.players || []).some((p) => (typeof p === "string" ? p : p.name) === playerName),
-    );
-    if (!playerMatches.length) return;
-    const wins = playerMatches.filter((m) => m.winner === playerName).length;
-    totalMatches += playerMatches.length;
-    totalWins += wins;
-    byGame[gameId] = {
-      played: playerMatches.length,
-      wins,
-      winrate: Math.round((wins / playerMatches.length) * 100),
-    };
-  });
-  return {
-    totalMatches,
-    totalWins,
-    winrate: totalMatches > 0 ? Math.round((totalWins / totalMatches) * 100) : 0,
-    byGame,
-  };
-}
+import type { AppStorageData, Match, MatchStore, TranslationFn } from "../types";
 
 interface CloudUserLike {
   uid: string;

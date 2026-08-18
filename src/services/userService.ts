@@ -32,14 +32,9 @@ const userdataRef = (uid: string) => doc(fbDb, "userdata", uid);
 type SharedMatchMap = Record<string, (Match & Record<string, unknown>)[]>;
 type MinimalProfileUser = Pick<User, "displayName" | "photoURL"> & Partial<Pick<User, "email">>;
 
-export function normalizePublicProfile(raw: LegacyUserDoc = {}): PublicProfile {
-  return {
-    displayName: (raw.displayName as string | null | undefined) ?? raw.profile?.displayName ?? null,
-    photoURL: (raw.photoURL as string | null | undefined) ?? raw.profile?.photoURL ?? null,
-    lastLogin: (raw.lastLogin as number | null | undefined) ?? raw.profile?.lastLogin ?? null,
-    email: raw.profile?.email ?? null,
-  };
-}
+import { normalizePublicProfile } from "../lib/publicData";
+
+export { normalizePublicProfile };
 
 export const saveUserProfile = async (uid: string, user: MinimalProfileUser) => {
   await setDoc(
