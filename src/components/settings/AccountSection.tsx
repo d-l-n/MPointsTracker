@@ -8,13 +8,10 @@ import {
   type SettingsSubPage,
 } from "./shared";
 import UserAvatar from "../ui/UserAvatar";
-import BlobatarPicker from "../ui/BlobatarPicker";
 import UserQRCode from "../auth/UserQRCode";
 import ConfirmModal from "../ui/ConfirmModal";
 import { fbAuth, fbDb } from "../../lib/firebase";
-import { updateProfile } from "firebase/auth";
 import { deleteDoc, doc } from "firebase/firestore";
-import { saveUserProfile } from "../../services/userService";
 import { Settings2, Information, Logout, Trash } from "reicon-react";
 
 export interface AccountSectionProps {
@@ -52,13 +49,10 @@ export default function AccountSection({
 }: AccountSectionProps) {
   const [editingName, setEditingName] = useState(false);
   const [nameVal, setNameVal] = useState(displayName);
-  const [savingName, setSavingName] = useState(false);
   const [confirmSignOut, setConfirmSignOut] = useState(false);
   const [confirmClearData, setConfirmClearData] = useState(false);
   const [confirmDeleteAccount, setConfirmDeleteAccount] = useState(false);
   const [deletingAccount, setDeletingAccount] = useState(false);
-  const [editingAvatar, setEditingAvatar] = useState(false);
-  const [savingAvatar, setSavingAvatar] = useState(false);
   const nameInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
@@ -66,52 +60,11 @@ export default function AccountSection({
     nameInputRef.current?.focus();
   }, [editingName]);
 
-  const handleSaveName = async () => {
-    const currentUser = fbAuth.currentUser;
-    if (!nameVal.trim() || !currentUser || !user?.uid) return;
-    setSavingName(true);
-    try {
-      await updateProfile(currentUser, { displayName: nameVal.trim() });
-      await currentUser.reload();
-      await saveUserProfile(user.uid, {
-        displayName: nameVal.trim(),
-        photoURL: user.photoURL ?? null,
-        email: user.email ?? null,
-      });
-      showToast?.(t("nameSaved"));
-      setEditingName(false);
-    } catch {
-      showToast?.(t("errSaveName"));
-    }
-    setSavingName(false);
-  };
-
   const handleSaveGuestName = () => {
     if (!nameVal.trim()) return;
     localStorage.setItem("bgt_guest_name", nameVal.trim());
     showToast?.(t("nameSaved"));
     setEditingName(false);
-  };
-
-  const handlePickAvatar = async (uri: string) => {
-    const currentUser = fbAuth.currentUser;
-    if (!currentUser || !user?.uid) return;
-    setSavingAvatar(true);
-    try {
-      await updateProfile(currentUser, { photoURL: uri });
-      await currentUser.reload();
-      await saveUserProfile(user.uid, {
-        displayName: user.displayName ?? null,
-        photoURL: uri,
-        email: user.email ?? null,
-      });
-      showToast?.(t("avatarSaved"));
-      setEditingAvatar(false);
-    } catch {
-      showToast?.(t("errSaveAvatar"));
-    } finally {
-      setSavingAvatar(false);
-    }
   };
 
   const handleDeleteAccount = async () => {
@@ -154,15 +107,17 @@ export default function AccountSection({
           </div>
         </div>
         <div className="settings-profile-actions">
-          <button
-            className="btnsec settings-profile-edit-btn"
-            onClick={() => {
-              setNameVal(displayName);
-              setEditingName(true);
-            }}
-          >
-            {t("editName")}
-          </button>
+          {!user && (
+            <button
+              className="btnsec settings-profile-edit-btn"
+              onClick={() => {
+                setNameVal(displayName);
+                setEditingName(true);
+              }}
+            >
+              {t("editName")}
+            </button>
+          )}
           {user?.uid && onViewProfile && (
             <button
               className="btnsec settings-profile-view-btn"
@@ -172,11 +127,10 @@ export default function AccountSection({
               {t("viewProfile")}
             </button>
           )}
-          <button className="btnsec settings-profile-edit-btn" onClick={() => setEditingAvatar((v) => !v)}>{t("chooseAvatar")}</button>
         </div>
       </div>
 
-      {editingName && (
+      {!user && editingName && (
         <div className="about-card settings-profile-edit-card">
           <div className="about-row" style={{ alignItems: "center" }}>
             <span className="about-label">{t("nameLabel")}</span>
@@ -195,10 +149,10 @@ export default function AccountSection({
               <button
                 className="btnpri account-selected"
                 style={compactSaveStyle}
-                disabled={savingName || !nameVal.trim()}
-                onClick={user ? handleSaveName : handleSaveGuestName}
+                disabled={!nameVal.trim()}
+                onClick={handleSaveGuestName}
               >
-                {savingName ? "..." : t("save")}
+                {t("save")}
               </button>
               <button
                 className="btnsec"
@@ -212,12 +166,6 @@ export default function AccountSection({
               </button>
             </div>
           </div>
-        </div>
-      )}
-
-      {editingAvatar && user && (
-        <div className="about-card settings-profile-avatar-picker">
-          <BlobatarPicker seed={user.email || user.displayName || user.uid || "user"} value={user.photoURL ?? null} onChange={handlePickAvatar} t={t} disabled={savingAvatar} />
         </div>
       )}
 

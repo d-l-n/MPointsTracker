@@ -1,12 +1,15 @@
-import { useEffect, useMemo, useState, type CSSProperties } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { doc, getDoc } from "firebase/firestore";
+import { updateProfile } from "firebase/auth";
 import ConfirmModal from "../components/ui/ConfirmModal";
+import BlobatarPicker from "../components/ui/BlobatarPicker";
 import { GAMES, getGame, getGameName } from "../data/games";
 import { Logout } from "reicon-react";
-import { fbDb } from "../lib/firebase";
-import { normalizePublicProfile } from "../services/userService";
+import { fbAuth, fbDb } from "../lib/firebase";
+import { normalizePublicProfile, saveUserProfile } from "../services/userService";
 import { buildStats } from "../lib/stats";
 import { getBlobatarUri } from "../lib/blobatar";
+import { compactSaveStyle } from "../components/settings/shared";
 import type {
   Match,
   MatchStore,
@@ -266,6 +269,7 @@ function PublicProfilePage({
   onSignOut,
   onSignIn: _onSignIn,
   onOpenHistoryForPlayer,
+  showToast,
 }: PublicProfilePageProps) {
   const [profile, setProfile] = useState<PublicProfile | null>(null);
   const [publicStats, setPublicStats] = useState<PublicStatsSummary | null>(null);
@@ -274,8 +278,81 @@ function PublicProfilePage({
   const [tab, setTab] = useState<"stats" | "versus">("stats");
   const [confirmSignOut, setConfirmSignOut] = useState(false);
   const [confirmClearData, setConfirmClearData] = useState(false);
+  const [editingName, setEditingName] = useState(false);
+  const [nameVal, setNameVal] = useState("");
+  const [savingName, setSavingName] = useState(false);
+  const [editingAvatar, setEditingAvatar] = useState(false);
+  const [savingAvatar, setSavingAvatar] = useState(false);
+  const [avatarDirty, setAvatarDirty] = useState(false);
+  const [confirmSwitchEditor, setConfirmSwitchEditor] = useState<"name" | "avatar" | null>(null);
+  const [scrollAtTop, setScrollAtTop] = useState(true);
+  const [scrollAtBottom, setScrollAtBottom] = useState(false);
+  const nameInputRef = useRef<HTMLInputElement | null>(null);
 
   const isSelf = myUser?.uid === uid;
+
+  useEffect(() => {
+    if (!editingName) return;
+    nameInputRef.current?.focus();
+  }, [editingName]);
+
+  useEffect(() => {
+    const container = document.querySelector<HTMLElement>(".app-content");
+    if (!container) return;
+
+    const THRESHOLD = 8;
+
+    const check = () => {
+      setScrollAtTop(container.scrollTop <= THRESHOLD);
+      setScrollAtBottom(
+        container.scrollHeight - container.clientHeight - container.scrollTop <= THRESHOLD,
+      );
+    };
+
+    check();
+    container.addEventListener("scroll", check, { passive: true });
+    return () => container.removeEventListener("scroll", check);  }, []);
+
+  const handleSaveName = async () => {
+    const currentUser = fbAuth.currentUser;
+    if (!nameVal.trim() || !currentUser || !myUser?.uid || !profile) return;
+    setSavingName(true);
+    try {
+      await updateProfile(currentUser, { displayName: nameVal.trim() });
+      await saveUserProfile(myUser.uid, {
+        displayName: nameVal.trim(),
+        photoURL: profile.photoURL ?? myUser.photoURL ?? null,
+        email: profile.email ?? myUser.email ?? null,
+      });
+      setProfile({ ...profile, displayName: nameVal.trim() });
+      showToast?.(t("nameSaved"));
+      setEditingName(false);
+    } catch {
+      showToast?.(t("errSaveName"));
+    }
+    setSavingName(false);
+  };
+
+  const handlePickAvatar = async (uri: string) => {
+    const currentUser = fbAuth.currentUser;
+    if (!currentUser || !myUser?.uid || !profile) return;
+    setSavingAvatar(true);
+    try {
+      await updateProfile(currentUser, { photoURL: uri });
+      await saveUserProfile(myUser.uid, {
+        displayName: profile.displayName ?? null,
+        photoURL: uri,
+        email: profile.email ?? myUser.email ?? null,
+      });
+      setProfile({ ...profile, photoURL: uri });
+      showToast?.(t("avatarSaved"));
+      setEditingAvatar(false);
+    } catch {
+      showToast?.(t("errSaveAvatar"));
+    } finally {
+      setSavingAvatar(false);
+    }
+  };
 
   useEffect(() => {
     if (!uid) return;
@@ -363,7 +440,7 @@ function PublicProfilePage({
     return <ProfileState message={error} actionLabel={t("back")} onAction={onBack} />;
   }
 
-  const displayName = profile?.displayName || uid.slice(0, 8) || "?";
+  const displayName = profile?.displayName || (isSelf ? t("noNamePlaceholder") : profile?.email?.split("@")[0] || uid.slice(0, 8)) || "?";
   const photoURL = profile?.photoURL;
   const statsSource = isSelf ? myStats?.find((stat) => stat.name === myUser?.displayName) || null : null;
   const totalWins = isSelf ? statsSource?.wins ?? 0 : publicStats?.totalWins ?? 0;
@@ -373,8 +450,43 @@ function PublicProfilePage({
   const perGameStats = isSelf ? myPerGame || {} : publicStats?.byGame || {};
   const gamesWithStats = Object.keys(perGameStats);
 
+  const nameDirty = editingName && nameVal.trim() !== displayName;
+
+  const openNameEditor = () => {
+    if (editingAvatar && avatarDirty) {
+      setConfirmSwitchEditor("name");
+      return;
+    }
+    setEditingAvatar(false);
+    setNameVal(displayName);
+    setEditingName(true);
+  };
+
+  const openAvatarEditor = () => {
+    if (editingName && nameDirty) {
+      setConfirmSwitchEditor("avatar");
+      return;
+    }
+    setEditingName(false);
+    setEditingAvatar((v) => !v);
+  };
+
+  const confirmSwitch = () => {
+    const target = confirmSwitchEditor;
+    setConfirmSwitchEditor(null);
+    if (target === "name") {
+      setEditingAvatar(false);
+      setAvatarDirty(false);
+      setNameVal(displayName);
+      setEditingName(true);
+    } else if (target === "avatar") {
+      setEditingName(false);
+      setEditingAvatar(true);
+    }
+  };
+
   return (
-    <div className="page page--flush-top public-profile-page" data-testid="public-profile-root">
+    <div className={`page page--flush-top public-profile-page${scrollAtTop ? " scroll-at-top" : ""}${scrollAtBottom ? " scroll-at-bottom" : ""}`} data-testid="public-profile-root">
       <div className="public-profile-hero">
         <div className="public-profile-avatar">
           {photoURL
@@ -390,7 +502,73 @@ function PublicProfilePage({
           {isSelf && <div className="public-profile-eyebrow">{t("profileThisIsYou")}</div>}
           {isSelf && myUser?.email && <div className="public-profile-email">{myUser.email}</div>}
         </div>
+        {isSelf && (
+          <div className="public-profile-edit-actions">
+            <button
+              className="btnsec public-profile-edit-btn"
+              onClick={openNameEditor}
+            >
+              {t("editName")}
+            </button>
+            <button className="btnsec public-profile-edit-btn" onClick={openAvatarEditor}>
+              {t("chooseAvatar")}
+            </button>
+          </div>
+        )}
       </div>
+
+      {isSelf && editingName && (
+        <div className="about-card public-profile-edit-card">
+          <div className="about-row" style={{ alignItems: "center" }}>
+            <span className="about-label">{t("nameLabel")}</span>
+            <div style={{ display: "flex", gap: 8, flex: 1, justifyContent: "flex-end" }}>
+              <input
+                className="inp"
+                id="profile-edit-name"
+                name="profile-edit-name"
+                ref={nameInputRef}
+                aria-label={t("namePlaceholder")}
+                value={nameVal}
+                onChange={(event) => setNameVal(event.target.value)}
+                placeholder={t("namePlaceholder")}
+                style={{ flex: 1, maxWidth: 180 }}
+              />
+              <button
+                className="btnpri account-selected"
+                style={compactSaveStyle}
+                disabled={savingName || !nameVal.trim()}
+                onClick={handleSaveName}
+              >
+                {savingName ? "..." : t("save")}
+              </button>
+              <button
+                className="btnsec"
+                aria-label={t("cancel")}
+                onClick={() => {
+                  setEditingName(false);
+                  setNameVal(displayName);
+                }}
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isSelf && editingAvatar && profile && (
+        <div className="about-card public-profile-avatar-picker">
+          <BlobatarPicker
+            seed={profile.email || myUser?.email || myUser?.displayName || uid || "user"}
+            value={profile.photoURL}
+            onChange={handlePickAvatar}
+            onCancel={() => { setEditingAvatar(false); setAvatarDirty(false); }}
+            onDirtyChange={setAvatarDirty}
+            t={t}
+            disabled={savingAvatar}
+          />
+        </div>
+      )}
 
       {!isSelf && (
         <div className="public-profile-tabs" role="tablist" aria-label={t("profileTabs")}>
@@ -523,6 +701,17 @@ function PublicProfilePage({
             onSignOut?.(true);
           }}
           onCancel={() => setConfirmClearData(false)}
+        />
+      )}
+      {confirmSwitchEditor && (
+        <ConfirmModal
+          title={t("unsavedChangesTitle")}
+          msg={t("unsavedChangesMsg")}
+          confirmLabel={t("discard")}
+          cancelLabel={t("cancel")}
+          onConfirm={confirmSwitch}
+          onCancel={() => setConfirmSwitchEditor(null)}
+          onOverlayClick={() => setConfirmSwitchEditor(null)}
         />
       )}
     </div>

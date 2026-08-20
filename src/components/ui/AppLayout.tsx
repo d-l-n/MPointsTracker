@@ -676,7 +676,7 @@ export default function AppLayout({
                 <AppHeader
                   hidden={sectionHeaderHiddenByScroll}
                   leading={<button className="ibtn page-back-btn" onClick={closeProfile} aria-label={t("back")}><span className="ibtn-glyph">←</span></button>}
-                  title={t("viewProfile").toUpperCase()}
+                  title={t("profileTitle").toUpperCase()}
                   actions={(
                     <div className="user-row">
                       {user && <SyncDot syncing={syncing} error={syncError} t={t} isOnline={isOnline} />}
