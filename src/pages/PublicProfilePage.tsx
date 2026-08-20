@@ -6,6 +6,7 @@ import { Logout } from "reicon-react";
 import { fbDb } from "../lib/firebase";
 import { normalizePublicProfile } from "../services/userService";
 import { buildStats } from "../lib/stats";
+import { getBlobatarUri } from "../lib/blobatar";
 import type {
   Match,
   MatchStore,
@@ -376,7 +377,9 @@ function PublicProfilePage({
     <div className="page page--flush-top public-profile-page" data-testid="public-profile-root">
       <div className="public-profile-hero">
         <div className="public-profile-avatar">
-          {photoURL ? <img src={photoURL} alt="" className="public-profile-avatar-image" /> : displayName.slice(0, 2).toUpperCase()}
+          {photoURL
+            ? <img src={photoURL} alt="" className="public-profile-avatar-image" />
+            : <img src={getBlobatarUri(profile?.email || uid || "")} alt="" className="public-profile-avatar-image" />}
         </div>
         <div className="public-profile-meta">
           <h2 className="public-profile-title">{displayName.toUpperCase()}</h2>

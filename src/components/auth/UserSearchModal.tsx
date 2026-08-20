@@ -3,6 +3,7 @@ import { doc, getDoc } from "firebase/firestore";
 
 import { fbDb, fbAuth } from "../../lib/firebase";
 import { normalizePublicProfile, searchUsersByName } from "../../services/userService";
+import { getBlobatarUri } from "../../lib/blobatar";
 import QRScanner from "./QRScanner";
 import type { PublicProfile, TranslationFn } from "../../types";
 
@@ -158,18 +159,12 @@ function UserSearchModal({ onLink, onClose, t, knownNames = [] }: UserSearchModa
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: 8, maxHeight: 260, overflowY: "auto" }}>
               {results.map((user, index) => {
-                const initials = (user.displayName || user.email || "?")
-                  .split(" ")
-                  .map((word) => word[0])
-                  .slice(0, 2)
-                  .join("")
-                  .toUpperCase();
                 return (
                   <button type="button" key={user.uid || index} className="usearch-result" onClick={() => handleSelect(user)}>
                     {user.photoURL ? (
                       <img src={user.photoURL} className="usearch-avatar" alt={user.displayName || ""} style={{ objectFit: "cover" }} referrerPolicy="no-referrer" />
                     ) : (
-                      <div className="usearch-avatar">{initials}</div>
+                      <img src={getBlobatarUri(user.email || user.displayName || "")} className="usearch-avatar" alt={user.displayName || ""} style={{ objectFit: "cover" }} />
                     )}
                     <div style={{ flex: 1, minWidth: 0, textAlign: "left" }}>
                       <div className="usearch-name">{user.displayName || t("noName")}</div>

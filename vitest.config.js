@@ -15,6 +15,8 @@ export default mergeConfig(
       include: [
         "src/**/*.test.js",
         "src/**/*.test.jsx",
+        "src/**/*.test.ts",
+        "src/**/*.test.tsx",
         "src/**/*.spec.js",
         "src/**/*.spec.jsx",
         "scripts/**/*.test.js",

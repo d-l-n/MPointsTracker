@@ -6,6 +6,7 @@ import { fmtDate } from "../lib/stats";
 import { GAMES, getGameName } from "../data/games";
 import ConfirmModal from "../components/ui/ConfirmModal";
 import { normalizePublicProfile } from "../services/userService";
+import { getBlobatarUri } from "../lib/blobatar";
 import type { GameDefinition, LegacyUserDoc, Match, PublicProfile, TranslationFn } from "../types";
 
 const identity = (key: string) => key;
@@ -375,12 +376,6 @@ function AdminUsers({ showToast, t = identity }: ToastProps) {
 
 function AdminUserCard({ u, i, normTs, t = identity }: AdminUserCardProps) {
   const [imgFailed, setImgFailed] = useState(false);
-  const initials = (u.profile.displayName || u.profile.email || "?")
-    .split(" ")
-    .map((word) => word[0])
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
   const lastLoginStr = normTs(u.profile.lastLogin);
 
   return (
@@ -401,7 +396,12 @@ function AdminUserCard({ u, i, normTs, t = identity }: AdminUserCardProps) {
           }}
         />
       ) : (
-        <div className="admin-user-avatar">{initials || <User size={20} />}</div>
+        <img
+          src={getBlobatarUri(u.profile.email || u.profile.displayName || u.uid)}
+          alt={`${t("adminAvatarPrefix")} ${u.profile.displayName || u.profile.email || t("playerN")}`}
+          className="admin-user-avatar"
+          style={{ objectFit: "cover" }}
+        />
       )}
       <div className="admin-user-info">
         <div className="admin-user-name" style={{ display: "flex", alignItems: "center", gap: 6 }}>
