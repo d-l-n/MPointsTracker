@@ -379,7 +379,11 @@ function PublicProfilePage({
         <div className="public-profile-avatar">
           {photoURL
             ? <img src={photoURL} alt="" className="public-profile-avatar-image" />
-            : <img src={getBlobatarUri(profile?.email || uid || "")} alt="" className="public-profile-avatar-image" />}
+            : <img
+                src={getBlobatarUri((isSelf ? myUser?.email : profile?.email) || profile?.displayName || uid || "")}
+                alt=""
+                className="public-profile-avatar-image"
+              />}
         </div>
         <div className="public-profile-meta">
           <h2 className="public-profile-title">{displayName.toUpperCase()}</h2>
