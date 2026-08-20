@@ -1032,6 +1032,12 @@ const fr = {
   "onboardingBack": "Retour",
   "onboardingSkip": "Passer",
   "onboardingFinish": "Commencer",
+  "generateAvatar": "Générer un avatar",
+  "chooseAvatar": "Choisir un avatar",
+  "avatarColor": "Couleur",
+  "avatarShape": "Forme",
+  "avatarSaved": "Avatar mis à jour",
+  "errSaveAvatar": "Impossible d'enregistrer l'avatar",
 };
 
 export default fr;

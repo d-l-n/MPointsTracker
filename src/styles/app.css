@@ -1107,6 +1107,15 @@ html:not(.dark) .btnsec.nav-leave-discard:hover{color:#5A1E35;border-color:rgba(
 .settings-profile-actions{display:flex;flex-direction:column;gap:6px;flex-shrink:0}
 .settings-profile-edit-btn,.settings-profile-view-btn{font-size:.72rem;white-space:nowrap}
 .settings-profile-edit-card.about-card{margin-bottom:12px}
+.blobatar-picker{display:flex;flex-direction:column;gap:12px}
+.blobatar-picker-colors{display:flex;flex-wrap:wrap;gap:8px}
+.blobatar-picker-swatch{width:40px;height:40px;padding:0;border-radius:50%;overflow:hidden;background:transparent;border:none;cursor:pointer}
+.blobatar-picker-swatch img{width:100%;height:100%;object-fit:cover}
+.blobatar-picker-swatch[aria-pressed="true"]{outline:2px solid var(--accent-primary);outline-offset:2px}
+.blobatar-picker-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.blobatar-picker-cell{aspect-ratio:1;padding:4px;border-radius:8px;border:1px solid transparent;background:transparent;cursor:pointer}
+.blobatar-picker-cell img{width:100%;height:100%;object-fit:contain}
+.blobatar-picker-cell[aria-pressed="true"]{border-color:var(--accent-primary)}
 .settings-profile-qr-panel{
   text-align:center;
   padding:18px 18px 16px;

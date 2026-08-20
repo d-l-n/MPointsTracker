@@ -1032,6 +1032,12 @@ const zh = {
   "onboardingBack": "上一步",
   "onboardingSkip": "跳过",
   "onboardingFinish": "开始使用",
+  "generateAvatar": "生成头像",
+  "chooseAvatar": "选择头像",
+  "avatarColor": "颜色",
+  "avatarShape": "形状",
+  "avatarSaved": "头像已更新",
+  "errSaveAvatar": "无法保存头像",
 };
 
 export default zh;

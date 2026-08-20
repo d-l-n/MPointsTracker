@@ -8,6 +8,7 @@ import {
   type SettingsSubPage,
 } from "./shared";
 import UserAvatar from "../ui/UserAvatar";
+import BlobatarPicker from "../ui/BlobatarPicker";
 import UserQRCode from "../auth/UserQRCode";
 import ConfirmModal from "../ui/ConfirmModal";
 import { fbAuth, fbDb } from "../../lib/firebase";
@@ -56,6 +57,8 @@ export default function AccountSection({
   const [confirmClearData, setConfirmClearData] = useState(false);
   const [confirmDeleteAccount, setConfirmDeleteAccount] = useState(false);
   const [deletingAccount, setDeletingAccount] = useState(false);
+  const [editingAvatar, setEditingAvatar] = useState(false);
+  const [savingAvatar, setSavingAvatar] = useState(false);
   const nameInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
@@ -88,6 +91,27 @@ export default function AccountSection({
     localStorage.setItem("bgt_guest_name", nameVal.trim());
     showToast?.(t("nameSaved"));
     setEditingName(false);
+  };
+
+  const handlePickAvatar = async (uri: string) => {
+    const currentUser = fbAuth.currentUser;
+    if (!currentUser || !user?.uid) return;
+    setSavingAvatar(true);
+    try {
+      await updateProfile(currentUser, { photoURL: uri });
+      await currentUser.reload();
+      await saveUserProfile(user.uid, {
+        displayName: user.displayName ?? null,
+        photoURL: uri,
+        email: user.email ?? null,
+      });
+      showToast?.(t("avatarSaved"));
+      setEditingAvatar(false);
+    } catch {
+      showToast?.(t("errSaveAvatar"));
+    } finally {
+      setSavingAvatar(false);
+    }
   };
 
   const handleDeleteAccount = async () => {
@@ -148,6 +172,7 @@ export default function AccountSection({
               {t("viewProfile")}
             </button>
           )}
+          <button className="btnsec settings-profile-edit-btn" onClick={() => setEditingAvatar((v) => !v)}>{t("chooseAvatar")}</button>
         </div>
       </div>
 
@@ -187,6 +212,12 @@ export default function AccountSection({
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {editingAvatar && user && (
+        <div className="about-card settings-profile-avatar-picker">
+          <BlobatarPicker seed={user.email || user.displayName || user.uid || "user"} value={user.photoURL ?? null} onChange={handlePickAvatar} t={t} disabled={savingAvatar} />
         </div>
       )}
 

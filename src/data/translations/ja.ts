@@ -1032,6 +1032,12 @@ const ja = {
   "onboardingBack": "戻る",
   "onboardingSkip": "スキップ",
   "onboardingFinish": "はじめる",
+  "generateAvatar": "アバターを生成",
+  "chooseAvatar": "アバターを選ぶ",
+  "avatarColor": "色",
+  "avatarShape": "形",
+  "avatarSaved": "アバターを更新しました",
+  "errSaveAvatar": "アバターを保存できませんでした",
 };
 
 export default ja;

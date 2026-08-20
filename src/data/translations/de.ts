@@ -1032,6 +1032,12 @@ const de = {
   "onboardingBack": "Zurück",
   "onboardingSkip": "Überspringen",
   "onboardingFinish": "Los geht's",
+  "generateAvatar": "Avatar generieren",
+  "chooseAvatar": "Avatar wählen",
+  "avatarColor": "Farbe",
+  "avatarShape": "Form",
+  "avatarSaved": "Avatar aktualisiert",
+  "errSaveAvatar": "Avatar konnte nicht gespeichert werden",
 };
 
 export default de;

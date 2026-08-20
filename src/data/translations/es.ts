@@ -1030,6 +1030,12 @@ const es = {
   "onboardingBack": "Atrás",
   "onboardingSkip": "Saltar",
   "onboardingFinish": "Empezar",
+  "generateAvatar": "Generar Avatar",
+  "chooseAvatar": "Elegir avatar",
+  "avatarColor": "Color",
+  "avatarShape": "Forma",
+  "avatarSaved": "Avatar actualizado",
+  "errSaveAvatar": "No se pudo guardar el avatar",
 };
 
 export default es;

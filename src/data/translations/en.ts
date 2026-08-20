@@ -1032,6 +1032,12 @@ const en = {
   "onboardingBack": "Back",
   "onboardingSkip": "Skip",
   "onboardingFinish": "Get started",
+  "generateAvatar": "Generate Avatar",
+  "chooseAvatar": "Choose avatar",
+  "avatarColor": "Color",
+  "avatarShape": "Shape",
+  "avatarSaved": "Avatar updated",
+  "errSaveAvatar": "Could not save avatar",
 };
 
 export default en;
