@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      blobatar:
+        specifier: ^2.2.0
+        version: 2.4.0(react@19.2.7)
       firebase:
         specifier: ^11.3.1
         version: 11.10.0
@@ -1388,6 +1391,17 @@ packages:
   bl@4.1.0:
     resolution: {integrity: sha512-1W07cM9gS6DcLperZfFSj+bWLtaPGSOHWhPiGzXmvVJbRLdG82sH/Kn8EtW1VqWVA54AKf2h5k5BbnIbwF3h6w==}
 
+  blobatar@2.4.0:
+    resolution: {integrity: sha512-eLXuYUW+Xr1FvB+ThFPxR3gjAArkhS6Z1OJnOFCqsoh8phkmHlcnZtzl/Mqi1VT6Ii+IuZ2bdCzmQhysOR2+kA==}
+    peerDependencies:
+      react: '>=18'
+      vue: '>=3'
+    peerDependenciesMeta:
+      react:
+        optional: true
+      vue:
+        optional: true
+
   body-parser@1.20.6:
     resolution: {integrity: sha512-p5tAzS57i5MV9fZFDj9LeIiTZEufbSe2eDozP+ElheSUq1m74CRq1jI4mYNDdVs9vQztXFLuk/Gd6BWTdwRJ5g==}
     engines: {node: '>= 0.8', npm: 1.2.8000 || >= 1.4.16}
@@ -1962,6 +1976,7 @@ packages:
   eslint@9.39.4:
     resolution: {integrity: sha512-XoMjdBOwe/esVgEvLmNsD3IRHkm7fbKIUGvrleloJXUZgDHig2IPWNniv+GwjyJXzuNqVjlr5+4yVUZjycJwfQ==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
+    deprecated: This version is no longer supported. Please see https://eslint.org/version-support for other options.
     hasBin: true
     peerDependencies:
       jiti: '*'
@@ -5843,6 +5858,10 @@ snapshots:
       buffer: 5.7.1
       inherits: 2.0.4
       readable-stream: 3.6.2
+
+  blobatar@2.4.0(react@19.2.7):
+    optionalDependencies:
+      react: 19.2.7
 
   body-parser@1.20.6:
     dependencies:
