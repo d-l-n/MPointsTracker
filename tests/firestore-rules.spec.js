@@ -14,7 +14,11 @@ test.describe("firestore rules", () => {
   });
 
   test("invites support owner replacement without opening deletes globally", () => {
-    expect(rules).toMatch(/match \/invites\/\{code\}[\s\S]*allow read:\s*if resource\.data\.expiresAt is int\s*&& resource\.data\.expiresAt > request\.time\.toMillis\(\)/);
+    // get individual: cualquiera con el código, mientras no expire.
+    expect(rules).toMatch(/match \/invites\/\{code\}[\s\S]*allow get:\s*if resource\.data\.expiresAt is int\s*&& resource\.data\.expiresAt > request\.time\.toMillis\(\)/);
+    // list: solo invites propias (verificable por query filter uid == auth.uid;
+    // condiciones sobre expiresAt/type-checks en list => permission-denied).
+    expect(rules).toMatch(/match \/invites\/\{code\}[\s\S]*allow list:\s*if isAuth\(\) && resource\.data\.uid == request\.auth\.uid/);
     expect(rules).toMatch(/match \/invites\/\{code\}[\s\S]*allow create:\s*if isAuth\(\)[\s\S]*"uid", "displayName", "photoURL", "createdAt", "expiresAt"[\s\S]*request\.resource\.data\.uid == request\.auth\.uid/);
     expect(rules).toMatch(/match \/invites\/\{code\}[\s\S]*allow delete:\s*if isAdmin\(\) \|\| \(isAuth\(\) && resource\.data\.uid == request\.auth\.uid\)/);
   });

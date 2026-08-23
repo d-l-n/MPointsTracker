@@ -54,8 +54,16 @@ service cloud.firestore {
 
     // ── invites/{code} — reservado para invites persistidos ────────────────
     match /invites/{code} {
-      allow read: if resource.data.expiresAt is int
+      // get individual (resolveInvite al abrir un link): cualquier persona con
+      // el código, mientras el invite no haya expirado.
+      allow get: if resource.data.expiresAt is int
         && resource.data.expiresAt > request.time.toMillis();
+
+      // list (createInviteLink borra invites previas del dueño): SOLO propias.
+      // La regla es verificable por Firestore porque la query del cliente filtra
+      // exactamente por uid == request.auth.uid; una regla sobre expiresAt o
+      // type-checks haría la query imposible de validar (permission-denied).
+      allow list: if isAuth() && resource.data.uid == request.auth.uid;
 
       allow create: if isAuth()
         && request.resource.data.keys().hasOnly([
