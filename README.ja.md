@@ -44,7 +44,7 @@ MPoints Tracker は、友人とのボードゲーム・カードゲームの得�
 ## クイックスタート
 
 ```bash
-npm install        # 依存関係をインストール（または: pnpm install）
+pnpm install       #依存関係をインストール
 npm run dev        # 開発サーバー（localhost:5173）
 npm run build      # 本番ビルド（/dist）
 npm run preview    # ビルドのプレビュー

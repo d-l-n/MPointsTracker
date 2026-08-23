@@ -44,7 +44,7 @@ MPoints Tracker 是一款**渐进式 Web 应用**，用于和朋友玩桌面游�
 ## 快速开始
 
 ```bash
-npm install        # 安装依赖（或：pnpm install）
+pnpm install       #安装依赖
 npm run dev        # 开发服务器 localhost:5173
 npm run build      # 生产构建到 /dist
 npm run preview    # 预览构建

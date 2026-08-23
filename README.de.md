@@ -44,7 +44,7 @@ MPoints Tracker ist eine **Progressive Web App** zum Erfassen von Punkten bei Br
 ## Schnellstart
 
 ```bash
-npm install        # Abhängigkeiten installieren (oder: pnpm install)
+pnpm install       # Abhängigkeiten installieren
 npm run dev        # Dev-Server auf localhost:5173
 npm run build      # Produktions-Build in /dist
 npm run preview    # Build-Vorschau

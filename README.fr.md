@@ -44,7 +44,7 @@ MPoints Tracker est une **application web progressive** pour enregistrer les sco
 ## Démarrage rapide
 
 ```bash
-npm install        # installer les dépendances (ou : pnpm install)
+pnpm install       # installer les dépendances
 npm run dev        # serveur de dev sur localhost:5173
 npm run build      # build de production dans /dist
 npm run preview    # prévisualiser le build

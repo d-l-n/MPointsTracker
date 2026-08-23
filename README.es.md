@@ -44,7 +44,7 @@ MPoints Tracker es una **aplicación web progresiva** para registrar puntajes du
 ## Inicio rápido
 
 ```bash
-npm install        # instalar dependencias (o: pnpm install)
+pnpm install       # instalar dependencias
 npm run dev        # dev server en localhost:5173
 npm run build      # build de producción en /dist
 npm run preview    # preview del build

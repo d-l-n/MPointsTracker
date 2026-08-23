@@ -2,6 +2,7 @@
   "name": "mpoints-tracker",
   "private": true,
   "version": "26.08.12",
+  "packageManager": "pnpm@11.10.0",
   "type": "module",
   "scripts": {
     "dev": "vite",

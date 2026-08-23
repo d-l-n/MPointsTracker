@@ -44,7 +44,7 @@ MPoints Tracker is a **progressive web app** for keeping score during board and 
 ## Quick Start
 
 ```bash
-npm install        # install dependencies (or: pnpm install)
+pnpm install       # install dependencies
 npm run dev        # dev server on localhost:5173
 npm run build      # production build in /dist
 npm run preview    # preview the production build
