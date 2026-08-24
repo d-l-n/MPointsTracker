@@ -1,16 +1,11 @@
-import { useState, type CSSProperties, type ChangeEvent } from "react";
+import { useEffect, useState, type CSSProperties, type ChangeEvent, type ReactNode } from "react";
 
-import ConfirmModal from "../ui/ConfirmModal";
+import { LANGUAGE_OPTIONS } from "../settings/shared";
+import { Language } from "reicon-react";
 import LoginForm from "./LoginForm";
 import type { TranslationFn } from "../../types";
 
 type AuthMode = "main" | "signin" | "signup" | "reset";
-
-interface LanguageOption {
-  code: string;
-  flag: string;
-  label: string;
-}
 
 interface EmailAuthScreenProps {
   t: TranslationFn;
@@ -30,15 +25,6 @@ interface EmailAuthScreenProps {
   showDebug?: boolean;
 }
 
-const LANGS: LanguageOption[] = [
-  { code: "es", flag: "🇦🇷", label: "ES" },
-  { code: "en", flag: "🇺🇸", label: "EN" },
-  { code: "de", flag: "🇩🇪", label: "DE" },
-  { code: "zh", flag: "🇨🇳", label: "中文" },
-  { code: "ja", flag: "🇯🇵", label: "日本語" },
-  { code: "fr", flag: "🇫🇷", label: "FR" },
-];
-
 const iconButtonStyle: CSSProperties = {
   width: 32,
   height: 32,
@@ -51,31 +37,23 @@ const iconButtonStyle: CSSProperties = {
   justifyContent: "center",
 };
 
-const authLogoStyle: CSSProperties = {
-  cursor: "pointer",
-  userSelect: "none",
-  border: "none",
-  padding: 0,
-  fontFamily: "inherit",
-  display: "block",
-  width: "100%",
-};
+const MailIcon = (
+  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <rect x="3" y="5" width="18" height="14" rx="3" />
+    <path d="m4.5 7.5 7.5 5.5 7.5-5.5" />
+  </svg>
+);
 
-const backLinkStyle: CSSProperties = {
-  textAlign: "center",
-  display: "block",
-  margin: "4px auto 0",
-};
+const PhoneIcon = (
+  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <rect x="7" y="2.5" width="10" height="19" rx="2.5" />
+    <path d="M11 18.5h2" />
+  </svg>
+);
 
 const primaryButtonStyle = {
   "--gc": "#006D77",
 } as CSSProperties & Record<"--gc", string>;
-
-const subtleEmailButtonStyle: CSSProperties = {
-  background: "var(--glass)",
-  border: "1px solid var(--glass-border)",
-  color: "var(--tx)",
-};
 
 const langRowStyle: CSSProperties = {
   position: "absolute",
@@ -92,52 +70,6 @@ const resetDoneStyle: CSSProperties = {
   color: "var(--tx)",
   fontSize: ".9rem",
   lineHeight: 1.6,
-};
-
-const offlineCopyStyle: CSSProperties = {
-  maxWidth: 360,
-  marginBottom: 14,
-  padding: "10px 12px",
-  borderRadius: "var(--rsm)",
-  background: "color-mix(in srgb, var(--glass) 84%, #f59e0b 16%)",
-  border: "1px solid color-mix(in srgb, #f59e0b 32%, transparent)",
-  color: "var(--tx)",
-  fontSize: ".78rem",
-  lineHeight: 1.5,
-  textAlign: "center",
-};
-
-const closeBtnStyle: CSSProperties = {
-  background: "var(--glass)",
-  border: "1px solid var(--glass-border)",
-  color: "var(--tx2)",
-  borderRadius: "var(--r)",
-  padding: "10px 24px",
-  fontFamily: "'Google Sans', sans-serif",
-  fontSize: ".85rem",
-  fontWeight: 600,
-  cursor: "pointer",
-  width: "100%",
-  maxWidth: 280,
-  textAlign: "center",
-  marginTop: 4,
-};
-
-const guestButtonStyle: CSSProperties = {
-  background: "color-mix(in srgb, var(--glass) 88%, transparent)",
-  border: "1.5px solid var(--glass-border)",
-  color: "var(--tx)",
-  borderRadius: "var(--r)",
-  padding: "12px 24px",
-  fontFamily: "'Google Sans', sans-serif",
-  fontSize: ".88rem",
-  fontWeight: 700,
-  cursor: "pointer",
-  width: "100%",
-  maxWidth: 280,
-  textAlign: "center",
-  boxShadow: "var(--glass-shadow)",
-  transition: "box-shadow .18s, transform .18s",
 };
 
 function normalizeMode(mode?: AuthMode | string): AuthMode {
@@ -171,7 +103,16 @@ function EmailAuthScreen({
   const [langOpen, setLangOpen] = useState(false);
   const [showGuestConfirm, setShowGuestConfirm] = useState(false);
 
-  const currentLang = LANGS.find((entry) => entry.code === lang) || LANGS[0];
+  useEffect(() => {
+    if (!showGuestConfirm) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setShowGuestConfirm(false);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [showGuestConfirm]);
+
+  const currentLang = LANGUAGE_OPTIONS.find((entry) => entry.code === lang) || LANGUAGE_OPTIONS[0];
 
   const handleSignUp = async () => {
     if (!email || !password) return;
@@ -207,12 +148,13 @@ function EmailAuthScreen({
       {onLangChange && (
         <div style={{ position: "relative" }}>
           <button onClick={() => setLangOpen((open) => !open)} className="lang-trigger">
-            {currentLang.flag} {currentLang.label}
+            <Language size={13} />
+            {currentLang.label}
             <span style={{ fontSize: ".55rem", opacity: 0.6, marginLeft: 2 }}>▼</span>
           </button>
           {langOpen && (
             <div className="lang-menu">
-              {LANGS.map((entry) => (
+              {LANGUAGE_OPTIONS.map((entry) => (
                 <button
                   key={entry.code}
                   onClick={() => {
@@ -221,7 +163,7 @@ function EmailAuthScreen({
                   }}
                   className={`lang-option${lang === entry.code ? " active" : ""}`}
                 >
-                  {entry.flag} {entry.label}
+                  {entry.label}
                 </button>
               ))}
             </div>
@@ -237,173 +179,167 @@ function EmailAuthScreen({
   );
 
   const closeBtn = onClose ? (
-    <button style={closeBtnStyle} onClick={onClose}>
+    <button className="auth-btn-quiet" onClick={onClose}>
       {t("cancel")}
     </button>
   ) : null;
 
-  if (mode === "signin") {
-    return (
-      <div className="auth-screen">
-        {langRow}
-        <button type="button" className="auth-logo" onClick={onLogoTap} style={authLogoStyle}>
-          MPOINTS
-          <br />
-          TRACKER
-        </button>
-        <LoginForm
-          t={t}
-          onSignIn={onSignIn}
-          onShowReset={() => {
-            setMode("reset");
-            setErr("");
-          }}
-          onShowSignup={() => {
-            setMode("signup");
-            setErr("");
-          }}
-          onBack={back}
-        />
+  const brand = (
+    <button type="button" className="auth-logo" onClick={onLogoTap}>
+      <span className="auth-logo-main">MPOINTS</span>
+      <span className="auth-logo-sub">TRACKER</span>
+    </button>
+  );
+
+  const shell = (children: ReactNode) => (
+    <div className="auth-screen">
+      <span className="auth-bg" aria-hidden="true">
+        <span className="auth-orb auth-orb--a" />
+        <span className="auth-orb auth-orb--b" />
+      </span>
+      {langRow}
+      <section className="auth-card">
+        {brand}
+        {children}
         {closeBtn}
-      </div>
+      </section>
+    </div>
+  );
+
+  if (mode === "signin") {
+    return shell(
+      <LoginForm
+        t={t}
+        onSignIn={onSignIn}
+        onShowReset={() => {
+          setMode("reset");
+          setErr("");
+        }}
+        onShowSignup={() => {
+          setMode("signup");
+          setErr("");
+        }}
+        onBack={back}
+      />
     );
   }
 
   if (mode === "signup") {
-    return (
-      <div className="auth-screen">
-        {langRow}
-        <button type="button" className="auth-logo" onClick={onLogoTap} style={authLogoStyle}>
-          MPOINTS
-          <br />
-          TRACKER
-        </button>
-        <div className="auth-form">
-          <div className="inp-group">
-            <label id="signup-name-label" htmlFor="signup-name" className="inp-label">{t("namePlaceholder")}</label>
-            <input id="signup-name" className="inp" type="text" placeholder={t("namePlaceholder")} value={name} onChange={handleNameChange} autoComplete="name" aria-invalid={!!err} aria-labelledby="signup-name-label" />
-          </div>
-          <div className="inp-group">
-            <label id="signup-email-label" htmlFor="signup-email" className="inp-label">{t("emailPlaceholder")}</label>
-            <input id="signup-email" className="inp" type="email" placeholder={t("emailPlaceholder")} value={email} onChange={handleEmailChange} autoComplete="email" aria-invalid={!!err} aria-labelledby="signup-email-label" />
-          </div>
-          <div className="inp-group">
-            <label id="signup-password-label" htmlFor="signup-password" className="inp-label">{t("passwordPlaceholder")}</label>
-            <input
-              id="signup-password"
-              className="inp"
-              type="password"
-              placeholder={t("passwordPlaceholder")}
-              value={password}
-              onChange={handlePasswordChange}
-              autoComplete="new-password"
-              aria-invalid={!!err}
-              aria-labelledby="signup-password-label"
-              aria-describedby={err ? "signup-error" : undefined}
-            />
-          </div>
-          {err && <div id="signup-error" className="auth-err" aria-live="assertive">{err}</div>}
-          <button className="btnpri" style={primaryButtonStyle} disabled={loading || !email || !password} onClick={handleSignUp}>
-            {loading ? "..." : t("signUp")}
-          </button>
-          <button className="auth-link" style={backLinkStyle} onClick={back}>
-            {t("backToLogin")}
-          </button>
+    return shell(
+      <div className="auth-form">
+        <div className="inp-group">
+          <label id="signup-name-label" htmlFor="signup-name" className="inp-label">{t("namePlaceholder")}</label>
+          <input id="signup-name" className="inp" type="text" placeholder={t("namePlaceholder")} value={name} onChange={handleNameChange} autoComplete="name" aria-invalid={!!err} aria-labelledby="signup-name-label" />
         </div>
-        {closeBtn}
+        <div className="inp-group">
+          <label id="signup-email-label" htmlFor="signup-email" className="inp-label">{t("emailPlaceholder")}</label>
+          <input id="signup-email" className="inp" type="email" placeholder={t("emailPlaceholder")} value={email} onChange={handleEmailChange} autoComplete="email" aria-invalid={!!err} aria-labelledby="signup-email-label" />
+        </div>
+        <div className="inp-group">
+          <label id="signup-password-label" htmlFor="signup-password" className="inp-label">{t("passwordPlaceholder")}</label>
+          <input
+            id="signup-password"
+            className="inp"
+            type="password"
+            placeholder={t("passwordPlaceholder")}
+            value={password}
+            onChange={handlePasswordChange}
+            autoComplete="new-password"
+            aria-invalid={!!err}
+            aria-labelledby="signup-password-label"
+            aria-describedby={err ? "signup-error" : undefined}
+          />
+        </div>
+        {err && <div id="signup-error" className="auth-err" aria-live="assertive">{err}</div>}
+        <button className="btnpri" style={primaryButtonStyle} disabled={loading || !email || !password} onClick={handleSignUp}>
+          {loading ? "..." : t("signUp")}
+        </button>
+        <button className="auth-link" onClick={back}>
+          {t("backToLogin")}
+        </button>
       </div>
     );
   }
 
   if (mode === "reset") {
-    return (
-      <div className="auth-screen">
-        {langRow}
-        <button type="button" className="auth-logo" onClick={onLogoTap} style={authLogoStyle}>
-          MPOINTS
-          <br />
-          TRACKER
+    return shell(
+      <div className="auth-form">
+        {resetDone ? (
+          <div style={resetDoneStyle}>{t("resetSent")}</div>
+        ) : (
+          <>
+            <div className="inp-group">
+              <label id="reset-email-label" htmlFor="reset-email" className="inp-label">{t("emailPlaceholder")}</label>
+              <input id="reset-email" className="inp" type="email" placeholder={t("emailPlaceholder")} value={email} onChange={handleEmailChange} autoComplete="email" aria-invalid={!!err} aria-labelledby="reset-email-label" aria-describedby={err ? "reset-error" : undefined} />
+            </div>
+            {err && <div id="reset-error" className="auth-err" aria-live="assertive">{err}</div>}
+            <button className="btnpri" style={primaryButtonStyle} disabled={loading || !email} onClick={handleReset}>
+              {loading ? "..." : t("forgotPassword")}
+            </button>
+          </>
+        )}
+        <button className="auth-link" onClick={back}>
+          {t("backToLogin")}
         </button>
-        <div className="auth-form">
-          {resetDone ? (
-            <div style={resetDoneStyle}>{t("resetSent")}</div>
-          ) : (
-            <>
-              <div className="inp-group">
-                <label id="reset-email-label" htmlFor="reset-email" className="inp-label">{t("emailPlaceholder")}</label>
-                <input id="reset-email" className="inp" type="email" placeholder={t("emailPlaceholder")} value={email} onChange={handleEmailChange} autoComplete="email" aria-invalid={!!err} aria-labelledby="reset-email-label" aria-describedby={err ? "reset-error" : undefined} />
-              </div>
-              {err && <div id="reset-error" className="auth-err" aria-live="assertive">{err}</div>}
-              <button className="btnpri" style={primaryButtonStyle} disabled={loading || !email} onClick={handleReset}>
-                {loading ? "..." : t("forgotPassword")}
-              </button>
-            </>
-          )}
-          <button className="auth-link" style={backLinkStyle} onClick={back}>
-            {t("backToLogin")}
-          </button>
-        </div>
-        {closeBtn}
       </div>
     );
   }
 
-  return (
-    <div className="auth-screen">
-      {langRow}
-      <button type="button" className="auth-logo" onClick={onLogoTap} style={authLogoStyle}>
-        MPOINTS
-        <br />
-        TRACKER
-      </button>
-      <div className="auth-sub">{t("registroTitle")}</div>
-      <div className="auth-desc">{t("authDesc")}</div>
-      {!isOnline && (
-        <div data-testid="offline-auth-copy" style={offlineCopyStyle}>
-          {t("offlineAuthCopy")}
-        </div>
-      )}
-      <button className="btn-google" onClick={onGoogle}>
-        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" />
-        {t("continueGoogle")}
-      </button>
-      <div className="auth-divider">o</div>
-      <button
-        className="btn-google"
-        style={subtleEmailButtonStyle}
-        onClick={() => {
-          setMode("signin");
-          setErr("");
-        }}
-      >
-        ✉️ {t("continueEmail")}
-      </button>
-      {onGuest && (
-        <>
+  return shell(
+    showGuestConfirm && onGuest ? (
+      <div className="auth-confirm">
+        <div className="auth-confirm-title">{t("localAccountTitle")}</div>
+        <div className="auth-confirm-msg">{t("localAccountMsg")}</div>
+        <button
+          className="modal-confirm"
+          data-testid="confirm-local-account"
+          onClick={() => {
+            setShowGuestConfirm(false);
+            onGuest();
+          }}
+        >
+          {t("localAccountConfirm")}
+        </button>
+        <button className="auth-btn-quiet" onClick={() => setShowGuestConfirm(false)}>
+          {t("cancel")}
+        </button>
+      </div>
+    ) : (
+      <>
+        <div className="auth-sub">{t("registroTitle")}</div>
+        <div className="auth-desc">{t("authDesc")}</div>
+        {!isOnline && (
+          <div data-testid="offline-auth-copy" className="auth-offline">
+            {t("offlineAuthCopy")}
+          </div>
+        )}
+        <button className="btn-google" onClick={onGoogle}>
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" />
+          {t("continueGoogle")}
+        </button>
+        <div className="auth-divider">o</div>
+        <button
+          className="auth-btn-outline"
+          onClick={() => {
+            setMode("signin");
+            setErr("");
+          }}
+        >
+          {MailIcon}
+          {t("continueEmail")}
+        </button>
+        {onGuest && (
           <button
-            style={guestButtonStyle}
+            className="auth-btn-outline"
             onClick={() => setShowGuestConfirm(true)}
             data-testid="guest-btn"
           >
-            📱 {t("useWithout")}
+            {PhoneIcon}
+            {t("useWithout")}
           </button>
-          {showGuestConfirm && (
-            <ConfirmModal
-              title={t("localAccountTitle")}
-              msg={t("localAccountMsg")}
-              confirmLabel={t("localAccountConfirm")}
-              cancelLabel={t("cancel")}
-              onConfirm={() => {
-                setShowGuestConfirm(false);
-                onGuest();
-              }}
-              onCancel={() => setShowGuestConfirm(false)}
-            />
-          )}
-        </>
-      )}
-      {closeBtn}
-    </div>
+        )}
+      </>
+    )
   );
 }
 
