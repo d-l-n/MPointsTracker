@@ -10,6 +10,7 @@ import type {
   Match,
   MatchStore,
   NavItem,
+  PendingInvite,
   PlayerGroup,
   ThemeAccentMode,
   ThemeMode,
@@ -27,6 +28,7 @@ import OnboardingModal from "./OnboardingModal";
 import BootShell from "./BootShell";
 import InstallBanner from "./InstallBanner";
 import OfflineBanner from "./OfflineBanner";
+import ConfirmModal from "./ConfirmModal";
 import ScrollToTop from "./ScrollToTop";
 import DevPanel from "./DevPanel";
 import { ShareResultButton } from "./ShareResultCard";
@@ -84,8 +86,10 @@ interface AppLayoutProps {
   syncError: unknown;
   nav: string;
   selected: string | null;
-  pendingInvite: { displayName: string } | null;
-  dismissPendingInvite: () => void;
+  pendingInvite: PendingInvite | null;
+  invitePromptOpen?: boolean;
+  acceptPendingInvite?: () => void;
+  declinePendingInvite: () => void;
   historyView: HistoryViewState | null;
   activeGame: string | null;
   gameTab: "stats" | "new";
@@ -236,7 +240,9 @@ export default function AppLayout({
   nav,
   selected,
   pendingInvite,
-  dismissPendingInvite,
+  invitePromptOpen,
+  acceptPendingInvite,
+  declinePendingInvite,
   historyView,
   activeGame,
   gameTab,
@@ -495,31 +501,17 @@ export default function AppLayout({
       />
       <AppShell dark={dark} toast={toast}>
       <InstallBanner t={t} />
-      {pendingInvite && nav === "home" && !selected && (
-        <div
-          data-testid="pending-invite-banner"
-          className="pending-invite-banner"
-        >
-          <div className="pending-invite-copy">
-            <div className="pending-invite-label">
-              {t("invitePending")}
-            </div>
-            <div
-              data-testid="pending-invite-name"
-              className="pending-invite-name"
-            >
-              {pendingInvite.displayName}
-            </div>
-          </div>
-          <button
-            data-testid="pending-invite-dismiss"
-            onClick={dismissPendingInvite}
-            className="pending-invite-dismiss"
-            aria-label={t("dismissInvite")}
-          >
-            ✕
-          </button>
-        </div>
+      {invitePromptOpen && pendingInvite && (
+        <ConfirmModal
+          title={t("inviteJoinTitle")}
+          msg={t("inviteJoinMsg").replace("{name}", pendingInvite.displayName)}
+          confirmLabel={t("inviteJoinAccept")}
+          cancelLabel={t("inviteJoinDecline")}
+          onConfirm={() => acceptPendingInvite?.()}
+          onCancel={declinePendingInvite}
+          confirmTestId="invite-accept"
+          cancelTestId="invite-decline"
+        />
       )}
 
       <div

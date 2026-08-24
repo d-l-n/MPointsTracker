@@ -145,7 +145,7 @@ export default function App() {
   // ── Misc UI ────────────────────────────────────────────────────────────────
   const [showSplash, setShowSplash] = useState(() => !localStorage.getItem("bgt_splash_seen"));
   const [showAuthModal, setShowAuthModal] = useState<false | string>(false);
-  const { pendingInvite, dismissPendingInvite, claimPendingInvite } = usePendingInvite({ showToast, t });
+  const { pendingInvite, invitePromptOpen, acceptPendingInvite, declinePendingInvite, claimPendingInvite } = usePendingInvite({ showToast, t });
   const routeLoaderState = useMemo(() => {
     if (!loaderData) return null;
 
@@ -321,8 +321,10 @@ export default function App() {
     knownNames, getMatches,
     addMatch, delMatch, editMatch,
     pendingInvite,
+    invitePromptOpen,
+    acceptPendingInvite,
     claimPendingInvite,
-  }), [user, dark, lang, t, showToast, data, playerGroups, savePlayerGroups, spotifyEnabled, spotifyPosition, saveSpotifyPreference, saveSpotifyPosition, knownNames, getMatches, addMatch, delMatch, editMatch, pendingInvite, claimPendingInvite]);
+  }), [user, dark, lang, t, showToast, data, playerGroups, savePlayerGroups, spotifyEnabled, spotifyPosition, saveSpotifyPreference, saveSpotifyPosition, knownNames, getMatches, addMatch, delMatch, editMatch, pendingInvite, invitePromptOpen, acceptPendingInvite, claimPendingInvite]);
 
   return (
     <AppProvider value={contextValue}>
@@ -356,7 +358,9 @@ export default function App() {
         nav={nav}
         selected={selected}
         pendingInvite={pendingInvite as PendingInvite | null}
-        dismissPendingInvite={dismissPendingInvite}
+        invitePromptOpen={invitePromptOpen}
+        acceptPendingInvite={acceptPendingInvite}
+        declinePendingInvite={declinePendingInvite}
         historyView={historyView}
         activeGame={activeGame}
         gameTab={gameTab}

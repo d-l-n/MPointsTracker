@@ -2,8 +2,7 @@ import { memo, useEffect, useState, type CSSProperties } from "react";
 
 import { useAppContext } from "../../context/AppContext";
 import { Link, Search, UserHand, X, LinkOff } from "reicon-react";
-import type { PendingInvite, TranslationFn } from "../../types";
-import Tooltip from "../ui/Tooltip";
+import type { PendingInvite, TranslationFn } from "../../types";import Tooltip from "../ui/Tooltip";
 import PlayerInput from "../ui/PlayerInput";
 import InviteLinkModal from "./InviteLinkModal";
 import UserSearchModal from "./UserSearchModal";
@@ -12,7 +11,6 @@ interface LinkTarget {
   uid: string | null;
   name: string;
 }
-
 interface LinkedPlayerInputProps {
   value: string;
   linkedUid?: string | null;
@@ -32,11 +30,6 @@ interface CurrentUser {
   uid: string;
   displayName?: string | null;
   email?: string | null;
-}
-
-interface ClaimedInvite {
-  uid: string;
-  displayName: string;
 }
 
 const baseButtonStyle: CSSProperties = {
@@ -118,7 +111,7 @@ function LinkedPlayerInput({
 
   const currentUser = user as CurrentUser | null | undefined;
   const currentPendingInvite = pendingInvite as PendingInvite | null | undefined;
-  const claimInvite = claimPendingInvite as (() => ClaimedInvite | null | undefined) | undefined;
+  const claimInvite = claimPendingInvite;
 
   const selfName =
     currentUser?.displayName ||

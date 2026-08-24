@@ -53,7 +53,7 @@ function createProps(overrides = {}) {
     nav: "home",
     selected: null,
     pendingInvite: null,
-    dismissPendingInvite: vi.fn(),
+    declinePendingInvite: vi.fn(),
     historyView: null,
     activeGame: null,
     gameTab: "new",

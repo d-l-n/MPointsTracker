@@ -14,16 +14,31 @@ interface UsePendingInviteOptions {
 
 export function usePendingInvite({ showToast, t }: UsePendingInviteOptions) {
   const [pendingInvite, setPendingInvite] = useState<PendingInvite | null>(null);
+  const [invitePromptOpen, setInvitePromptOpen] = useState(false);
   const pendingInviteRef = useRef<PendingInvite | null>(null);
 
   useEffect(() => {
     pendingInviteRef.current = pendingInvite;
   }, [pendingInvite]);
 
-  const dismissPendingInvite = useCallback(() => {
+  // Decline: cierra el prompt y descarta la invitación por completo.
+  const declinePendingInvite = useCallback(() => {
+    setInvitePromptOpen(false);
     pendingInviteRef.current = null;
     setPendingInvite(null);
   }, []);
+
+  // Accept: cierra el prompt pero conserva la invitación para que
+  // LinkedPlayerInput la reclame al crear la próxima partida.
+  const acceptPendingInvite = useCallback(() => {
+    const invite = pendingInviteRef.current;
+    if (!invite) {
+      setInvitePromptOpen(false);
+      return;
+    }
+    setInvitePromptOpen(false);
+    showToast(t("inviteJoinDone").replace("{name}", invite.displayName));
+  }, [showToast, t]);
 
   const claimPendingInvite = useCallback((): PendingInvite | null => {
     const invite = pendingInviteRef.current;
@@ -47,7 +62,7 @@ export function usePendingInvite({ showToast, t }: UsePendingInviteOptions) {
 
       if (invite) {
         setPendingInvite(invite);
-        showToast(`${invite.displayName} ${t("inviteReady")}`);
+        setInvitePromptOpen(true);
         return;
       }
 
@@ -63,5 +78,5 @@ export function usePendingInvite({ showToast, t }: UsePendingInviteOptions) {
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  return { pendingInvite, dismissPendingInvite, claimPendingInvite };
+  return { pendingInvite, invitePromptOpen, acceptPendingInvite, declinePendingInvite, claimPendingInvite };
 }

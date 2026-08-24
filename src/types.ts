@@ -248,7 +248,9 @@ export interface AppContextValue {
   delMatch: (gid: string, matchId: string) => void;
   editMatch: (gid: string, match: Match & Record<string, unknown>) => void;
   pendingInvite?: unknown;
-  claimPendingInvite?: (...args: unknown[]) => unknown;
+  invitePromptOpen?: boolean;
+  acceptPendingInvite?: () => void;
+  claimPendingInvite?: () => PendingInvite | null;
 }
 
 export interface NavItem {

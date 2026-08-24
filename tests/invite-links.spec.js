@@ -29,7 +29,7 @@ async function openInvite(page, code, inviteDoc) {
 }
 
 test.describe("Invite links", () => {
-  test("shows the pending invite banner from a firestore invite code and allows dismissing it", async ({ page }) => {
+  test("shows a join confirmation prompt and allows declining it", async ({ page }) => {
     await openInvite(page, "invite-code-1", {
       uid: "invite-user-1",
       displayName: "Ana Invitada",
@@ -37,15 +37,20 @@ test.describe("Invite links", () => {
       expiresAt: Date.now() + 60 * 60 * 1000,
     });
 
-    await expect(page.locator('[data-testid="pending-invite-banner"]')).toBeVisible();
-    await expect(page.locator('[data-testid="pending-invite-name"]')).toHaveText(/Ana Invitada/i);
+    const dialog = page.locator('[role="dialog"]');
+    await expect(dialog).toBeVisible();
+    await expect(dialog).toContainText(/Ana Invitada/i);
+    await expect(page.locator('[data-testid="invite-accept"]')).toBeVisible();
 
-    await page.locator('[data-testid="pending-invite-dismiss"]').click();
+    await page.locator('[data-testid="invite-decline"]').click();
 
-    await expect(page.locator('[data-testid="pending-invite-banner"]')).toHaveCount(0);
+    await expect(page.locator('[data-testid="invite-accept"]')).toHaveCount(0);
+    // Declined invites must not auto-link later.
+    await openGame(page, "uno-family", "uno");
+    await expect(page.locator('[data-testid="linked-player-chip"]')).toHaveCount(0);
   });
 
-  test("auto-links the invited player when opening a game", async ({ page }) => {
+  test("auto-links the invited player after accepting the prompt", async ({ page }) => {
     await openInvite(page, "invite-code-2", {
       uid: "invite-user-2",
       displayName: "Beto Invitado",
@@ -53,9 +58,12 @@ test.describe("Invite links", () => {
       expiresAt: Date.now() + 60 * 60 * 1000,
     });
 
+    await expect(page.locator('[role="dialog"]')).toContainText(/Beto Invitado/i);
+    await page.locator('[data-testid="invite-accept"]').click();
+    await expect(page.locator('[data-testid="invite-accept"]')).toHaveCount(0);
+
     await openGame(page, "uno-family", "uno");
 
     await expect(page.locator('[data-testid="linked-player-chip"]').first()).toContainText(/Beto Invitado/i);
-    await expect(page.locator('[data-testid="pending-invite-banner"]')).toHaveCount(0);
   });
 });
