@@ -145,7 +145,7 @@ export default function App() {
   // ── Misc UI ────────────────────────────────────────────────────────────────
   const [showSplash, setShowSplash] = useState(() => !localStorage.getItem("bgt_splash_seen"));
   const [showAuthModal, setShowAuthModal] = useState<false | string>(false);
-  const { pendingInvite, invitePromptOpen, acceptPendingInvite, declinePendingInvite, claimPendingInvite } = usePendingInvite({ showToast, t });
+  const { pendingInvite, invitePromptOpen, acceptPendingInvite, declinePendingInvite, claimPendingInvite } = usePendingInvite({ showToast, t, user });
   const routeLoaderState = useMemo(() => {
     if (!loaderData) return null;
 

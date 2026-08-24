@@ -65,6 +65,27 @@ service cloud.firestore {
       // type-checks haría la query imposible de validar (permission-denied).
       allow list: if isAuth() && resource.data.uid == request.auth.uid;
 
+      // update (acceptInvite reporta quién aceptó): cualquier usuario logueado
+      // puede agregar UNICAMENTE el campo acceptedBy a un invite NO expirado.
+      // Los campos del host quedan intactos (igualdad byte a byte) y el uid
+      // dentro de acceptedBy debe ser el del llamador (no se puede suplantar).
+      allow update: if isAuth()
+        && resource.data.expiresAt is int
+        && resource.data.expiresAt > request.time.toMillis()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["acceptedBy"])
+        && request.resource.data.uid == resource.data.uid
+        && request.resource.data.displayName == resource.data.displayName
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.expiresAt == resource.data.expiresAt
+        && request.resource.data.acceptedBy.uid == request.auth.uid
+        && request.resource.data.acceptedBy.displayName is string
+        && request.resource.data.acceptedBy.acceptedAt is int
+        && (
+          !request.resource.data.acceptedBy.keys().hasAny(["photoURL"])
+          || request.resource.data.acceptedBy.photoURL == null
+          || request.resource.data.acceptedBy.photoURL is string
+        );
+
       allow create: if isAuth()
         && request.resource.data.keys().hasOnly([
           "uid", "displayName", "photoURL", "createdAt", "expiresAt"

@@ -1,6 +1,6 @@
 import { useEffect, useState, type CSSProperties } from "react";
 
-import { createInviteLink } from "../../lib/inviteService";
+import { createInviteLink, subscribeHostInvites, type AcceptedInvite } from "../../lib/inviteService";
 import type { TranslationFn } from "../../types";
 
 interface InviteUser {
@@ -64,6 +64,29 @@ const expiryStyle: CSSProperties = {
   color: "var(--tx3)",
 };
 
+const joinedSectionStyle: CSSProperties = {
+  marginTop: 14,
+  paddingTop: 12,
+  borderTop: "1px solid var(--bo2)",
+};
+
+const joinedTitleStyle: CSSProperties = {
+  fontSize: ".7rem",
+  color: "var(--tx3)",
+  letterSpacing: 1,
+  textTransform: "uppercase",
+};
+
+const joinedNameStyle: CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  gap: 6,
+  marginTop: 6,
+  fontSize: ".82rem",
+  color: "#52B788",
+  fontWeight: 600,
+};
+
 const actionsStyle: CSSProperties = {
   display: "grid",
   gridTemplateColumns: "1fr 1fr",
@@ -76,6 +99,20 @@ function InviteLinkModal({ user, onClose, t = ((key: string) => key) as Translat
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
+  const [joined, setJoined] = useState<AcceptedInvite[]>([]);
+
+  // Live feed: quiénes aceptaron los invites del host mientras el modal
+  // está abierto. Errores dejan la lista vacía (best-effort).
+  useEffect(() => {
+    if (!user.uid) return;
+    return subscribeHostInvites(user.uid, (invites) => {
+      const acceptances = invites
+        .map((invite) => invite.acceptedBy)
+        .filter((entry): entry is AcceptedInvite => Boolean(entry?.uid))
+        .sort((a, b) => b.acceptedAt - a.acceptedAt);
+      setJoined(acceptances);
+    });
+  }, [user.uid]);
 
   useEffect(() => {
     let mounted = true;
@@ -150,6 +187,17 @@ function InviteLinkModal({ user, onClose, t = ((key: string) => key) as Translat
         {error && <div style={errorStyle}>{error}</div>}
 
         <div style={expiryStyle}>{t("inviteExpiry")}</div>
+
+        {joined.length > 0 && (
+          <div style={joinedSectionStyle}>
+            <div style={joinedTitleStyle}>{t("inviteJoinedTitle")}</div>
+            {joined.map((entry) => (
+              <div key={`${entry.uid}-${entry.acceptedAt}`} style={joinedNameStyle}>
+                <span aria-hidden="true">✓</span> {entry.displayName}
+              </div>
+            ))}
+          </div>
+        )}
 
         <div style={actionsStyle}>
           <button className="btnsec" onClick={handleCopy} disabled={loading || !link}>

@@ -397,6 +397,7 @@ const de = {
   "inviteJoinAccept": "Beitreten",
   "inviteJoinDecline": "Nicht jetzt",
   "inviteJoinDone": "Du bist {name}s Partie beigetreten",
+  "inviteJoinedTitle": "Beigetreten",
   "inviteExpiredOrInvalid": "❌ Ungültiger oder abgelaufener Einladungslink",
   "cameraError": "Kamerazugriff nicht möglich. Zugriff erlauben und erneut versuchen.",
   "scannerError": "Scanner konnte nicht geladen werden",

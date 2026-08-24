@@ -4,6 +4,7 @@ import {
   doc,
   getDoc,
   getDocs,
+  onSnapshot,
   query,
   setDoc,
   where,
@@ -28,6 +29,13 @@ interface InvitePayload extends PendingInvite {
 
 interface StoredInvite extends InvitePayload {
   code: string;
+}
+
+export interface AcceptedInvite {
+  uid: string;
+  displayName: string;
+  photoURL: string | null;
+  acceptedAt: number;
 }
 
 interface BrowserInviteMap {
@@ -117,6 +125,69 @@ async function createInviteLink(user: InviteUser | null | undefined, now = Date.
   });
 }
 
+interface AcceptInviteStoreOptions {
+  code: string;
+  user: InviteUser | null | undefined;
+  now?: number;
+  writeAcceptance: (code: string, acceptance: AcceptedInvite) => Promise<unknown>;
+}
+
+function buildAcceptance(user: InviteUser | null | undefined, now = Date.now()): AcceptedInvite {
+  if (!user?.uid) {
+    throw new Error("missing-user");
+  }
+
+  return {
+    uid: user.uid,
+    displayName: user.displayName || user.email?.split("@")[0] || user.uid.slice(0, 8),
+    photoURL: user.photoURL || null,
+    acceptedAt: now,
+  };
+}
+
+async function acceptInviteWithStore({
+  code,
+  user,
+  now = Date.now(),
+  writeAcceptance,
+}: AcceptInviteStoreOptions): Promise<AcceptedInvite> {
+  const acceptance = buildAcceptance(user, now);
+  await writeAcceptance(code, acceptance);
+  return acceptance;
+}
+
+async function acceptInvite(code: string, user: InviteUser | null | undefined, now = Date.now()): Promise<void> {
+  await acceptInviteWithStore({
+    code,
+    user,
+    now,
+    writeAcceptance: async (inviteCode, acceptance) =>
+      setDoc(doc(fbDb, "invites", inviteCode), { acceptedBy: acceptance }, { merge: true }),
+  });
+}
+
+// Live feed for the host's modal: every invite owned by `uid` with its
+// acceptedBy (if any). Returns an unsubscribe function.
+function subscribeHostInvites(
+  uid: string,
+  cb: (invites: Array<StoredInvite & { acceptedBy?: AcceptedInvite }>) => void,
+): () => void {
+  const hostInvitesQuery = query(collection(fbDb, "invites"), where("uid", "==", uid));
+  return onSnapshot(
+    hostInvitesQuery,
+    (snap) => {
+      cb(snap.docs.map((entry) => ({
+        code: entry.id,
+        ...(entry.data() as InvitePayload & { acceptedBy?: AcceptedInvite }),
+      })));
+    },
+    (error) => {
+      console.warn("[inviteService] host invites subscription error:", error);
+      cb([]);
+    },
+  );
+}
+
 function getInviteCodeFromUrl(url = window.location.href): string | null {
   try {
     return new URL(url).searchParams.get(INVITE_PARAM);
@@ -152,6 +223,8 @@ function clearInviteFromUrl(url = window.location.href): void {
 export {
   INVITE_PARAM,
   INVITE_TTL_MS,
+  acceptInvite,
+  acceptInviteWithStore,
   buildInvitePayload,
   clearInviteFromUrl,
   createInviteLink,
@@ -159,4 +232,5 @@ export {
   getInviteCodeFromUrl,
   resolveInvite,
   resolveInviteDoc,
+  subscribeHostInvites,
 };

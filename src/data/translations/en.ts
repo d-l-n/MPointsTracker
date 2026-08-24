@@ -397,6 +397,7 @@ const en = {
   "inviteJoinAccept": "Join",
   "inviteJoinDecline": "Not now",
   "inviteJoinDone": "You joined {name}'s match",
+  "inviteJoinedTitle": "Joined",
   "inviteExpiredOrInvalid": "❌ Invalid or expired invite link",
   "cameraError": "Could not access camera. Allow access and try again.",
   "scannerError": "Could not load scanner",

@@ -403,6 +403,7 @@ const zh = {
   "inviteJoinAccept": "加入",
   "inviteJoinDecline": "暂不",
   "inviteJoinDone": "你已加入 {name} 的对局",
+  "inviteJoinedTitle": "已加入",
   "inviteExpiredOrInvalid": "❌ 邀请链接无效或已过期",
   "cameraError": "无法访问相机。请允许访问后重试。",
   "scannerError": "无法加载扫描器",

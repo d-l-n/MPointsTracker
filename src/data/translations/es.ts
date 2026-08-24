@@ -398,6 +398,7 @@ const es = {
   "inviteJoinAccept": "Unirme",
   "inviteJoinDecline": "Ahora no",
   "inviteJoinDone": "Te uniste a la partida de {name}",
+  "inviteJoinedTitle": "Se unieron",
   "inviteExpiredOrInvalid": "❌ Link inválido o expirado",
   "cameraError": "No se pudo acceder a la cámara. Permití el acceso e intentá de nuevo.",
   "scannerError": "No se pudo cargar el escáner",

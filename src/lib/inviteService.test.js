@@ -2,7 +2,7 @@ import { describe, expect, test, vi } from "vitest";
 import {
   INVITE_TTL_MS, buildInvitePayload, resolveInviteDoc,
   getInviteCodeFromUrl, clearInviteFromUrl,
-  createInviteLinkWithStore,
+  createInviteLinkWithStore, acceptInviteWithStore,
 } from "./inviteService.ts";
 
 describe("buildInvitePayload", () => {
@@ -124,5 +124,44 @@ describe("createInviteLinkWithStore", () => {
 
     expect(deleteInviteByCode).not.toHaveBeenCalled();
     expect(url).toContain("invite=abc");
+  });
+});
+
+describe("acceptInviteWithStore", () => {
+  const mockUser = { uid: "guest-9", displayName: "Beto", email: null, photoURL: null };
+
+  test("writes acceptance with caller identity and timestamp", async () => {
+    const writeAcceptance = vi.fn().mockResolvedValue(undefined);
+
+    const result = await acceptInviteWithStore({
+      code: "code-1", user: mockUser, now: 5_000, writeAcceptance,
+    });
+
+    expect(writeAcceptance).toHaveBeenCalledWith("code-1", {
+      uid: "guest-9",
+      displayName: "Beto",
+      photoURL: null,
+      acceptedAt: 5_000,
+    });
+    expect(result.uid).toBe("guest-9");
+  });
+
+  test("derives displayName from email when missing", async () => {
+    const writeAcceptance = vi.fn().mockResolvedValue(undefined);
+
+    await acceptInviteWithStore({
+      code: "code-2", user: { uid: "u1", email: "alice@t.com" }, now: 1, writeAcceptance,
+    });
+
+    expect(writeAcceptance.mock.calls[0][1].displayName).toBe("alice");
+  });
+
+  test("throws missing-user without uid (guest mode cannot write back)", async () => {
+    const writeAcceptance = vi.fn();
+
+    await expect(acceptInviteWithStore({
+      code: "code-3", user: { displayName: "Anon" }, writeAcceptance,
+    })).rejects.toThrow("missing-user");
+    expect(writeAcceptance).not.toHaveBeenCalled();
   });
 });

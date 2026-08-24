@@ -399,6 +399,7 @@ const ja = {
   "inviteJoinAccept": "参加",
   "inviteJoinDecline": "今はしない",
   "inviteJoinDone": "{name} の対局に参加しました",
+  "inviteJoinedTitle": "参加済み",
   "inviteExpiredOrInvalid": "❌ 招待リンクが無効か期限切れです",
   "cameraError": "カメラにアクセスできません。アクセスを許可して再試行してください。",
   "scannerError": "スキャナーを読み込めませんでした",

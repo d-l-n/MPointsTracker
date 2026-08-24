@@ -398,6 +398,7 @@ const fr = {
   "inviteJoinAccept": "Rejoindre",
   "inviteJoinDecline": "Pas maintenant",
   "inviteJoinDone": "Vous avez rejoint la partie de {name}",
+  "inviteJoinedTitle": "Ont rejoint",
   "inviteExpiredOrInvalid": "❌ Lien d'invitation invalide ou expiré",
   "cameraError": "Impossible d'accéder à la caméra. Autorisez l'accès et réessayez.",
   "scannerError": "Impossible de charger le scanner",
