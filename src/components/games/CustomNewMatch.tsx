@@ -1,4 +1,4 @@
-import { memo, useEffect, useState } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 
 import { mkId, haptic } from "../../lib/storage";
 import { getGameName } from "../../data/games";
@@ -94,7 +94,20 @@ function CustomNewMatch({
     return acc;
   }, {});
   const hasDuplicates = Object.values(nameCount).some((value) => value > 1);
-  const sortedPlayers = [...named].sort((left, right) => (scores[right.id] || 0) - (scores[left.id] || 0));
+  // Rounds won, used to break score ties. Without it a tie (e.g. all scores at
+  // zero because only round winners were recorded) fell back to roster order,
+  // so the first player — usually the account owner — was always crowned.
+  const roundWins = useMemo(() => {
+    const wins: Record<string, number> = {};
+    history.forEach((entry) => {
+      if (entry.winnerId) wins[entry.winnerId] = (wins[entry.winnerId] || 0) + 1;
+    });
+    return wins;
+  }, [history]);
+  const comparePlayers = (left: PlayerInputState, right: PlayerInputState) =>
+    (scores[right.id] || 0) - (scores[left.id] || 0) ||
+    (roundWins[right.id] || 0) - (roundWins[left.id] || 0);
+  const sortedPlayers = [...named].sort(comparePlayers);
   const limitVal = customLimit || 0;
   const topScore = Math.max(1, ...sortedPlayers.map((player) => scores[player.id] || 0));
 
@@ -130,8 +143,16 @@ function CustomNewMatch({
   };
 
   const handleSave = () => {
-    const sorted = [...named].sort((left, right) => (scores[right.id] || 0) - (scores[left.id] || 0));
-    const winner = sorted[0]?.name || null;
+    const sorted = [...named].sort(comparePlayers);
+    const [top, runnerUp] = sorted;
+    const hasDecisiveResult =
+      named.some((player) => (scores[player.id] || 0) !== 0) || Object.keys(roundWins).length > 0;
+    const isTie =
+      Boolean(top) &&
+      Boolean(runnerUp) &&
+      (scores[top.id] || 0) === (scores[runnerUp.id] || 0) &&
+      (roundWins[top.id] || 0) === (roundWins[runnerUp.id] || 0);
+    const winner = hasDecisiveResult && !isTie ? (top?.name || null) : null;
     const resolvedName = customName.trim() || t("customGame");
     const resolvedEmoji = customEmoji || "🎮";
     onSave({
