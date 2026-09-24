@@ -9,6 +9,7 @@ import {
 } from "./shared";
 import UserAvatar from "../ui/UserAvatar";
 import UserQRCode from "../auth/UserQRCode";
+import ProfileMatchHistory, { type ProfileHistoryMatch } from "../ui/ProfileMatchHistory";
 import ConfirmModal from "../ui/ConfirmModal";
 import { fbAuth, fbDb } from "../../lib/firebase";
 import { deleteDoc, doc } from "firebase/firestore";
@@ -27,6 +28,7 @@ export interface AccountSectionProps {
   quickStreak: number;
   statusPrimary: string;
   statusSecondary: string;
+  historyMatches?: ProfileHistoryMatch[];
   showToast?: (msg: string, duration?: number) => void;
   t: TranslationFn;
 }
@@ -44,6 +46,7 @@ export default function AccountSection({
   quickStreak,
   statusPrimary,
   statusSecondary,
+  historyMatches = [],
   showToast,
   t,
 }: AccountSectionProps) {
@@ -184,6 +187,8 @@ export default function AccountSection({
         <ProfileStatCard label={t("profileWinrate")} value={`${quickWinrate}%`} accent="#f59e0b" />
         <ProfileStatCard label={t("profileStreak")} value={quickStreak} accent="#e63946" />
       </div>
+
+      <ProfileMatchHistory matches={historyMatches} t={t} limit={10} />
 
       {!user && (
         <div style={{ display: "flex", gap: 8, marginBottom: "14px" }}>

@@ -2547,6 +2547,17 @@ html:not(.dark) .btnsec.nav-leave-discard:hover{color:#5A1E35;border-color:rgba(
 .public-profile-stat-label{font-size:.58rem;color:var(--tx3);margin-top:3px;text-align:center;text-transform:uppercase;letter-spacing:.5px;line-height:1.2}
 .public-profile-empty{text-align:center;padding:32px 16px;color:var(--tx3);font-size:.85rem}
 .public-profile-empty--compact{padding:24px 0}
+
+/* ── PROFILE MATCH HISTORY ─────────────────────────────────────────── */
+.profile-history-list{display:flex;flex-direction:column}
+.profile-history-row{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid var(--content-border);min-width:0}
+.profile-history-row:last-child{border-bottom:none}
+.profile-history-accent{flex:0 0 auto;width:4px;height:30px;border-radius:999px;background:var(--gc,#006D77)}
+.profile-history-copy{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}
+.profile-history-title{font-size:.82rem;font-weight:700;color:var(--tx);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.profile-history-meta{font-size:.7rem;color:var(--tx3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.profile-history-players{flex:0 1 42%;font-size:.68rem;color:var(--tx2);text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.profile-history-viewall{margin:10px 14px}
 @media (min-width: 700px){
   .public-profile-stats-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
 }

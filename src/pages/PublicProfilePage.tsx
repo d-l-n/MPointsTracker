@@ -3,6 +3,7 @@ import { doc, getDoc } from "firebase/firestore";
 import { updateProfile } from "firebase/auth";
 import ConfirmModal from "../components/ui/ConfirmModal";
 import BlobatarPicker from "../components/ui/BlobatarPicker";
+import ProfileMatchHistory, { type ProfileHistoryMatch } from "../components/ui/ProfileMatchHistory";
 import { GAMES, getGame, getGameName } from "../data/games";
 import { Logout } from "reicon-react";
 import { fbAuth, fbDb } from "../lib/firebase";
@@ -400,6 +401,23 @@ function PublicProfilePage({
     return buildPerGameStatsFromData(myData, myUser.displayName);
   }, [myData, myUser]);
 
+  const profileHistory = useMemo<ProfileHistoryMatch[]>(() => {
+    if (!myData) return [];
+    const targetName = isSelf ? myUser?.displayName : profile?.displayName;
+    if (!targetName) return [];
+
+    const rows: ProfileHistoryMatch[] = [];
+    Object.entries(myData).forEach(([gid, matches]) => {
+      if (gid.startsWith("__") || !Array.isArray(matches)) return;
+      (matches as StoredMatch[]).forEach((match) => {
+        const names = (match.players || []).map((player) => getPlayerName(player));
+        if (names.includes(targetName)) rows.push({ ...match, _gid: gid } as ProfileHistoryMatch);
+      });
+    });
+
+    return rows.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  }, [myData, isSelf, myUser, profile]);
+
   const versusGames = useMemo<VersusGameSummary[]>(() => {
     if (!myData || !myUser || !profile) return [];
 
@@ -617,6 +635,8 @@ function PublicProfilePage({
           ) : (
             <div className="public-profile-empty">{t("profileNoStats")}</div>
           )}
+
+          <ProfileMatchHistory matches={profileHistory} t={t} limit={8} />
         </div>
       )}
 

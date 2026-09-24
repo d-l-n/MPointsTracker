@@ -11,6 +11,7 @@ import LanguageSection from "../components/settings/LanguageSection";
 import PlayerGroupsSection from "../components/settings/PlayerGroupsSection";
 import ThemeSection from "../components/settings/ThemeSection";
 import VersionTapper from "../components/ui/VersionTapper";
+import type { ProfileHistoryMatch } from "../components/ui/ProfileMatchHistory";
 import { SectionLabel, SettingsRow, type AppUser, type LanguageCode, type SettingsSubPage } from "../components/settings/shared";
 import { Sun, Cpu, Information, MessageText } from "reicon-react";
 import type {
@@ -138,6 +139,17 @@ function SettingsPage({
   const profileStats = displayName
     ? (buildStats(allMatches).find((stat) => stat.name === displayName) || null)
     : null;
+  // Matches the profile owner played in, most recent first. Shown as the
+  // "match history" section of the profile.
+  const historyMatches: ProfileHistoryMatch[] = Object.entries(data)
+    .filter(([key, matches]) => !key.startsWith("__") && Array.isArray(matches))
+    .flatMap(([gid, matches]) =>
+      (matches as Match[]).map((match) => ({ ...match, _gid: gid })),
+    )
+    .filter((match) =>
+      !displayName || (match.players || []).some((player) => player.name === displayName),
+    )
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   if (subPage === "apptheme") {
     return (
@@ -217,6 +229,7 @@ function SettingsPage({
       quickStreak={profileStats?.streak.max ?? 0}
       statusPrimary={user ? (user.email || t("connected")) : t("localOnly")}
       statusSecondary={user ? t("cloudAndDevice") : t("deviceOnly")}
+      historyMatches={historyMatches}
       showToast={showToast}
       t={t}
     />
