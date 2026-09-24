@@ -1,9 +1,9 @@
-pre-commit:
-  parallel: true
-  commands:
-    security:
-      run: pwsh -NoProfile -File ../core/scripts/check-code.ps1
-pre-push:
-  commands:
-    vulnerabilities:
-      run: pwsh -NoProfile -File ../core/scripts/scan-vulns.ps1
+# Git hooks for mpoints-tracker.
+#
+# The former `security` (pre-commit) and `vulnerabilities` (pre-push) hooks ran
+# `../core/scripts/*.ps1` from the shared "core" project. That project was
+# removed, so both hooks were dead and blocked every commit/push. Repo-local
+# verification lives in `npm run verify:local` (typecheck -> build -> vitest ->
+# Playwright). Re-add hooks here only if they can run without external repos.
+pre-commit: {}
+pre-push: {}
