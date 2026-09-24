@@ -39,6 +39,7 @@ interface AuthHookOptions {
   t: TranslationFn;
   mergeCloudData: (cloudData: Record<string, unknown>) => void;
   mergeSharedMatches: (toMerge: Record<string, Match[]>) => void;
+  removeSharedMatches: (deletions: Array<{ gameId: string; matchId: string }>) => void;
   onCloudTheme?: (accent: ThemeAccentMode, customAccent?: string) => void;
 }
 
@@ -158,6 +159,7 @@ export function useAuth({
   t,
   mergeCloudData,
   mergeSharedMatches,
+  removeSharedMatches,
   onCloudTheme,
 }: AuthHookOptions) {
   const [user, setUser] = useState<User | null | undefined>(undefined);
@@ -303,10 +305,14 @@ export function useAuth({
       }
 
       try {
-        const toMerge = (await pullSharedMatches(currentUser.uid)) as Record<string, Match[]>;
+        const { matches: toMerge, deletions } = await pullSharedMatches(currentUser.uid);
         if (Object.keys(toMerge).length > 0) {
           mergeSharedMatches(toMerge);
           addLog(`syncSharedMatches: imported ${Object.values(toMerge).flat().length} shared matches`);
+        }
+        if (deletions.length > 0) {
+          removeSharedMatches(deletions);
+          addLog(`syncSharedMatches: removed ${deletions.length} deleted shared matches`);
         }
       } catch (error) {
         addLog(`syncSharedMatches ERR: ${error && typeof error === "object" && "code" in error ? String(error.code) : error}`, "warn");
@@ -314,7 +320,7 @@ export function useAuth({
 
       addLog("handleUser: DONE ✓", "ok");
     },
-    [addLog, mergeCloudData, mergeSharedMatches, onCloudTheme],
+    [addLog, mergeCloudData, mergeSharedMatches, removeSharedMatches, onCloudTheme],
   );
 
   // Pull shared matches while signed in: on tab focus / app resume, when the
@@ -328,19 +334,23 @@ export function useAuth({
     if (!user || sharePullInFlight.current) return;
     sharePullInFlight.current = true;
     try {
-      const toMerge = (await pullSharedMatches(user.uid)) as Record<string, Match[]>;
+      const { matches: toMerge, deletions } = await pullSharedMatches(user.uid);
       const count = Object.values(toMerge).flat().length;
       if (count > 0) {
         mergeSharedMatches(toMerge);
         addLog(`refreshSharedMatches: imported ${count} shared matches`, "ok");
         showToast(t("shareReceived").replace("{n}", String(count)));
       }
+      if (deletions.length > 0) {
+        removeSharedMatches(deletions);
+        addLog(`refreshSharedMatches: removed ${deletions.length} deleted shared matches`, "ok");
+      }
     } catch (error) {
       addLog(`refreshSharedMatches ERR: ${error && typeof error === "object" && "code" in error ? String(error.code) : error}`, "warn");
     } finally {
       sharePullInFlight.current = false;
     }
-  }, [addLog, mergeSharedMatches, showToast, t, user]);
+  }, [addLog, mergeSharedMatches, removeSharedMatches, showToast, t, user]);
 
   useEffect(() => {
     if (!user) return;

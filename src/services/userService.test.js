@@ -14,8 +14,8 @@ vi.mock("firebase/firestore", () => ({
 
 vi.mock("../lib/firebase", () => ({ fbDb: {}, fbAuth: { currentUser: null } }));
 
-import { collection, getDocs, limit, query, where } from "firebase/firestore";
-import { searchUsersByName } from "./userService.ts";
+import { collection, getDocs, limit, query, where, writeBatch } from "firebase/firestore";
+import { pullSharedMatches, searchUsersByName } from "./userService.ts";
 
 const mkDoc = (id, data) => ({ id, data: () => data });
 
@@ -81,5 +81,47 @@ describe("searchUsersByName", () => {
     getDocs.mockResolvedValue({ docs });
     const results = await searchUsersByName("user", "nobody", 8);
     expect(results).toHaveLength(8);
+  });
+});
+
+describe("pullSharedMatches", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    writeBatch.mockReturnValue({ delete: vi.fn(), commit: vi.fn().mockResolvedValue(undefined) });
+  });
+
+  test("returns empty maps when there are no shared docs", async () => {
+    getDocs.mockResolvedValue({ empty: true, docs: [] });
+    expect(await pullSharedMatches("u1")).toEqual({ matches: {}, deletions: [] });
+  });
+
+  test("groups matches by game and separates deletion tombstones", async () => {
+    getDocs.mockResolvedValue({
+      empty: false,
+      docs: [
+        { ref: "ref-1", data: () => ({ id: "m1", _gameId: "uno", winner: "Ana" }) },
+        { ref: "ref-2", data: () => ({ _deleted: true, _gameId: "truco", _matchId: "m2" }) },
+        { ref: "ref-3", data: () => ({ id: "m3", _gameId: "uno" }) },
+      ],
+    });
+
+    const result = await pullSharedMatches("u1");
+
+    expect(result.matches.uno).toHaveLength(2);
+    expect(result.matches.uno[0].id).toBe("m1");
+    expect(result.deletions).toEqual([{ gameId: "truco", matchId: "m2" }]);
+  });
+
+  test("ignores docs without a game id and malformed tombstones", async () => {
+    getDocs.mockResolvedValue({
+      empty: false,
+      docs: [
+        { ref: "ref-1", data: () => ({ id: "m1" }) },
+        { ref: "ref-2", data: () => ({ _deleted: true }) },
+      ],
+    });
+
+    const result = await pullSharedMatches("u1");
+    expect(result).toEqual({ matches: {}, deletions: [] });
   });
 });

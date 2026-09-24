@@ -53,6 +53,11 @@ export interface Match {
   duration?: number;
   inactivePlayers?: string[];
   rosterEvents?: UnoRosterEvent[];
+  /** Uids of registered players this match was shared with (for cross-user deletion). */
+  _sharedWithUids?: string[];
+  /** Set on tombstone docs written to a recipient's shared_matches when a match is deleted. */
+  _deleted?: boolean;
+  _matchId?: string;
 }
 
 export interface GameDefinition {

@@ -85,7 +85,7 @@ export default function App() {
   const {
     data, syncing, syncError,
     getMatches, addMatch, delMatch, editMatch, importData,
-    mergeSharedMatches, mergeCloudData,
+    mergeSharedMatches, removeSharedMatches, mergeCloudData,
     total, knownNames,
   } = useMatches({ userRef, dark, showToast, t });
 
@@ -105,7 +105,7 @@ export default function App() {
     signInGoogle, signInWithEmail, signUpWithEmail, sendPasswordReset, signOut,
     enterGuestMode,
   } = useAuth({
-    addLog, showToast, t, mergeCloudData, mergeSharedMatches,
+    addLog, showToast, t, mergeCloudData, mergeSharedMatches, removeSharedMatches,
     onCloudTheme: handleCloudTheme,
   });
 
@@ -260,16 +260,28 @@ export default function App() {
     if (!selected) return;
 
     const keepPortionDraft = selected === "portion_counter";
-    addMatch(selected, match as Match & Record<string, unknown>);
+    const linked = linkedPlayers[selected] || [];
+    // Remember which registered players received this match so a later deletion
+    // can propagate to all of them (see useMatches.delMatch).
+    const sharedWithUids = Array.from(
+      new Set(
+        linked
+          .map((linkedPlayer) => linkedPlayer.uid)
+          .filter((uid): uid is string => Boolean(uid) && uid !== user?.uid),
+      ),
+    );
+    const storedMatch = (sharedWithUids.length > 0
+      ? { ...match, _sharedWithUids: sharedWithUids }
+      : match) as Match & Record<string, unknown>;
+    addMatch(selected, storedMatch);
     triggerConfetti(getGame(selected)?.color);
 
-    const linked = linkedPlayers[selected] || [];
     if (linked.length > 0) {
-      const shareResult = await shareMatchWithPlayers(selected, match as Match & Record<string, unknown>, linked, user);
+      const shareResult = await shareMatchWithPlayers(selected, storedMatch, linked, user);
       addLog(`share match ${selected}: attempted=${shareResult.attempted} shared=${shareResult.shared} failed=${shareResult.failed} skipped=${shareResult.skipped}`);
       if (shareResult.retryable > 0) {
         // Network failure: keep the share so it is retried on reconnect/login.
-        enqueuePendingShare({ gameId: selected, match: match as Match & Record<string, unknown>, recipients: linked, sharedBy: user });
+        enqueuePendingShare({ gameId: selected, match: storedMatch, recipients: linked, sharedBy: user });
         addLog(`share match ${selected}: ${shareResult.retryable} offline → queued for retry`);
       }
       if (!user) {

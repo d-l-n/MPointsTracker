@@ -238,9 +238,15 @@ users/{uid}/
 users/{uid}/shared_matches/
   └── {matchId}: {
         ...matchData,
-        _gameId, _sharedBy, _sharedByUid, _sharedAt
+        _gameId, _sharedBy, _sharedByUid, _sharedAt,
+        _sharedWithUids   // uids of registered players the match was shared with
       }
 ```
+
+Deleting a match that was shared with registered players also writes a tombstone
+(`{ _deleted: true, _gameId, _matchId }`) into each recipient's `shared_matches`.
+Recipients consume tombstones on their next shared-match pull and drop the match
+from their local store, so a deletion propagates to everyone involved.
 
 ### Match shape (UNO example)
 

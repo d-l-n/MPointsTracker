@@ -9,11 +9,14 @@ vi.mock("../lib/firebase", () => ({ fbDb: {} }));
 
 import { addDoc, collection } from "firebase/firestore";
 import {
+  deleteSharedMatchForRecipients,
   enqueuePendingShare,
   flushPendingShares,
   getPendingShares,
   isRetryableShareError,
+  mergeSharedMatchLists,
   shareMatchWithPlayers,
+  updateSharedMatchForRecipients,
 } from "./matchService.ts";
 
 const BASE_MATCH = {
@@ -119,6 +122,181 @@ describe("shareMatchWithPlayers", () => {
     addDoc.mockResolvedValue({});
     await shareMatchWithPlayers("uno", BASE_MATCH, [{ uid: "u1" }], { uid: "host-1" });
     expect(addDoc.mock.calls[0][1]._sharedBy).toBe("Alguien");
+  });
+});
+
+describe("deleteSharedMatchForRecipients", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  test("is a no-op without a match id or recipients", async () => {
+    expect(await deleteSharedMatchForRecipients("uno", undefined, ["u1"], "host-1")).toEqual({ notified: 0, failed: 0 });
+    expect(await deleteSharedMatchForRecipients("uno", "m1", [], "host-1")).toEqual({ notified: 0, failed: 0 });
+    expect(addDoc).not.toHaveBeenCalled();
+  });
+
+  test("writes a tombstone per recipient, skipping the deleter and duplicates", async () => {
+    addDoc.mockResolvedValue({});
+    const result = await deleteSharedMatchForRecipients("uno", "m1", ["u1", "u1", "host-1", null], "host-1");
+
+    expect(result).toEqual({ notified: 1, failed: 0 });
+    expect(addDoc).toHaveBeenCalledTimes(1);
+    const [collectionPath, doc] = addDoc.mock.calls[0];
+    expect(collectionPath).toBe("users/u1/shared_matches");
+    expect(doc).toMatchObject({ _deleted: true, _gameId: "uno", _matchId: "m1", _deletedBy: "host-1" });
+    expect(typeof doc._deletedAt).toBe("number");
+  });
+
+  test("counts failed tombstones", async () => {
+    addDoc.mockRejectedValueOnce({ code: "unavailable" }).mockResolvedValueOnce({});
+    const result = await deleteSharedMatchForRecipients("uno", "m1", ["u1", "u2"], "host-1");
+    expect(result).toEqual({ notified: 1, failed: 1 });
+  });
+});
+
+describe("updateSharedMatchForRecipients", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  test("is a no-op without a match, match id, or recipients", async () => {
+    expect(await updateSharedMatchForRecipients("uno", null, ["u1"], "host-1")).toEqual({ notified: 0, failed: 0 });
+    expect(await updateSharedMatchForRecipients("uno", { ...BASE_MATCH, id: undefined }, ["u1"], "host-1")).toEqual({
+      notified: 0,
+      failed: 0,
+    });
+    expect(await updateSharedMatchForRecipients("uno", BASE_MATCH, [], "host-1")).toEqual({ notified: 0, failed: 0 });
+    expect(addDoc).not.toHaveBeenCalled();
+  });
+
+  test("writes one updated copy per recipient, skipping the editor and duplicates", async () => {
+    addDoc.mockResolvedValue({});
+    const result = await updateSharedMatchForRecipients(
+      "uno",
+      { ...BASE_MATCH, _sharedWithUids: ["u1", "u1", "host-1", null] },
+      ["u1", "u1", "host-1", null],
+      "host-1",
+    );
+
+    expect(result).toEqual({ notified: 1, failed: 0 });
+    expect(addDoc).toHaveBeenCalledTimes(1);
+    const [collectionPath, doc] = addDoc.mock.calls[0];
+    expect(collectionPath).toBe("users/u1/shared_matches");
+    expect(doc._gameId).toBe("uno");
+    expect(typeof doc._sharedAt).toBe("number");
+    expect(doc.id).toBe("m1");
+    expect(doc.winner).toBe("Ana");
+  });
+
+  test("preserves _sharedBy/_sharedByUid and _sharedWithUids from the incoming match", async () => {
+    addDoc.mockResolvedValue({});
+    await updateSharedMatchForRecipients(
+      "uno",
+      {
+        ...BASE_MATCH,
+        _sharedBy: "Original Host",
+        _sharedByUid: "orig-uid",
+        _sharedAt: 123,
+        _sharedWithUids: ["u1", "u2"],
+      },
+      ["u1"],
+      "host-1",
+    );
+    const doc = addDoc.mock.calls[0][1];
+    expect(doc._sharedBy).toBe("Original Host");
+    expect(doc._sharedByUid).toBe("orig-uid");
+    expect(doc._sharedWithUids).toEqual(["u1", "u2"]);
+    expect(doc._sharedAt).not.toBe(123);
+  });
+
+  test("strips _deleted/_matchId and stale share metadata from the stored doc", async () => {
+    addDoc.mockResolvedValue({});
+    await updateSharedMatchForRecipients(
+      "uno",
+      {
+        ...BASE_MATCH,
+        _gameId: "old",
+        _sharedBy: "old",
+        _sharedByUid: "old",
+        _sharedAt: 1,
+        _deleted: true,
+        _matchId: "m1",
+      },
+      ["u1"],
+      "host-1",
+    );
+    const doc = addDoc.mock.calls[0][1];
+    expect(doc._gameId).toBe("uno");
+    expect(doc._deleted).toBeUndefined();
+    expect(doc._matchId).toBeUndefined();
+    expect(doc._sharedBy).toBe("old");
+  });
+
+  test("counts failed writes", async () => {
+    addDoc.mockRejectedValueOnce({ code: "unavailable" }).mockResolvedValueOnce({});
+    const result = await updateSharedMatchForRecipients("uno", BASE_MATCH, ["u1", "u2"], "host-1");
+    expect(result).toEqual({ notified: 1, failed: 1 });
+  });
+
+  test("falls back to editorName when the incoming match has no _sharedBy", async () => {
+    addDoc.mockResolvedValue({});
+    await updateSharedMatchForRecipients("uno", BASE_MATCH, ["u1"], "host-1", "Editor Name");
+    expect(addDoc.mock.calls[0][1]._sharedBy).toBe("Editor Name");
+    expect(addDoc.mock.calls[0][1]._sharedByUid).toBe("host-1");
+  });
+
+  test("falls back to generic sender name when neither match nor editor has a name", async () => {
+    addDoc.mockResolvedValue({});
+    await updateSharedMatchForRecipients("uno", BASE_MATCH, ["u1"], "host-1");
+    expect(addDoc.mock.calls[0][1]._sharedBy).toBe("Alguien");
+  });
+});
+
+describe("mergeSharedMatchLists", () => {
+  test("appends matches with new ids", () => {
+    const existing = [{ id: "a", _sharedAt: 1 }];
+    const incoming = [{ id: "b", _sharedAt: 2 }];
+    expect(mergeSharedMatchLists(existing, incoming)).toEqual([
+      { id: "a", _sharedAt: 1 },
+      { id: "b", _sharedAt: 2 },
+    ]);
+  });
+
+  test("replaces an existing match when the incoming copy is newer", () => {
+    const existing = [{ id: "a", winner: "Ana", _sharedAt: 100 }];
+    const incoming = [{ id: "a", winner: "Luis", _sharedAt: 200 }];
+    expect(mergeSharedMatchLists(existing, incoming)).toEqual([{ id: "a", winner: "Luis", _sharedAt: 200 }]);
+  });
+
+  test("keeps the existing match on a _sharedAt tie", () => {
+    const existing = [{ id: "a", winner: "Ana", _sharedAt: 100 }];
+    const incoming = [{ id: "a", winner: "Luis", _sharedAt: 100 }];
+    expect(mergeSharedMatchLists(existing, incoming)).toEqual([{ id: "a", winner: "Ana", _sharedAt: 100 }]);
+  });
+
+  test("keeps the existing match when the incoming copy is older", () => {
+    const existing = [{ id: "a", winner: "Ana", _sharedAt: 200 }];
+    const incoming = [{ id: "a", winner: "Luis", _sharedAt: 100 }];
+    expect(mergeSharedMatchLists(existing, incoming)).toEqual([{ id: "a", winner: "Ana", _sharedAt: 200 }]);
+  });
+
+  test("multiple incoming copies of the same id: newest wins (last-write-wins)", () => {
+    const existing = [{ id: "a", winner: "Ana", _sharedAt: 100 }];
+    const incoming = [
+      { id: "a", winner: "Luis", _sharedAt: 300 },
+      { id: "a", winner: "Marta", _sharedAt: 200 },
+    ];
+    expect(mergeSharedMatchLists(existing, incoming)).toEqual([{ id: "a", winner: "Luis", _sharedAt: 300 }]);
+  });
+
+  test("ignores incoming matches without an id and keeps id-less existing entries", () => {
+    const existing = [{ id: "a", _sharedAt: 1 }, { winner: "Sin id" }];
+    const incoming = [{ winner: "Otro sin id", _sharedAt: 99 }];
+    expect(mergeSharedMatchLists(existing, incoming)).toEqual([
+      { id: "a", _sharedAt: 1 },
+      { winner: "Sin id" },
+    ]);
   });
 });
 

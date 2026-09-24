@@ -30,6 +30,16 @@ const userRef = (uid: string) => doc(fbDb, "users", uid);
 const userdataRef = (uid: string) => doc(fbDb, "userdata", uid);
 
 type SharedMatchMap = Record<string, (Match & Record<string, unknown>)[]>;
+
+export interface SharedMatchDeletion {
+  gameId: string;
+  matchId: string;
+}
+
+export interface PullSharedMatchesResult {
+  matches: SharedMatchMap;
+  deletions: SharedMatchDeletion[];
+}
 type MinimalProfileUser = Pick<User, "displayName" | "photoURL"> & Partial<Pick<User, "email">>;
 
 import { normalizePublicProfile } from "../lib/publicData";
@@ -181,23 +191,34 @@ export const saveThemeCustomAccentToCloud = async (uid: string, hex: string) => 
   );
 };
 
-export const pullSharedMatches = async (uid: string): Promise<SharedMatchMap> => {
+export const pullSharedMatches = async (uid: string): Promise<PullSharedMatchesResult> => {
   const snap = await getDocs(collection(fbDb, "users", uid, "shared_matches"));
-  if (snap.empty) return {};
+  if (snap.empty) return { matches: {}, deletions: [] };
 
   const toMerge: SharedMatchMap = {};
+  const deletions: SharedMatchDeletion[] = [];
   const refsToDelete: DocumentReference<DocumentData>[] = [];
 
   snap.docs.forEach((entry) => {
     const match = entry.data() as Match & Record<string, unknown>;
+    refsToDelete.push(entry.ref);
+
+    // Tombstone written when the sharer (or another participant) deleted the
+    // match: remove it locally instead of merging it.
+    if (match._deleted) {
+      const gameId = typeof match._gameId === "string" ? match._gameId : null;
+      const matchId = typeof match._matchId === "string" ? match._matchId : null;
+      if (gameId && matchId) deletions.push({ gameId, matchId });
+      return;
+    }
+
     const gameId = match._gameId;
     if (!gameId) return;
     if (!toMerge[gameId]) toMerge[gameId] = [];
     toMerge[gameId].push(match);
-    refsToDelete.push(entry.ref);
   });
 
-  if (Object.keys(toMerge).length === 0) return {};
+  if (Object.keys(toMerge).length === 0 && deletions.length === 0) return { matches: {}, deletions: [] };
 
   const commitDelete = async () => {
     try {
@@ -211,7 +232,7 @@ export const pullSharedMatches = async (uid: string): Promise<SharedMatchMap> =>
   };
 
   void commitDelete();
-  return toMerge;
+  return { matches: toMerge, deletions };
 };
 
 export const loadLegacyUserDoc = async (uid: string): Promise<LegacyUserDoc | null> => {

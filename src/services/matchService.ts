@@ -96,6 +96,140 @@ export const shareMatchWithPlayers = async (
   };
 };
 
+// ── Cross-user deletion ─────────────────────────────────────────────────────
+// When a match that was shared with registered players is deleted, the owner
+// (or any participant) drops a "tombstone" doc in each recipient's
+// shared_matches subcollection. Recipients pick it up on their next pull and
+// remove the match from their local store, so the record disappears for
+// everyone instead of only for the person who deleted it.
+
+export interface DeleteShareResult {
+  notified: number;
+  failed: number;
+}
+
+export const deleteSharedMatchForRecipients = async (
+  gameId: string,
+  matchId: string | undefined | null,
+  recipientUids: Array<string | null | undefined> | undefined,
+  deletedByUid: string | null | undefined,
+): Promise<DeleteShareResult> => {
+  if (!matchId) return { notified: 0, failed: 0 };
+
+  const targets = Array.from(
+    new Set((recipientUids || []).filter((uid): uid is string => Boolean(uid) && uid !== deletedByUid)),
+  );
+  if (targets.length === 0) return { notified: 0, failed: 0 };
+
+  const results = await Promise.allSettled(
+    targets.map((uid) =>
+      addDoc(collection(fbDb, "users", uid, "shared_matches"), {
+        _deleted: true,
+        _gameId: gameId,
+        _matchId: matchId,
+        _deletedBy: deletedByUid || null,
+        _deletedAt: Date.now(),
+      }),
+    ),
+  );
+
+  const failed = results.filter((result) => result.status === "rejected").length;
+  return { notified: targets.length - failed, failed };
+};
+
+// ── Cross-user edits ────────────────────────────────────────────────────────
+// When a match that was shared with registered players is edited, the editor
+// drops an updated copy in each recipient's shared_matches subcollection.
+// Recipients pick it up on their next pull and replace their local copy
+// (mergeSharedMatchLists compares `_sharedAt` timestamps), so the edit
+// propagates to everyone instead of only the person who made it.
+
+export interface UpdateShareResult {
+  notified: number;
+  failed: number;
+}
+
+export const updateSharedMatchForRecipients = async (
+  gameId: string,
+  match: (Match & Record<string, unknown>) | null | undefined,
+  recipientUids: Array<string | null | undefined> | undefined,
+  editorUid: string | null | undefined,
+  editorName?: string | null,
+): Promise<UpdateShareResult> => {
+  if (!match || !match.id) return { notified: 0, failed: 0 };
+
+  const targets = Array.from(
+    new Set((recipientUids || []).filter((uid): uid is string => Boolean(uid) && uid !== editorUid)),
+  );
+  if (targets.length === 0) return { notified: 0, failed: 0 };
+
+  const {
+    _gameId: _g,
+    _sharedBy: _sb,
+    _sharedByUid: _sbu,
+    _sharedAt: _sa,
+    _deleted: _d,
+    _matchId: _mi,
+    ...cleanMatch
+  } = match;
+
+  const updatedCopy = {
+    ...cleanMatch,
+    _gameId: gameId,
+    _sharedBy: _sb || editorName || "Alguien",
+    _sharedByUid: _sbu || editorUid || null,
+    _sharedAt: Date.now(),
+  };
+
+  const results = await Promise.allSettled(
+    targets.map((uid) =>
+      addDoc(collection(fbDb, "users", uid, "shared_matches"), updatedCopy),
+    ),
+  );
+
+  const failed = results.filter((result) => result.status === "rejected").length;
+  return { notified: targets.length - failed, failed };
+};
+
+// ── Shared-match merge (replace-by-newer) ───────────────────────────────────
+// Recipients pull shared_matches docs and merge them into their local store.
+// An updated copy of a match carries the same `id` as the local one, so a plain
+// "add if missing" merge would silently drop the edit. This helper replaces an
+// existing entry only when the incoming copy is newer (by `_sharedAt`); ties
+// keep the local copy. Multiple incoming copies of the same id within one pull
+// are applied in ascending `_sharedAt` order so the newest wins
+// (last-write-wins). Existing entries keep their position; new ones append.
+
+export const mergeSharedMatchLists = (
+  existing: Array<Match & Record<string, unknown>>,
+  incoming: Array<Match & Record<string, unknown>>,
+): Array<Match & Record<string, unknown>> => {
+  const byId = new Map<string, Match & Record<string, unknown>>();
+  existing.forEach((match) => {
+    if (match.id) byId.set(match.id, match);
+  });
+  const sorted = [...incoming].sort(
+    (a, b) => Number(a._sharedAt || 0) - Number(b._sharedAt || 0),
+  );
+  for (const candidate of sorted) {
+    if (!candidate.id) continue;
+    const current = byId.get(candidate.id);
+    if (!current || Number(candidate._sharedAt || 0) > Number(current._sharedAt || 0)) {
+      byId.set(candidate.id, candidate);
+    }
+  }
+  // Existing order preserved; id-less existing entries kept in place; incoming
+  // ids that were never present append (first-seen order, ascending _sharedAt).
+  const knownIds = new Set(existing.map((match) => match.id).filter(Boolean));
+  const merged = existing.map((match) => (match.id ? byId.get(match.id) ?? match : match));
+  for (const candidate of sorted) {
+    if (!candidate.id || knownIds.has(candidate.id)) continue;
+    knownIds.add(candidate.id);
+    merged.push(candidate);
+  }
+  return merged;
+};
+
 // ── Pending share queue (offline retry) ─────────────────────────────────────
 // If a share fails because the network is down, the match + recipients are kept
 // in localStorage and retried on reconnect/login/next save instead of being

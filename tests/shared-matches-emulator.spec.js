@@ -49,7 +49,10 @@ async function setEmulatorDisplayName(idToken, displayName) {
 
 test.describe('Shared matches (local emulators)', () => {
   // Emulator round-trips + two logged-in contexts make this suite slow.
-  test.describe.configure({ timeout: 120000 });
+  // Serial: every test shares the same HOST/BOB accounts, and a recipient pull
+  // consumes *all* docs in their shared_matches subcollection — running tests in
+  // parallel would let one test's pull swallow another test's shared match.
+  test.describe.configure({ timeout: 120000, mode: "serial" });
 
   test.beforeAll(async () => {
     const host = await createEmulatorUser(HOST);
@@ -163,6 +166,122 @@ async function expectRecipientReceives(page, count) {
   throw new Error(`recipient did not receive the shared match (before=${before}, expected >= ${before + count})`);
 }
 
+/** Read every match id currently stored locally (any game). */
+async function localMatchIds(page) {
+  return page.evaluate(() => {
+    const data = JSON.parse(localStorage.getItem('bgt_v6') || '{}');
+    return Object.values(data)
+      .filter(Array.isArray)
+      .flat()
+      .map((match) => match && match.id)
+      .filter(Boolean);
+  });
+}
+
+/**
+ * Id of the match saved at/after `sinceMs` for a game. Identifies the match we
+ * just saved even when cloud data from previous runs lingers in the emulator.
+ */
+async function waitForMatchSavedAfter(page, gid, sinceMs) {
+  for (let i = 0; i < 10; i += 1) {
+    const id = await page.evaluate(({ gameId, since }) => {
+      const data = JSON.parse(localStorage.getItem('bgt_v6') || '{}');
+      const list = Array.isArray(data[gameId]) ? data[gameId] : [];
+      const fresh = list
+        .filter((match) => match && match.date && new Date(match.date).getTime() >= since)
+        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+      return fresh && fresh.id;
+    }, { gameId: gid, since: sinceMs });
+    if (id) return id;
+    await page.waitForTimeout(500);
+  }
+  throw new Error(`no match saved after ${new Date(sinceMs).toISOString()} was found`);
+}
+
+/** Wait until the page's local store contains `matchId`, dispatching the focus pull each round. */
+async function expectMatchPresent(page, matchId) {
+  for (let i = 0; i < 12; i += 1) {
+    const ids = await localMatchIds(page);
+    if (ids.includes(matchId)) return;
+    await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+    await page.waitForTimeout(1500);
+  }
+  throw new Error(`match ${matchId} was not received`);
+}
+
+/**
+ * Wait until a match disappears from the page's local store, triggering the
+ * focus pull each round (that is what makes the recipient consume the deletion
+ * tombstone without waiting for the 60s interval).
+ */
+async function expectMatchGone(page, matchId) {
+  for (let i = 0; i < 12; i += 1) {
+    const ids = await localMatchIds(page);
+    if (!ids.includes(matchId)) return;
+    await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+    await page.waitForTimeout(1500);
+  }
+  throw new Error(`match ${matchId} was not removed from local storage`);
+}
+
+/**
+ * Wait until the stored match was REPLACED by the propagated edit: exactly one
+ * entry with the id (no duplicate appended) and its content reflects the edit.
+ */
+async function expectMatchUpdated(page, matchId, expectedNote) {
+  for (let i = 0; i < 12; i += 1) {
+    await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+    const ok = await page.evaluate(
+      ({ id, expected }) => {
+        const data = JSON.parse(localStorage.getItem('bgt_v6') || '{}');
+        const matches = Object.values(data)
+          .filter(Array.isArray)
+          .flat()
+          .filter((match) => match && match.id === id);
+        return matches.length === 1 && typeof matches[0].note === "string" && matches[0].note.includes(expected);
+      },
+      { id: matchId, expected: expectedNote },
+    );
+    if (ok) return;
+    await page.waitForTimeout(1500);
+  }
+  throw new Error(`match ${matchId} was not replaced by the edited copy (note "${expectedNote}")`);
+}
+
+test('host deletes a shared match and the recipient loses it on the next pull', async ({ browser }) => {
+    const ctxB = await newAppContext(browser);
+    const pageB = await ctxB.newPage();
+    await login(pageB, BOB);
+
+    const ctxA = await newAppContext(browser);
+    const pageA = await ctxA.newPage();
+    await login(pageA, HOST);
+
+    // Host links B, plays and saves → B receives the match.
+    await openUnoGame(pageA);
+    await linkPlayerByName(pageA, BOB.name);
+    const savedSince = Date.now() - 2000;
+    await playAndSaveUnoMatch(pageA);
+
+    const matchId = await waitForMatchSavedAfter(pageA, 'uno', savedSince);
+    expect(matchId).toBeTruthy();
+    await expectMatchPresent(pageB, matchId);
+
+    // Host deletes it from the history page (the delete is committed after the
+    // 5s undo window, so poll until it leaves the host's own store too).
+    await pageA.goto('/history');
+    await pageA.locator('[data-testid="history-subpage"]').waitFor({ state: 'visible', timeout: 15000 });
+    await pageA.locator(`[data-testid="delete-match-${matchId}"]`).click();
+    await pageA.locator('.modal-confirm').click();
+    await expectMatchGone(pageA, matchId);
+
+    // Recipient pulls the tombstone and drops its copy.
+    await expectMatchGone(pageB, matchId);
+
+    await ctxA.close();
+    await ctxB.close();
+  });
+
 test('host links player B, saves a match, B receives it via focus poll', async ({ browser }) => {
     const ctxB = await newAppContext(browser);
     const pageB = await ctxB.newPage();
@@ -177,6 +296,40 @@ test('host links player B, saves a match, B receives it via focus poll', async (
     await playAndSaveUnoMatch(pageA);
 
     await expectRecipientReceives(pageB, 1);
+
+    await ctxA.close();
+    await ctxB.close();
+  });
+
+  test('host edits a shared match and the recipient gets the updated copy on the next pull', async ({ browser }) => {
+    const ctxB = await newAppContext(browser);
+    const pageB = await ctxB.newPage();
+    await login(pageB, BOB);
+
+    const ctxA = await newAppContext(browser);
+    const pageA = await ctxA.newPage();
+    await login(pageA, HOST);
+
+    // Host links B, plays and saves → B receives the match.
+    await openUnoGame(pageA);
+    await linkPlayerByName(pageA, BOB.name);
+    const savedSince = Date.now() - 2000;
+    await playAndSaveUnoMatch(pageA);
+
+    const matchId = await waitForMatchSavedAfter(pageA, 'uno', savedSince);
+    expect(matchId).toBeTruthy();
+    await expectMatchPresent(pageB, matchId);
+
+    // Host edits the match (adds a note) from the history page.
+    await pageA.goto('/history');
+    await pageA.locator('[data-testid="history-subpage"]').waitFor({ state: 'visible', timeout: 15000 });
+    await pageA.locator(`[data-testid="edit-match-${matchId}"]`).click();
+    await pageA.locator('#edit-note').fill('EDITADO');
+    await pageA.locator('button.btnpri', { hasText: /guardar cambios|save changes/i }).click();
+    await pageA.locator('button.btnpri', { hasText: /guardar cambios|save changes/i }).waitFor({ state: 'detached', timeout: 5000 }).catch(() => {});
+
+    // Recipient pulls the updated copy and REPLACES the old one (never a duplicate).
+    await expectMatchUpdated(pageB, matchId, 'EDITADO');
 
     await ctxA.close();
     await ctxB.close();

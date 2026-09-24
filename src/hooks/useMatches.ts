@@ -3,6 +3,11 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { load, persist } from "../lib/storage";
 import { getAllPastPlayerNames } from "../lib/stats";
 import { computePublicStats } from "../lib/publicData";
+import {
+  deleteSharedMatchForRecipients,
+  mergeSharedMatchLists,
+  updateSharedMatchForRecipients,
+} from "../services/matchService";
 import { saveDataToCloud, savePublicStats } from "../services/userService";
 import type { AppStorageData, Match, MatchStore, TranslationFn } from "../types";
 
@@ -92,6 +97,9 @@ export function useMatches({ userRef, dark, showToast, t }: UseMatchesOptions) {
 
   const delMatch = useCallback(
     (gid: string, mid: string) => {
+      const match = (Array.isArray(data[gid]) ? (data[gid] as StoredMatch[]) : []).find(
+        (entry) => entry.id === mid,
+      );
       setData((previousData) => ({
         ...previousData,
         [gid]: (Array.isArray(previousData[gid]) ? (previousData[gid] as StoredMatch[]) : []).filter(
@@ -99,12 +107,29 @@ export function useMatches({ userRef, dark, showToast, t }: UseMatchesOptions) {
         ),
       }));
       showToast(t("deleted"));
+
+      // If the match was shared with registered players, notify them so the
+      // record disappears for everyone, not just locally (best-effort).
+      const uid = userRef?.current?.uid;
+      const recipients = match && Array.isArray(match._sharedWithUids)
+        ? (match._sharedWithUids as Array<string | null | undefined>)
+        : [];
+      if (uid && recipients.length > 0) {
+        void deleteSharedMatchForRecipients(gid, mid, recipients, uid)
+          .then(({ failed }) => {
+            if (failed > 0) showToast(t("deleteShareFail").replace("{n}", String(failed)));
+          })
+          .catch(() => {});
+      }
     },
-    [showToast, t],
+    [data, showToast, t, userRef],
   );
 
   const editMatch = useCallback(
     (gid: string, updated: StoredMatch) => {
+      const previous = (Array.isArray(data[gid]) ? (data[gid] as StoredMatch[]) : []).find(
+        (entry) => entry.id === updated.id,
+      );
       setData((previousData) => ({
         ...previousData,
         [gid]: (Array.isArray(previousData[gid]) ? (previousData[gid] as StoredMatch[]) : []).map((match) =>
@@ -112,8 +137,29 @@ export function useMatches({ userRef, dark, showToast, t }: UseMatchesOptions) {
         ),
       }));
       showToast(t("matchUpdated"));
+
+      // If the edited match was shared with registered players, push the
+      // updated copy to them so their next pull replaces their local one
+      // (best-effort, same pattern as delMatch).
+      const uid = userRef?.current?.uid;
+      const recipients = previous && Array.isArray(previous._sharedWithUids)
+        ? (previous._sharedWithUids as Array<string | null | undefined>)
+        : [];
+      if (uid && recipients.length > 0) {
+        void updateSharedMatchForRecipients(
+          gid,
+          updated,
+          recipients,
+          uid,
+          userRef?.current?.displayName,
+        )
+          .then(({ failed }) => {
+            if (failed > 0) showToast(t("shareEditFail").replace("{n}", String(failed)));
+          })
+          .catch(() => {});
+      }
     },
-    [showToast, t],
+    [data, showToast, t, userRef],
   );
 
   const importData = useCallback((nextData: MatchStore) => {
@@ -123,15 +169,37 @@ export function useMatches({ userRef, dark, showToast, t }: UseMatchesOptions) {
   const mergeSharedMatches = useCallback((toMerge: Record<string, Match[]>) => {
     setData((previousData) => {
       const nextData: MatchStore = { ...previousData };
+      let changed = false;
       Object.entries(toMerge).forEach(([gid, newMatches]) => {
         const existing = Array.isArray(previousData[gid]) ? (previousData[gid] as StoredMatch[]) : [];
-        const existingIds = new Set(existing.map((match) => match.id));
-        const filtered = newMatches.filter((match) => !existingIds.has(match.id));
-        if (filtered.length > 0) {
-          nextData[gid] = [...existing, ...filtered];
+        const merged = mergeSharedMatchLists(existing, newMatches as StoredMatch[]);
+        if (
+          merged.length !== existing.length ||
+          merged.some((match, index) => match !== existing[index])
+        ) {
+          nextData[gid] = merged;
+          changed = true;
         }
       });
-      return nextData;
+      return changed ? nextData : previousData;
+    });
+  }, []);
+
+  const removeSharedMatches = useCallback((deletions: Array<{ gameId: string; matchId: string }>) => {
+    if (deletions.length === 0) return;
+    setData((previousData) => {
+      const nextData: MatchStore = { ...previousData };
+      let changed = false;
+      deletions.forEach(({ gameId, matchId }) => {
+        if (!matchId || !Array.isArray(nextData[gameId])) return;
+        const before = nextData[gameId] as StoredMatch[];
+        const after = before.filter((match) => match.id !== matchId);
+        if (after.length !== before.length) {
+          nextData[gameId] = after;
+          changed = true;
+        }
+      });
+      return changed ? nextData : previousData;
     });
   }, []);
 
@@ -166,6 +234,7 @@ export function useMatches({ userRef, dark, showToast, t }: UseMatchesOptions) {
     editMatch,
     importData,
     mergeSharedMatches,
+    removeSharedMatches,
     mergeCloudData,
     total,
     knownNames,
